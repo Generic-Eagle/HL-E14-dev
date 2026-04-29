@@ -6,6 +6,4 @@
   components:
   - type: Sprite
     sprite: _HL13/Objects/Clothing/Uniforms/Combine/civilprotection.rsi
-  - type: Sprite
-    sprite: _HL13/Objects/Clothing/Uniforms/Combine/civilprotection.rsi
   - type: HideLayerClothing
