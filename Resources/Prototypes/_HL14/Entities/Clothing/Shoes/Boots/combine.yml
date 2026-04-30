@@ -8,7 +8,7 @@
     sprite: Clothing/Shoes/Boots/jackboots.rsi
   - type: item
     sprite: Clothing/Shoes/Boots/jackboots.rsi
-  - type: Sprite
+  - type: Clothing
     sprite: _HL13/Objects/Clothing/Shoes/Boots/Combine/civilprotection.rsi
   - type: ClothingSlowOnDamageModifier
     modifier: 0.5
