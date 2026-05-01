@@ -1,0 +1,28 @@
+- type: entity
+  abstract: true
+  parent: [ClothingOuterBaseMedium, AllowSuitStorageClothing]
+  id: ClothingOuterArmorCivilProtectionVest
+  name: Civil Protection Armor Vest
+  description: Standard-issue Civil Protection armor vest designed for a basic level protection of vital organs
+  components:
+  - type: Sprite
+    sprite: _HL13/Objects/Clothing/OuterClothing/Armor/Combine/civilprotectionvest.rsi
+  - type: Armor 
+    modifiers:
+      coefficients:
+        Blunt: 0.70
+        Slash: 0.70
+        Piercing: 0.70 
+        Heat: 0.80
+  - type: ExplosionResistance
+    damageCoefficient: 0.90
+
+- type: entity
+  abstract: true
+  parent: [ClothingOuterArmorCivilProtectionVest]
+  id: ClothingOuterArmorCivilProtectionTrench
+  name: Civil Protection Armored Trenchcoat
+  description: Standard-issue Civil Protection armor vest designed for a basic level protection of vital organs. This one comes with an attached trenchcoat.
+  components:
+  - type: Sprite
+    sprite: _HL13/Objects/Clothing/OuterClothing/Armor/Combine/civilprotectiontrench.rsi

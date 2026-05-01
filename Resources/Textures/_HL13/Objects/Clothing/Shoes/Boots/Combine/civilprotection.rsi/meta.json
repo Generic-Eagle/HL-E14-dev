@@ -1,6 +1,6 @@
 {
     "version": 1,
-    "license": null,
+    "license": "CC-BY-SA-3.0",
     "copyright": "Worn sprites taken from halflife-episode 13 at https://github.com/Marmio64/halflife-episode13/blob/master/hl13/icons/mob/clothing/shoes.dmi Icon and inhand Taken from tgstation at commit https://github.com/tgstation/tgstation/commit/7e4e9d432d88981fb9bb463970c5b98ce85c0abe.",
     "size": {
         "x": 32,
