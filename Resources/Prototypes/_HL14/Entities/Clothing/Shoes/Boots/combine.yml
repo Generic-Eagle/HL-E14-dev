@@ -4,12 +4,18 @@
   name: Civil Protection Jackboots
   description: Standard-issue Civil Protection footwear
   components:
-  - type: icon
+  - type: sprite
     sprite: Clothing/Shoes/Boots/jackboots.rsi
-  - type: item
+    Layers:
+     - State: Icon
+  - type: sprite
     sprite: Clothing/Shoes/Boots/jackboots.rsi
-  - type: clothing
+    Layers: 
+     - state: item
+  - type: sprite
     sprite: _HL13/Objects/Clothing/Shoes/Boots/Combine/civilprotection.rsi
+    Layers:
+     - state: clothing
   - type: ClothingSlowOnDamageModifier
     modifier: 0.5
 
