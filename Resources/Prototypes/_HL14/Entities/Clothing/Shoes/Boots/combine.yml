@@ -5,7 +5,7 @@
   description: Standard-issue Civil Protection footwear
   components:
   - type: Sprite
-    sprite: _HL13/Objects/Clothing/Shoes/Boots/Combine/civilprotection.rsi
+    sprite: _HL13\Objects/Clothing/Shoes/Boots/Combine/civilprotection.rsi
   - type: ClothingSlowOnDamageModifier
     modifier: 0.5
 
