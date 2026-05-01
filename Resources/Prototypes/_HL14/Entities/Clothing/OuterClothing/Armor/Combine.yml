@@ -1,5 +1,4 @@
 - type: entity
-  abstract: true
   parent: [ClothingOuterBaseMedium, AllowSuitStorageClothing]
   id: ClothingOuterArmorCivilProtectionVest
   name: Civil Protection Armor Vest
@@ -18,7 +17,6 @@
     damageCoefficient: 0.90
 
 - type: entity
-  abstract: true
   parent: [ClothingOuterArmorCivilProtectionVest]
   id: ClothingOuterArmorCivilProtectionTrench
   name: Civil Protection Armored Trenchcoat
