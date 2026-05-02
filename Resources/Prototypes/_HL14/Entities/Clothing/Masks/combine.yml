@@ -55,7 +55,7 @@
   parent: [CMBaseMask, CMUBaseGasMaskFilterSlot]
   id: GasMaskOTA
   name: Overwatch Transhuman Soldier Gasmask
-  description: Standard-issue gasmask of the Overwatch Transhuman Arm
+  description: Standard-issue gasmask of the Overwatch Transhuman Arm.
   components:
   - type: Sprite
     sprite: _HL13/Objects/Clothing/Masks/Combine/otamask.rsi
@@ -63,3 +63,48 @@
   - type: IngestionBlocker
   - type: IdentityBlocker
   - type: HideLayerClothing
+
+- type: entity
+  parent: [GasMaskOTA]
+  id: GasMaskDagger
+  name: Overwatch Transhuman "DAGGER" Gasmask
+  description: Standard-issue gasmask of the Overwatch Transhuman Arm. Colored red for "DAGGER" units.
+  components:
+  - type: Sprite
+    sprite: _HL13/Objects/Clothing/Masks/Combine/daggermask.rsi
+
+- type: entity
+  parent: [GasMaskOTA]
+  id: GasMaskGrunt
+  name: Overwatch Transhuman "GRUNT" Gasmask
+  description: Standard-issue gasmask of the Overwatch Transhuman Arm. Modified for lower-ranked "grunt" units.
+  components:
+  - type: Sprite
+    sprite: _HL13/Objects/Clothing/Masks/Combine/gruntmask.rsi
+
+- type: entity
+  parent: [GasMaskOTA]
+  id: GasMaskElite
+  name: Overwatch Transhuman "ELITE" Gasmask
+  description: Standard-issue gasmask of the Overwatch Transhuman Arm. Modified for higher-ranked "ELITE" units.
+  components:
+  - type: Sprite
+    sprite: _HL13/Objects/Clothing/Masks/Combine/elitemask.rsi
+
+- type: entity
+  parent: [GasMaskOTA]
+  id: GasMaskWallhammer
+  name: Overwatch Transhuman "WALLHAMMER" Gasmask
+  description: Standard-issue gasmask of the Overwatch Transhuman Arm. Modified for specialized "WALLHAMMER" units.
+  components:
+  - type: Sprite
+    sprite: _HL13/Objects/Clothing/Masks/Combine/wallhammermask.rsi
+
+- type: entity
+  parent: [GasMaskOTA]
+  id: GasMasksuppressor
+  name: Overwatch Transhuman "SUPPRESSOR" Gasmask
+  description: Standard-issue gasmask of the Overwatch Transhuman Arm. Modified for specialized "SUPPRESSOR" units.
+  components:
+  - type: Sprite
+    sprite: _HL13/Objects/Clothing/Masks/Combine/suppressor.rsi

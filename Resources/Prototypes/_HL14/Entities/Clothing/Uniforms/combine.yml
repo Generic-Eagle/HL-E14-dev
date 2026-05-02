@@ -12,7 +12,7 @@
   parent: RMCUniformBase
   id: ClothingUniformDVL
   name: Division Leader Uniform
-  description: Standard-Issue uniform of the Civil Protection colored red for division leaders.
+  description: Standard-Issue uniform of the Civil Protection. Colored red for division leaders.
   components:
   - type: Sprite
     sprite: _HL13/Objects/Clothing/Uniforms/Combine/dvljumpsuit.rsi
@@ -22,7 +22,7 @@
   parent: RMCUniformBase
   id: ClothingUniformSectorial
   name: Sectorial Commander Uniform
-  description: Standard-Issue uniform of the Civil Protection colored blue for sectorial commanders.
+  description: Standard-Issue uniform of the Civil Protection. Colored blue for sectorial commanders.
   components:
   - type: Sprite
     sprite: _HL13/Objects/Clothing/Uniforms/Combine/sectorialjumpsuit.rsi
@@ -34,8 +34,58 @@
   parent: RMCUniformBase
   id: ClothingUniformOTA
   name: Overwatch Transhuman Soldier Uniform
-  description: Standard-Issue uniform of OTA soldiers
+  description: Standard-issue uniform of the Overwatch Transhuman Arm.
   components:
   - type: Sprite
     sprite: _HL13/Objects/Clothing/Uniforms/Combine/otajumpsuit.rsi
+  - type: HideLayerClothing
+
+- type: entity
+  parent: RMCUniformBase
+  id: ClothingUniformDagger
+  name: Overwatch Transhuman "DAGGER" Uniform
+  description: Standard-issue uniform of the Overwatch Transhuman Arm. Colored red for "DAGGER" units.
+  components:
+  - type: Sprite
+    sprite: _HL13/Objects/Clothing/Uniforms/Combine/daggerjumpsuit.rsi
+  - type: HideLayerClothing
+
+- type: entity
+  parent: RMCUniformBase
+  id: ClothingUniformGrunt
+  name: Overwatch Transhuman "GRUNT" Uniform
+  description: Standard-issue uniform of the Overwatch Transhuman Arm. Modified for lower-ranked "grunt" units.
+  components:
+  - type: Sprite
+    sprite: _HL13/Objects/Clothing/Uniforms/Combine/gruntjumpsuit.rsi
+  - type: HideLayerClothing
+
+- type: entity
+  parent: RMCUniformBase
+  id: ClothingUniformElite
+  name: Overwatch Transhuman "ELITE" Uniform
+  description: Standard-issue uniform of the Overwatch Transhuman Arm. Modified for higher-ranked "ELITE" units.
+  components:
+  - type: Sprite
+    sprite: _HL13/Objects/Clothing/Uniforms/Combine/elitejumpsuit.rsi
+  - type: HideLayerClothing
+  
+- type: entity
+  parent: RMCUniformBase
+  id: ClothingUniformSuppressor
+  name: Overwatch Transhuman "SUPPRESSOR" Uniform
+  description: Standard-issue uniform of the Overwatch Transhuman Arm. Modified for specialized "SUPPRESSOR" units.
+  components:
+  - type: Sprite
+    sprite: _HL13/Objects/Clothing/Uniforms/Combine/suppressorjumpsuit.rsi
+  - type: HideLayerClothing
+
+- type: entity
+  parent: RMCUniformBase
+  id: ClothingUniformAssassin
+  name: Overwatch Transhuman "ASSASSIN" uniform
+  description: Standard-issue uniform of the Overwatch Transhuman Arm. Modified for specialized elite "ASSASSIN" units.
+  components:
+  - type: Sprite
+    sprite: _HL13/Objects/Clothing/Uniforms/Combine/assassinjumpsuit.rsi
   - type: HideLayerClothing
