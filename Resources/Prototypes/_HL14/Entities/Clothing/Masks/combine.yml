@@ -1,0 +1,65 @@
+# Civil Protecion
+
+- type: entity
+  parent: [CMBaseMask, CMUBaseGasMaskFilterSlot]
+  id: GasMaskCivilProtection
+  name: Civil Protection Gas Mask
+  description: A standard-issue civil protection gas mask
+  components:
+  - type: Sprite
+    sprite: _HL13/Objects/Clothing/Masks/Combine/civilprotectionmask.rsi
+  - type: BreathMask
+  - type: IngestionBlocker
+  - type: IdentityBlocker
+  - type: HideLayerClothing
+
+- type: entity
+  parent: [GasMaskCivilProtection]
+  id: GasMaskCPM
+  name: Civil Protection Medic Gasmask
+  description: A standard-issue medical officer gas mask. Only differs from the base model in the yellow lense color.
+  components:
+  - type: Sprite
+    sprite: _HL13/Objects/Clothing/Masks/Combine/medicalofficermask.rsi
+
+- type: entity
+  parent: [GasMaskCivilProtection]
+  id: GasMaskEPU
+  name: Elite Protection Unit Gasmask
+  description: A standard-issue Elite Protectin Unit Gas mask. Only differs from the base model in the green lense color.
+  components:
+  - type: Sprite
+    sprite: _HL13/Objects/Clothing/Masks/Combine/epumask.rsi
+
+- type: entity
+  parent: [GasMaskCivilProtection]
+  id: GasMaskDVL
+  name: Division Leader Gasmask
+  description: A standard-issue gas mask for Division Leaders. Not much different from the standard gas mask.
+  components:
+  - type: Sprite
+    sprite: _HL13/Objects/Clothing/Masks/Combine/dvlmask.rsi
+
+- type: entity
+  parent: [GasMaskCivilProtection]
+  id: GasMaskSCT
+  name: Sectorial Commander Gasmask
+  description: A standard-issue gas mask for the head honcho. Far more complex than lesser models, and a true sign of trust from the benefactors, for somebody retaining their faculties.
+  components:
+  - type: Sprite
+    sprite: _HL13/Objects/Clothing/Masks/Combine/sectorialmask.rsi
+
+#Overwatch Transhuman Arm
+
+- type: entity
+  parent: [CMBaseMask, CMUBaseGasMaskFilterSlot]
+  id: GasMaskOTA
+  name: Overwatch Transhuman Soldier Gasmask
+  description: Standard-issue gasmask of the Overwatch Transhuman Arm
+  components:
+  - type: Sprite
+    sprite: _HL13/Objects/Clothing/Masks/Combine/otamask.rsi
+  - type: BreathMask
+  - type: IngestionBlocker
+  - type: IdentityBlocker
+  - type: HideLayerClothing

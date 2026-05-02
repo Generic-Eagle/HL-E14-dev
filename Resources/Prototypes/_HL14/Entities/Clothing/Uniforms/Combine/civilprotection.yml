@@ -1,9 +1,0 @@
-- type: entity
-  parent: ClothingUniformBase
-  id: ClothingUniformCivilProtection
-  name: Civil Protection Uniform
-  description: Standard-Issue uniform of the Civil Protection
-  components:
-  - type: Sprite
-    sprite: _HL13/Objects/Clothing/Uniforms/Combine/civilprotection.rsi
-  - type: HideLayerClothing

@@ -1,0 +1,41 @@
+- type: entity
+  parent: RMCUniformBase
+  id: ClothingUniformCivilProtection
+  name: Civil Protection Uniform
+  description: Standard-Issue uniform of the Civil Protection
+  components:
+  - type: Sprite
+    sprite: _HL13/Objects/Clothing/Uniforms/Combine/civilprotectionjumpsuit.rsi
+  - type: HideLayerClothing
+
+- type: entity
+  parent: RMCUniformBase
+  id: ClothingUniformDVL
+  name: Division Leader Uniform
+  description: Standard-Issue uniform of the Civil Protection colored red for division leaders.
+  components:
+  - type: Sprite
+    sprite: _HL13/Objects/Clothing/Uniforms/Combine/dvljumpsuit.rsi
+  - type: HideLayerClothing
+
+- type: entity
+  parent: RMCUniformBase
+  id: ClothingUniformSectorial
+  name: Sectorial Commander Uniform
+  description: Standard-Issue uniform of the Civil Protection colored blue for sectorial commanders.
+  components:
+  - type: Sprite
+    sprite: _HL13/Objects/Clothing/Uniforms/Combine/sectorialjumpsuit.rsi
+  - type: HideLayerClothing
+
+  # Overwatch Transhuman Arm
+
+- type: entity
+  parent: RMCUniformBase
+  id: ClothingUniformOTA
+  name: Overwatch Transhuman Soldier Uniform
+  description: Standard-Issue uniform of OTA soldiers
+  components:
+  - type: Sprite
+    sprite: _HL13/Objects/Clothing/Uniforms/Combine/otajumpsuit.rsi
+  - type: HideLayerClothing

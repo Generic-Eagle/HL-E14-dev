@@ -5,7 +5,15 @@
   description: Standard-issue Civil Protection footwear
   components:
   - type: Sprite
-    sprite: _HL13\Objects/Clothing/Shoes/Boots/Combine/civilprotection.rsi
+    sprite: _HL13\Objects/Clothing/Shoes/Boots/Combine/civilprotectionboots.rsi
   - type: ClothingSlowOnDamageModifier
     modifier: 0.5
 
+- type: entity
+  parent: [ClothingShoesBootsCivilProtJack]
+  id: ClothingShoesBootsOTAtJack
+  name: Overwatch Transhuman Soldier Jackboots
+  description: Standard-issue OTA footwear
+  components:
+  - type: Sprite
+    sprite: _HL13\Objects/Clothing/Shoes/Boots/Combine/otaboots.rsi
