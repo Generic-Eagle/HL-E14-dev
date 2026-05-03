@@ -94,3 +94,64 @@
   components:
   - type: Sprite
     sprite: _HL13/Objects/Clothing/OuterClothing/Armor/Combine/daggervest.rsi
+
+- type: entity
+  parent: [ClothingOuterArmorCivilProtectionVest]
+  id: ClothingOuterArmorASSASSINVest
+  name: Overwatch Transhuman "ASSASSIN" Vest
+  description: Standard-issue OTA armor vest designed for optimal protection. Padding removed for mobile "ASSASSIN" units.
+  components:
+  - type: Sprite
+    sprite: _HL13/Objects/Clothing/OuterClothing/Armor/Combine/assassinvest.rsi
+
+- type: entity
+  parent: [ClothingOuterArmorOTAVest]
+  id: ClothingOuterArmorELITEVest
+  name: Overwatch Transhuman "ELITE" Vest
+  description: Standard-issue OTA armor vest designed for optimal protection. Modified with special combine materials for higher padding for higher-ranked "ELITE" units
+  components:
+  - type: Sprite
+    sprite: _HL13/Objects/Clothing/OuterClothing/Armor/Combine/elitevest.rsi
+  - type: Armor 
+    modifiers:
+      coefficients:
+        Blunt: 0.40
+        Slash: 0.40
+        Piercing: 0.40 
+        Heat: 0.40
+  - type: ClothingSpeedModifier
+    walkModifier: 0.666
+    sprintModifier: 0.666
+  - type: ExplosionResistance
+    damageCoefficient: 0.70
+
+- type: entity
+  parent: [ClothingOuterArmorOTAVest]
+  id: ClothingOuterArmorWALLHAMMERVest
+  name: Overwatch Transhuman "WALLHAMMER"" Vest
+  description: Standard-issue OTA armor vest designed for optimal protection. Modified with additional padding, which offers more protection but is much heavier than standard.
+  components:
+  - type: Sprite
+    sprite: _HL13/Objects/Clothing/OuterClothing/Armor/Combine/wallhammervest.rsi
+  - type: Armor 
+    modifiers:
+      coefficients:
+        Blunt: 0.30
+        Slash: 0.30
+        Piercing: 0.30 
+        Heat: 0.30
+  - type: ClothingSpeedModifier
+    walkModifier: 0.333
+    sprintModifier: 0.333
+  - type: ExplosionResistance
+    damageCoefficient: 0.50
+
+- type: entity
+  parent: [ClothingOuterArmorOTAVest]
+  id: ClothingOuterArmorSUPPRESSORVest
+  name: Overwatch Transhuman "SUPPRESSOR" Vest
+  description: Standard-issue OTA armor vest designed for optimal protection. Heavy modification for specialized "SUPPRESSOR" units.
+  components:
+  - type: SmartGunArmor
+  - type: Sprite
+    sprite: _HL13/Objects/Clothing/OuterClothing/Armor/Combine/suppressorvest.rsi
