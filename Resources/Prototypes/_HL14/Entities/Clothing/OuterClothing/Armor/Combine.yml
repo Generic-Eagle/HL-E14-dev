@@ -69,7 +69,7 @@
   parent: [ClothingOuterBaseMedium, AllowSuitStorageClothing]
   id: ClothingOuterArmorOTAVest
   name: Overwatch Transhuman Soldier Vest
-  description: Standard-issue OTA armor vest designed for optimal protection
+  description: Standard-issue OTA armor vest designed for optimal protection.
   components:
   - type: Sprite
     sprite: _HL13/Objects/Clothing/OuterClothing/Armor/Combine/otabluevest.rsi
@@ -85,3 +85,12 @@
     sprintModifier: 0.666
   - type: ExplosionResistance
     damageCoefficient: 0.80
+
+- type: entity
+  parent: [ClothingOuterArmorOTAVest]
+  id: ClothingOuterArmorDAGGERVest
+  name: Overwatch Transhuman "DAGGER" Vest
+  description: Standard-issue OTA armor vest designed for optimal protection. Colored red for specialized "DAGGER" units
+  components:
+  - type: Sprite
+    sprite: _HL13/Objects/Clothing/OuterClothing/Armor/Combine/daggervest.rsi

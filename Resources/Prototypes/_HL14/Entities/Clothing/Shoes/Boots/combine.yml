@@ -2,7 +2,7 @@
   parent: [ClothingShoesMilitaryBase]
   id: ClothingShoesBootsCivilProtJack
   name: Civil Protection Jackboots
-  description: Standard-issue Civil Protection footwear
+  description: Standard-issue Civil Protection footwear.
   components:
   - type: Sprite
     sprite: _HL13\Objects/Clothing/Shoes/Boots/Combine/civilprotectionboots.rsi
@@ -11,9 +11,18 @@
 
 - type: entity
   parent: [ClothingShoesBootsCivilProtJack]
-  id: ClothingShoesBootsOTAtJack
+  id: ClothingShoesBootsOTAJack
   name: Overwatch Transhuman Soldier Jackboots
-  description: Standard-issue OTA footwear
+  description: Standard-issue boots of the Overwatch Transhuman Arm.
   components:
   - type: Sprite
     sprite: _HL13\Objects/Clothing/Shoes/Boots/Combine/otaboots.rsi
+
+- type: entity
+  parent: [ClothingShoesBootsCivilProtJack]
+  id: ClothingShoesBootsAssassinJack
+  name: Overwatch Transhuman "ASSASSIN" boots
+  description: Standard-issue boots of the Overwatch Transhuman Arm. Modified for specialized "ASSASSIN" units.
+  components:
+  - type: Sprite
+    sprite: _HL13\Objects/Clothing/Shoes/Boots/Combine/assassinboots.rsi
