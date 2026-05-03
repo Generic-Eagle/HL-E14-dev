@@ -5,7 +5,7 @@
   description: Standard-issue Civil Protection footwear.
   components:
   - type: Sprite
-    sprite: _HL13\Objects/Clothing/Shoes/Boots/Combine/civilprotectionboots.rsi
+    sprite: _HL13/Objects/Clothing/Shoes/Boots/Combine/civilprotectionboots.rsi
   - type: ClothingSlowOnDamageModifier
     modifier: 0.5
 
@@ -16,7 +16,7 @@
   description: Standard-issue boots of the Overwatch Transhuman Arm.
   components:
   - type: Sprite
-    sprite: _HL13\Objects/Clothing/Shoes/Boots/Combine/otaboots.rsi
+    sprite: _HL13/Objects/Clothing/Shoes/Boots/Combine/otaboots.rsi
 
 - type: entity
   parent: [ClothingShoesBootsCivilProtJack]
