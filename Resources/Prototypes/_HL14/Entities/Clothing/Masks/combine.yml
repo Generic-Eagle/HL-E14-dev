@@ -12,6 +12,10 @@
   - type: IngestionBlocker
   - type: IdentityBlocker
   - type: HideLayerClothing
+    slots:
+    - Hair
+    - HeadTop
+    - HeadSide
 
 - type: entity
   parent: [GasMaskCivilProtection]
@@ -49,6 +53,7 @@
   - type: Sprite
     sprite: _HL13/Objects/Clothing/Masks/Combine/sectorialmask.rsi
 
+
 #Overwatch Transhuman Arm
 
 - type: entity
@@ -63,6 +68,10 @@
   - type: IngestionBlocker
   - type: IdentityBlocker
   - type: HideLayerClothing
+    slots:
+    - Hair
+    - HeadTop
+    - HeadSide
 
 - type: entity
   parent: [GasMaskOTA]
@@ -88,8 +97,6 @@
   name: Overwatch Transhuman "ELITE" Gasmask
   description: Standard-issue gasmask of the Overwatch Transhuman Arm. Modified for higher-ranked "ELITE" units.
   components:
-  - type: Sprite
-    sprite: _HL13/Objects/Clothing/Masks/Combine/elitemask.rsi
 
 - type: entity
   parent: [GasMaskOTA]

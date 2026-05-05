@@ -1,0 +1,27 @@
+- type: entity
+  parent: RMCBaseBioSuit
+  id: SuitBioCWUCleanup
+  name: CWU Hazardous Bio-Remidiation Suit
+  description: A suit designed for Civil Workers Union infestation control teams.
+  components:
+  - type: Sprite
+    sprite: _HL13/Objects/Clothing/OuterClothing/Misc/cwucleanupbiosuit.rsi
+  - type: Clothing
+    sprite: _HL13/Objects/Clothing/OuterClothing/Misc/cwucleanupbiosuit.rsi
+  - type: CMHardArmor
+  - type: ClothingSpeedModifier # SLOWDOWN_ARMOR_LIGHT
+    walkModifier: 0.725
+    sprintModifier: 0.725
+  - type: RMCArmorSpeedTier
+    speedTier: light
+
+- type: entity
+  parent: SuitBioCWUCleanup
+  id: SuitBioCWUScientist
+  name: CWU Xenian-Research Suit
+  description: A suit designed for Civil Workers Union science teams.
+  components:
+  - type: Sprite
+    sprite: _HL13/Objects/Clothing/OuterClothing/Misc/cwuscientistbiosuit.rsi
+  - type: Clothing
+    sprite: _HL13/Objects/Clothing/OuterClothing/Misc/cwuscientistbiosuit.rsi
