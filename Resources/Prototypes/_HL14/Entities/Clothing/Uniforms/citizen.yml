@@ -1,0 +1,29 @@
+- type: entity
+  parent: [RMCUniformBase, RMCFoldableUniformBase]
+  id: ClothingUniformCitizen
+  name: Blue Citizen Jumpsuit
+  description: The standard drab blues of average Combine citizens.
+  components:
+  - type: Sprite
+    sprite: _HL13/Objects/Clothing/Uniforms/Citizen/citizenjumpsuit.rsi
+  - type: Foldable
+    unfoldVerbText: rmc-sleeves-verb-unfold
+    foldVerbText: rmc-sleeves-verb-fold
+
+- type: entity
+  parent: [RMCUniformBase]
+  id: ClothingUniformRefugeeTan
+  name: Tan Refugee Jumpsuit
+  description: The standard drab blues of average Combine citizen. Has had its shirt replaced with a tan one, turning it into one of many symbols of those against the combine.
+  components:
+  - type: Sprite
+    sprite: _HL13/Objects/Clothing/Uniforms/Citizen/refugeetanjumpsuit.rsi
+
+- type: entity
+  parent: [RMCUniformBase]
+  id: ClothingUniformRefugeeGreen
+  name: Green Refugee Jumpsuit
+  description: The standard drab blues of average Combine citizen. Has had its shirt replaced with a green one, turning it into one of many symbols of those against the combine.
+  components:
+  - type: Sprite
+    sprite: _HL13/Objects/Clothing/Uniforms/Citizen/refugeegreenjumpsuit.rsi
