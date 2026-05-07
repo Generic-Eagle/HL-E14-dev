@@ -1,3 +1,5 @@
+#Science
+
 - type: entity
   parent: ClothingHeadBase
   id: HoodBioCWUCleanup
@@ -29,3 +31,4 @@
     sprite: _HL13/Objects/Clothing/Head/Helmets/Citizen/cwusciencehelmet.rsi
   - type: Clothing
     sprite: _HL13/Objects/Clothing/Head/Helmets/Citizen/cwusciencehelmet.rsi
+

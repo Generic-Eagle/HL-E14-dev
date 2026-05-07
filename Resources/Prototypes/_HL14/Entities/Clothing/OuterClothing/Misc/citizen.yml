@@ -1,5 +1,3 @@
-# CWU science
-
 - type: entity
   parent: RMCBaseBioSuit
   id: SuitBioCWUCleanup
@@ -28,7 +26,7 @@
   - type: Clothing
     sprite: _HL13/Objects/Clothing/OuterClothing/Misc/cwuscientistbiosuit.rsi
 
-#CWU Technical
+#Technical
 
 - type: entity
   parent: RMCHazardVest
