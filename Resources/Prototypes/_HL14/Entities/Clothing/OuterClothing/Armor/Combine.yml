@@ -21,11 +21,11 @@
 - type: entity
   parent: [ClothingOuterArmorCivilProtectionVest]
   id: ClothingOuterArmorCPMVest
-  name: Civil Protection Medic Vest
-  description: Standard-issue Civil Protection armor vest designed for a basic level protection of vital organs. This one is colored red for Civil Protection field medics.
+  name: Civil Protection "HELIX" Vest
+  description: Standard-issue Civil Protection armor vest designed for a basic level protection of vital organs. This one is colored red for "HELIX" units.
   components:
   - type: Sprite
-    sprite: _HL13/Objects/Clothing/OuterClothing/Armor/Combine/medicalofficervest.rsi
+    sprite: _HL13/Objects/Clothing/OuterClothing/Armor/Combine/helixvest.rsi
 
 - type: entity
   parent: [ClothingOuterArmorCivilProtectionVest]
@@ -36,23 +36,25 @@
   - type: Sprite
     sprite: _HL13/Objects/Clothing/OuterClothing/Armor/Combine/civilprotectiontrench.rsi
 
-- type: entity
-  parent: [ClothingOuterArmorCivilProtectionVest]
-  id: ClothingOuterArmorEPUTrench
-  name: Elite Protection Unit Trenchcoat
-  description: Standard-issue Civil Protection armor vest designed for a basic level protection of vital organs. This one comes with an attached trenchcoat and is colored green for Elite Protection Units.
-  components:
-  - type: Sprite
-    sprite: _HL13/Objects/Clothing/OuterClothing/Armor/Combine/eputrench.rsi
+
 
 - type: entity
   parent: [ClothingOuterArmorCivilProtectionVest]
-  id: ClothingOuterArmorDVLVest
-  name: Division Leader Vest
-  description: Standard-issue Civil Protection armor vest designed for a basic level protection of vital organs. This one is colored red for division leaders.
+  id: ClothingOuterArmorEPUVest
+  name: Elite Protection Unit Vest
+  description: Standard-issue Civil Protection armor vest designed for a basic level protection of vital organs. This one is colored red for Elite Protection Units.
   components:
   - type: Sprite
-    sprite: _HL13/Objects/Clothing/OuterClothing/Armor/Combine/dvlvest.rsi
+    sprite: _HL13/Objects/Clothing/OuterClothing/Armor/Combine/epuvest.rsi
+
+- type: entity
+  parent: [ClothingOuterArmorCivilProtectionVest]
+  id: ClothingOuterArmorDVLTrench
+  name: Division Leader Trenchcoat
+  description: Standard-issue Civil Protection armor vest designed for a basic level protection of vital organs. This one comes with an attached trenchcoat and is colored red for Division Leaders.
+  components:
+  - type: Sprite
+    sprite: _HL13/Objects/Clothing/OuterClothing/Armor/Combine/dvltrench.rsi
 
 - type: entity
   parent: [ClothingOuterArmorCivilProtectionVest]
@@ -62,6 +64,7 @@
   components:
   - type: Sprite
     sprite: _HL13/Objects/Clothing/OuterClothing/Armor/Combine/sectorialtrench.rsi
+
 
 #Overwatch Transhuman Arm
 

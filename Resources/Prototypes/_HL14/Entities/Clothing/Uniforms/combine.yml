@@ -10,6 +10,26 @@
 
 - type: entity
   parent: RMCUniformBase
+  id: ClothingUniformGRID
+  name: Civil Protection "GRID" Uniform
+  description: Standard-Issue uniform of the Civil Protection. Colored blue for GRID units.
+  components:
+  - type: Sprite
+    sprite: _HL13/Objects/Clothing/Uniforms/Combine/gridjumpsuit.rsi
+  - type: HideLayerClothing
+
+- type: entity
+  parent: RMCUniformBase
+  id: ClothingUniformEPU
+  name: Elite Protection Unit Uniform
+  description: Standard-Issue uniform of the Civil Protection. Has a red armband for Elite Protection Units
+  components:
+  - type: Sprite
+    sprite: _HL13/Objects/Clothing/Uniforms/Combine/epujumpsuit.rsi
+  - type: HideLayerClothing
+
+- type: entity
+  parent: RMCUniformBase
   id: ClothingUniformDVL
   name: Division Leader Uniform
   description: Standard-Issue uniform of the Civil Protection. Colored red for division leaders.

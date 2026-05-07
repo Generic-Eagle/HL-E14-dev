@@ -20,11 +20,11 @@
 - type: entity
   parent: [GasMaskCivilProtection]
   id: GasMaskCPM
-  name: Civil Protection Medic Gasmask
-  description: A standard-issue medical officer gas mask. Only differs from the base model in the yellow lense color.
+  name: Civil Protection "HELIX"" Gasmask
+  description: A standard-issue gas mask for "HELIX". Only differs from the base model in the yellow lense color.
   components:
   - type: Sprite
-    sprite: _HL13/Objects/Clothing/Masks/Combine/medicalofficermask.rsi
+    sprite: _HL13/Objects/Clothing/Masks/Combine/helixmask.rsi
 
 - type: entity
   parent: [GasMaskCivilProtection]
