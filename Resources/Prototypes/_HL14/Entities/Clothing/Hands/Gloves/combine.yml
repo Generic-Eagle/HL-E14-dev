@@ -5,9 +5,9 @@
   description: Standard-issue Civil Protection combat gloves, designed with Combine insulative materials.
   components:
   - type: Sprite
-    sprite: _HL13/objects/Clothing/Hands/Gloves/Combine/civilprotectiongloves.rsi
+    sprite: _HL13/Objects/Clothing/Hands/Gloves/Combine/civilprotectiongloves.rsi
   - type: Clothing
-    sprite: _HL13/objects/Clothing/Hands/Gloves/Combine/civilprotectiongloves.rsi
+    sprite: _HL13/Objects/Clothing/Hands/Gloves/Combine/civilprotectiongloves.rsi
   - type: Fiber
     fiberMaterial: fibers-insulative
     fiberColor: fibers-black
@@ -19,6 +19,6 @@
   description: Standard-issue OTA combat gloves, designed with Combine insulative materials.
   components:
   - type: Sprite
-    sprite: _HL13/objects/Clothing/Hands/Gloves/Combine/otagloves.rsi
+    sprite: _HL13/Objects/Clothing/Hands/Gloves/Combine/otagloves.rsi
   - type: Clothing
-    sprite: _HL13/objects/Clothing/Hands/Gloves/Combine/otagloves.rsi
+    sprite: _HL13/Objects/Clothing/Hands/Gloves/Combine/otagloves.rsi
