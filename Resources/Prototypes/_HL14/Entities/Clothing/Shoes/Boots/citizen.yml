@@ -13,7 +13,7 @@
   parent: [ClothingShoesBase]
   id: ClothingShoesBootsCWUScience
   name: CWU Science Workboots
-  description: Workboots of combine manufacture. Issued to CWU scientists, both infestation control and xenian research.
+  description: Workboots of combine manufacture. Issued to CWU scientists, both those working in infestation control and xenian research.
   components:
   - type: Sprite
     sprite: _HL13/Objects/Clothing/Shoes/Boots/Citizen/scienceboots.rsi
