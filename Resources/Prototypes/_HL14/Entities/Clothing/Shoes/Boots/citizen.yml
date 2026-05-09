@@ -16,7 +16,7 @@
   description: Workboots of combine manufacture. Issued to CWU scientists, both those working in infestation control and xenian research.
   components:
   - type: Sprite
-    sprite: _HL13/Objects/Clothing/Shoes/Boots/Citizen/scienceboots.rsi
+    sprite: _HL13/Objects/Clothing/Shoes/Boots/Citizen/cwuscienceboots.rsi
 
 - type: entity
   parent: [ClothingShoesBase]
@@ -25,4 +25,4 @@
   description: Workboots of combine manufacture. Issued to CWU technicians.
   components:
   - type: Sprite
-    sprite: _HL13/Objects/Clothing/Shoes/Boots/Citizen/technicianboots.rsi
+    sprite: _HL13/Objects/Clothing/Shoes/Boots/Citizen/cwutechnicianboots.rsi
