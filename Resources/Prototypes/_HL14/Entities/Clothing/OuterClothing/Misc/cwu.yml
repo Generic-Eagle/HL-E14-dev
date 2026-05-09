@@ -18,7 +18,7 @@
     speedTier: light
 
 - type: entity
-  parent: SuitBioCWUCleanup
+  parent: RMCBaseBioSuit
   id: SuitBioCWUScientist
   name: CWU Xenian-Research Suit
   description: A suit designed for Civil Workers Union science teams.
@@ -27,6 +27,12 @@
     sprite: _HL13/Objects/Clothing/OuterClothing/Misc/cwuscientistbiosuit.rsi
   - type: Clothing
     sprite: _HL13/Objects/Clothing/OuterClothing/Misc/cwuscientistbiosuit.rsi
+  - type: CMHardArmor
+  - type: ClothingSpeedModifier # SLOWDOWN_ARMOR_LIGHT
+    walkModifier: 0.725
+    sprintModifier: 0.725
+  - type: RMCArmorSpeedTier
+    speedTier: light
 
 #CWU Technical
 

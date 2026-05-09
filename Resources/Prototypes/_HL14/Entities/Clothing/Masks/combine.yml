@@ -115,3 +115,18 @@
   components:
   - type: Sprite
     sprite: _HL13/Objects/Clothing/Masks/Combine/suppressor.rsi
+
+- type: entity
+  parent: GasMaskOTA
+  id: CMArmorHelmetM35
+  name: Cremator Mask
+  description: Standard-issue gasmask of the Combine's "CREMATOR" units.
+  components:
+  - type: Corrodible
+    isCorrodible: false
+  - type: Sprite
+    sprite: _HL13/Objects/Clothing/Masks/Combine/crematormask.rsi
+  - type: Clothing
+    sprite: _HL13/Objects/Clothing/Masks/Combine/crematormask.rsi
+  - type: TemperatureProtection
+    heatingCoefficient: 0.001

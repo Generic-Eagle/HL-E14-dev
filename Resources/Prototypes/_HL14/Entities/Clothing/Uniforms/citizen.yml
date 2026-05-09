@@ -27,3 +27,27 @@
   components:
   - type: Sprite
     sprite: _HL13/Objects/Clothing/Uniforms/Citizen/refugeegreenjumpsuit.rsi
+
+- type: entity
+  parent: [RMCUniformBase, RMCFoldableUniformBase]
+  id: ClothingUniformCombinePrisoner
+  name: Combine Prisoner Jumpsuit
+  description: The standard uniform of average Combine citizens colored in prisoner black. You really messed up, didn't you?
+  components:
+  - type: Sprite
+    sprite: _HL13/Objects/Clothing/Uniforms/Citizen/prisonerjumpsuit.rsi
+  - type: Foldable
+    unfoldVerbText: rmc-sleeves-verb-unfold
+    foldVerbText: rmc-sleeves-verb-fold
+
+- type: entity
+  parent: [RMCUniformBase, RMCFoldableUniformBase]
+  id: ClothingUniformRebelPrisoner
+  name: Modified Prisoner Jumpsuit
+  description: The standard uniform of average Combine citizens colored in prisoner black. The tracking devices and identifiers have been removed.
+  components:
+  - type: Sprite
+    sprite: _HL13/Objects/Clothing/Uniforms/Citizen/resistedprisonerjumpsuit.rsi
+  - type: Foldable
+    unfoldVerbText: rmc-sleeves-verb-unfold
+    foldVerbText: rmc-sleeves-verb-fold

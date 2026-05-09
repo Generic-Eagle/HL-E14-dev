@@ -158,3 +158,30 @@
   - type: SmartGunArmor
   - type: Sprite
     sprite: _HL13/Objects/Clothing/OuterClothing/Armor/Combine/suppressorvest.rsi
+
+- type: entity
+  parent: ClothingOuterArmorOTAVest
+  id: ClothingOuterArmorCrematorJacket
+  name: Combine "CREMATOR" Jacket
+  description: Specialized, fire-resisting jacket for the combine's feared "CREMATOR" units.
+  components:
+  - type: Sprite
+    sprite: _HL13/Objects/Clothing/OuterClothing/Armor/Combine/crematorjacket.rsi
+  - type: Corrodible
+    isCorrodible: false
+  - type: CMArmor
+    bio: 25
+    heatingCoefficient: 0.001
+    coolingCoefficient: 0.3
+  - type: RMCImmuneToIgnition
+    immuneToDirectHits: false
+  - type: FirewalkArmor
+    whitelist:
+      components:
+      - PyroWhitelist
+    addComponentsOnFirewalk:
+    - type: RMCImmuneToFireTileDamage
+      bypassWhitelist:
+        components:
+        - RMCFireImmunityBypass
+    auraColor: "#03FCC6"

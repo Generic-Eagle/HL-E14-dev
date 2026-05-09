@@ -25,3 +25,12 @@
   components:
   - type: Sprite
     sprite: _HL13/Objects/Clothing/OuterClothing/Jackets/whitecitizenjacket.rsi
+
+- type: entity
+  parent: ClothingOuterArmorBlueJacket
+  id: ClothingOuterArmorPrisonerJacket
+  name: Combine Prisoner Jacket
+  description: A jacket of combine manufacture that completely fails to keep you warm. Atleast it has pockets. This one is in prisoner black. What did you do this time?
+  components:
+  - type: Sprite
+    sprite: _HL13/Objects/Clothing/OuterClothing/Jackets/prisonerjacket.rsi
