@@ -118,7 +118,7 @@
 
 - type: entity
   parent: GasMaskOTA
-  id: CMArmorHelmetM35
+  id: GasMaskcremator
   name: Cremator Mask
   description: Standard-issue gasmask of the Combine's "CREMATOR" units.
   components:
