@@ -57,7 +57,7 @@
   description: Standard-issue uniform of the Overwatch Transhuman Arm.
   components:
   - type: Sprite
-    sprite: _HL13/Objects/Clothing/Uniforms/Combine/otajumpsuit.rsi
+    sprite: _HL13/Objects/Clothing/Uniforms/Combine/otaechojumpsuit.rsi
   - type: HideLayerClothing
 
 - type: entity
@@ -67,7 +67,7 @@
   description: Standard-issue uniform of the Overwatch Transhuman Arm. Colored red for "DAGGER" units.
   components:
   - type: Sprite
-    sprite: _HL13/Objects/Clothing/Uniforms/Combine/daggerjumpsuit.rsi
+    sprite: _HL13/Objects/Clothing/Uniforms/Combine/otadaggerjumpsuit.rsi
   - type: HideLayerClothing
 
 - type: entity
@@ -77,7 +77,7 @@
   description: Standard-issue uniform of the Overwatch Transhuman Arm. Modified for lower-ranked "grunt" units.
   components:
   - type: Sprite
-    sprite: _HL13/Objects/Clothing/Uniforms/Combine/gruntjumpsuit.rsi
+    sprite: _HL13/Objects/Clothing/Uniforms/Combine/otagruntjumpsuit.rsi
   - type: HideLayerClothing
 
 - type: entity
@@ -87,7 +87,7 @@
   description: Standard-issue uniform of the Overwatch Transhuman Arm. Modified for higher-ranked "ELITE" units.
   components:
   - type: Sprite
-    sprite: _HL13/Objects/Clothing/Uniforms/Combine/elitejumpsuit.rsi
+    sprite: _HL13/Objects/Clothing/Uniforms/Combine/otaelitejumpsuit.rsi
   - type: HideLayerClothing
   
 - type: entity
@@ -97,7 +97,7 @@
   description: Standard-issue uniform of the Overwatch Transhuman Arm. Modified for specialized "SUPPRESSOR" units.
   components:
   - type: Sprite
-    sprite: _HL13/Objects/Clothing/Uniforms/Combine/suppressorjumpsuit.rsi
+    sprite: _HL13/Objects/Clothing/Uniforms/Combine/otasuppressorjumpsuit.rsi
   - type: HideLayerClothing
 
 - type: entity
@@ -107,5 +107,5 @@
   description: Standard-issue uniform of the Overwatch Transhuman Arm. Modified for specialized elite "ASSASSIN" units.
   components:
   - type: Sprite
-    sprite: _HL13/Objects/Clothing/Uniforms/Combine/assassinjumpsuit.rsi
+    sprite: _HL13/Objects/Clothing/Uniforms/Combine/otaassassinjumpsuit.rsi
   - type: HideLayerClothing

@@ -63,7 +63,7 @@
   description: Standard-issue gasmask of the Overwatch Transhuman Arm.
   components:
   - type: Sprite
-    sprite: _HL13/Objects/Clothing/Masks/Combine/otamask.rsi
+    sprite: _HL13/Objects/Clothing/Masks/Combine/otaechomask.rsi
   - type: BreathMask
   - type: IngestionBlocker
   - type: IdentityBlocker
@@ -80,7 +80,7 @@
   description: Standard-issue gasmask of the Overwatch Transhuman Arm. Colored red for "DAGGER" units.
   components:
   - type: Sprite
-    sprite: _HL13/Objects/Clothing/Masks/Combine/daggermask.rsi
+    sprite: _HL13/Objects/Clothing/Masks/Combine/otadaggermask.rsi
 
 - type: entity
   parent: [GasMaskOTA]
@@ -89,7 +89,7 @@
   description: Standard-issue gasmask of the Overwatch Transhuman Arm. Modified for lower-ranked "grunt" units.
   components:
   - type: Sprite
-    sprite: _HL13/Objects/Clothing/Masks/Combine/gruntmask.rsi
+    sprite: _HL13/Objects/Clothing/Masks/Combine/otagruntmask.rsi
 
 - type: entity
   parent: [GasMaskOTA]
@@ -98,7 +98,7 @@
   description: Standard-issue gasmask of the Overwatch Transhuman Arm. Modified for higher-ranked "ELITE" units.
   components:
   - type: Sprite
-    sprite: _HL13/Objects/Clothing/Masks/Combine/elitemask.rsi
+    sprite: _HL13/Objects/Clothing/Masks/Combine/otaelitemask.rsi
 
 - type: entity
   parent: [GasMaskOTA]
@@ -107,7 +107,7 @@
   description: Standard-issue gasmask of the Overwatch Transhuman Arm. Modified for specialized "WALLHAMMER" units.
   components:
   - type: Sprite
-    sprite: _HL13/Objects/Clothing/Masks/Combine/wallhammermask.rsi
+    sprite: _HL13/Objects/Clothing/Masks/Combine/otawallhammermask.rsi
 
 - type: entity
   parent: [GasMaskOTA]
@@ -116,7 +116,7 @@
   description: Standard-issue gasmask of the Overwatch Transhuman Arm. Modified for specialized "SUPPRESSOR" units.
   components:
   - type: Sprite
-    sprite: _HL13/Objects/Clothing/Masks/Combine/suppressor.rsi
+    sprite: _HL13/Objects/Clothing/Masks/Combine/otasuppressor.rsi
 
 - type: entity
   parent: GasMaskOTA
