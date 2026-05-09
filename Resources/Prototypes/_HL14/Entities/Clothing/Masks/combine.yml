@@ -97,6 +97,8 @@
   name: Overwatch Transhuman "ELITE" Gasmask
   description: Standard-issue gasmask of the Overwatch Transhuman Arm. Modified for higher-ranked "ELITE" units.
   components:
+  - type: Sprite
+    sprite: _HL13/Objects/Clothing/Masks/Combine/elitemask.rsi
 
 - type: entity
   parent: [GasMaskOTA]

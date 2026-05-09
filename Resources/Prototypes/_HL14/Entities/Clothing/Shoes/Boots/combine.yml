@@ -25,4 +25,4 @@
   description: Standard-issue boots of the Overwatch Transhuman Arm. Modified for specialized "ASSASSIN" units.
   components:
   - type: Sprite
-    sprite: _HL13\Objects/Clothing/Shoes/Boots/Combine/assassinboots.rsi
+    sprite: _HL13/Objects/Clothing/Shoes/Boots/Combine/assassinboots.rsi
