@@ -64,7 +64,7 @@
       rmc-aslot-underbarrel: 0.312, -0.25
 
 - type: entity
-  parent: HL14WeaponPistolUSP9mmEmpty
+  parent: HL14WeaponPistolUSP9mm
   id: HL14WeaponPistolUSP9mmEmpty
   suffix: Empty
   components:
