@@ -1,6 +1,6 @@
 - type: entity
   parent: [ RMCBaseSlideMagazineVisuals, CMWeaponPistolBase ]
-  id: HL14WeaponPistolUSP9mmEmpty
+  id: HL14WeaponPistolUSP9mm
   name: USP Match 9mm
   description: Standard issue side-arm of the Civil protection, a Combine reproduction of the USP Match. Chambered in 9x19mm. 
   components:
