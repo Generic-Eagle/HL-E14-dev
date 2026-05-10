@@ -2,10 +2,13 @@
   id: HL14USP
 
 - type: Tag
-  id: HLMagazinePistolUSP
+  id: HL14MagazinePistolUSP
 
 - type: Tag
-  id: HLMagazinePistolUSPAP
+  id: HL14MagazinePistolUSPAP
 
 - type: Tag
-  id: HLMagazinePistolUSPHP
+  id: HL14MagazinePistolUSPHP
+
+- Type: Tag
+  id: HL14MagazinePistolUSPRubber

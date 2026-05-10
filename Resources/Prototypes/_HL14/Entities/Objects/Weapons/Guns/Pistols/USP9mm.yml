@@ -31,9 +31,9 @@
         priority: 2
         whitelist:
           tags:
-          - HLMagazinePistolUSP
-          - HLMagazinePistolUSPAP
-          - HLMagazinePistolUSPRubber
+          - HL14MagazinePistolUSP
+          - HL14MagazinePistolUSPAP
+          - HL14MagazinePistolUSPRubber
         startingItem: HLMagazinePistolUSP
   - type: AttachableHolder
     slots:
@@ -77,8 +77,8 @@
         priority: 2
         whitelist:
           tags:
-          - HLMagazinePistolUSP
-          - HLMagazinePistolUSPAP
+          - HL14MagazinePistolUSP
+          - HL14MagazinePistolUSPAP
 
 #9mm
 - type: entity
@@ -89,7 +89,7 @@
   - type: Tag
     tags:
     - CMMagazinePistol
-    - HLMagazinePistolUSP
+    - HL14MagazinePistolUSP
   - type: BallisticAmmoProvider
     mayTransfer: True
     whitelist:
@@ -117,7 +117,7 @@
   - type: Tag
     tags:
     - CMMagazinePistol
-    - HLMagazinePistolUSPAP
+    - HL14MagazinePistolUSPAP
   - type: BallisticAmmoProvider
     whitelist:
       tags:
