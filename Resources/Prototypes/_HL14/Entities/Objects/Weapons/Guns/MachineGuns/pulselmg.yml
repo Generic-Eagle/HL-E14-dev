@@ -32,6 +32,17 @@
     heavy: 0.806
   - type: Sprite
     sprite: _HL13/Objects/Weapons/Guns/MachineGuns/pulselmg.rsi
+    layers:
+    - state: base
+      sprite: _HL13/Objects/Weapons/Guns/MachineGuns/pulselmg.rsi
+    - state: mag-0
+      sprite: _HL13/Objects/Weapons/Guns/MachineGuns/pulselmg.rsi
+      map: [ "enum.GunVisualLayers.Mag" ]
+  - type: Clothing
+    sprite: _RMC14/Objects/Weapons/Guns/SmartGuns/ml66a.rsi # Use the CM13 smartgun sprite for now, they look similar, anyway.
+    slots:
+    - suitStorage
+    - Back
   - type: MeleeWeapon
     damage:
       types:
