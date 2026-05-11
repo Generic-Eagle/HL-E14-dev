@@ -6,7 +6,7 @@
   components:
   - type: Gun
     soundGunshot:
-     path: /Audio/_HL14/Weapons/Guns/Gunshots/uspfire.ogg
+     path: /Audio/_HL14/Weapons/Guns/Gunshots/usp_fire.ogg
   - type: Tag
     tags:
     - Sidearm
