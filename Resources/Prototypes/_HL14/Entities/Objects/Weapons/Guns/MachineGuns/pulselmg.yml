@@ -32,11 +32,6 @@
     heavy: 0.806
   - type: Sprite
     sprite: _HL13/Objects/Weapons/Guns/MachineGuns/pulselmg.rsi
-  - type: Clothing
-    sprite: _HL13/Objects/Weapons/Guns/MachineGuns/pulselmg.rsi
-    slots:
-    - suitStorage
-    - Back
   - type: MeleeWeapon
     damage:
       types:
