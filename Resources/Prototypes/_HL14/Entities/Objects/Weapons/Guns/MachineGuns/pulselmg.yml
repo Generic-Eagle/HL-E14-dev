@@ -1,6 +1,6 @@
 ﻿- type: entity
   parent: [ CMBaseWeaponGun, BaseItem, RMCBaseAttachableHolder ]
-  id: HL14PulseLMG
+  id:  HL14WeaponMachineGunPulselmg
   name: Pulse LMG
   description: A deadly firearm wielded by Combine "SUPPRESSOR" units.
   components:

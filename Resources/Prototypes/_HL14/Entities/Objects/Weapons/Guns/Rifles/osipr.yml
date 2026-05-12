@@ -1,7 +1,7 @@
 ﻿- type: entity
   parent: [ CMBaseWeaponRifle, RMCBaseWeaponMagazineVisuals ]
   name: OSIPR "AR2" 
-  id: HL14OSIPR
+  id: HL14WeaponRifleOSIPR
   description: An older design of the Pulse Rifle commonly used by the Marine Corps. Uses 10x24mm caseless ammunition.
   components:
   - type: Sprite
@@ -67,11 +67,11 @@
     multiplier: 1.1
   - type: Tag
     tags:
-    - HL14OSIPR
+    - HL14WeaponRifleOSIPR
 
 - type: entity
-  parent: HL14OSIPR
-  id: HL14OSIPRUnloaded
+  parent: HL14WeaponRifleOSIPR
+  id: HL14WeaponRifleOSIPRUnloaded
   suffix: Unloaded
   components:
   - type: ItemSlots

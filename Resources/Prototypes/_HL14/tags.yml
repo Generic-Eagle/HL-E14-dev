@@ -20,4 +20,10 @@
   id:  HLMagazineOSIPR
 
 - type: Tag
-  id:  HL14OSIPR
+  id:  HL14WeaponRifleOSIPR
+
+- type: Tag
+  id:  HL14WeaponSMGPulsesmg
+
+- type: Tag
+  id:  HLMagazinePulseSmg

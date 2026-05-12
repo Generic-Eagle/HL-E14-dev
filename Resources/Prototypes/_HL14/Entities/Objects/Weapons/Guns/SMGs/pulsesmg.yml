@@ -1,0 +1,95 @@
+﻿- type: entity
+  parent: CMBaseWeaponSMG
+  name: Combine Pulse SMG
+  id: HL14WeaponSMGPulseSmg
+  description: Some sort of MP7-AR2 hybrid issued to Combine units not deemed worthy enough of the real-deal AR2, yet too good for the MP7.
+  components:
+  - type: Sprite
+    sprite: _HL13/Objects/Weapons/Guns/SMGs/pulsesmg.rsi
+    layers:
+    - state: bolt-open
+      map: [ "enum.GunVisualLayers.Base" ]
+    - state: mag-0
+      map: [ "enum.GunVisualLayers.Mag" ]
+  - type: Clothing
+    sprite: _HL13/Objects/Weapons/Guns/SMGs/pulsesmg.rsi
+  - type: Gun
+    shotsPerBurst: 3
+    soundGunshot:
+      path: /Audio/_HL14/Weapons/Guns/Gunshots/pulsesmg_fire.ogg
+    soundEmpty:
+      path: /Audio/_HL14/Weapons/Guns/Reload/slidelock_alyx.ogg
+  - type: RMCSelectiveFire
+    baseFireModes:
+    - SemiAuto
+    - Burst
+    - FullAuto
+    recoilWielded: 1
+    recoilUnwielded: 1
+    scatterWielded: 4
+    scatterUnwielded: 10
+    baseFireRate: 6.666
+    burstScatterMult: 1
+    modifiers:
+      Burst:
+        fireDelay: 0.0999
+        maxScatterModifier: 10
+        useBurstScatterMult: true
+        unwieldedScatterMultiplier: 2
+        shotsToMaxScatter: 6
+      FullAuto:
+        maxScatterModifier: 3
+        useBurstScatterMult: true
+        unwieldedScatterMultiplier: 2
+        shotsToMaxScatter: 4
+  - type: RMCWeaponAccuracy
+    accuracyMultiplier: 1.35
+    accuracyMultiplierUnwielded: 1
+  - type: ItemSlots
+    slots:
+      gun_magazine:
+        name: Magazine
+        startingItem: CMMagazineSMGM63AP
+        insertSound:  /Audio/_HL14/Weapons/Guns/Reload/alyx_load.ogg
+        ejectSound: /Audio/_HL14/Weapons/Guns/Reload/alyx_unload.ogg
+        priority: 2
+        whitelist:
+          tags:
+          - HLMagazinePulsesmg
+  - type: GunDamageModifier
+    multiplier: 1.35
+  - type: AttachableHolder
+    slots:
+      rmc-aslot-barrel:
+        whitelist:
+          tags:
+          - RMCAttachmentBarrelCharger
+          - RMCAttachmentExtendedBarrel
+          - RMCAttachmentRecoilCompensator
+          - RMCAttachmentSuppressor
+          - RMCM5Bayonet
+      rmc-aslot-rail:
+        whitelist:
+          tags:
+          - RMCAttachmentRailFlashlight
+          - RMCAttachmentMagneticHarness
+          - RMCAttachmentS5RedDotSight
+          - RMCAttachmentS5MicroRedDotSight
+          - RMCAttachmentS6ReflexSight
+          - RMCAttachmentS42xTelescopicMiniscope
+      rmc-aslot-underbarrel:
+        whitelist:
+          tags:
+          - RMCAttachmentAngledGrip
+          - RMCAttachmentFlashlightGrip
+          - RMCAttachmentGyroscopicStabilizer
+          - RMCAttachmentLaserSight
+          - RMCAttachmentVerticalGrip
+  - type: AttachableHolderVisuals
+    offsets:
+      rmc-aslot-barrel: 0.8, 0.06
+      rmc-aslot-rail: 0.032, 0.155
+      rmc-aslot-underbarrel: 0.25, -0.25
+  - type: Tag
+    tags:
+    - HL14WeaponSMGPulsesmg

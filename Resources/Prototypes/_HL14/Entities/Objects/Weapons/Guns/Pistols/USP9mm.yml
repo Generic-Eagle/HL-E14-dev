@@ -2,7 +2,7 @@
   parent: [ RMCBaseSlideMagazineVisuals, CMWeaponPistolBase ]
   id: HL14WeaponPistolUSP9mm
   name: USP Match 9mm
-  description: Standard issue side-arm of the Civil protection, a Combine reproduction of the USP Match. Chambered in 9x19mm. 
+  description: Standard issue side-arm of the Civil Protection. A Combine reproduction of the USP Match chambered in 9x19mm. 
   components:
   - type: Gun
     soundGunshot:
@@ -27,7 +27,7 @@
       gun_magazine:
         name: Magazine
         insertSound: /Audio/_RMC14/Weapons/Guns/Reload/gun_mk80_reload.ogg
-        ejectSound: /Audio/_RMC14/Weapons/Guns/Reload/gun_88m4_unload.ogg
+        ejectSound: /Audio/_HL14/Weapons/Guns/Reload/slidelock_alyx.ogg
         priority: 2
         whitelist:
           tags:
