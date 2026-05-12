@@ -60,7 +60,7 @@
     - FullAuto
     recoilWielded: 3
     scatterWielded: 10
-    baseFireRate: 4.3
+    baseFireRate: 12
     burstScatterMult: 4
     modifiers:
       FullAuto:
@@ -78,13 +78,13 @@
     slots:
       gun_magazine:
         name: Magazine
-        startingItem: RMCMagazineSmartGun
-        insertSound: /Audio/_RMC14/Weapons/Guns/Reload/gun_sg_reload.ogg
-        ejectSound: /Audio/_RMC14/Weapons/Guns/Reload/gun_sg_unload.ogg
+        startingItem: HLMagazinePulselmg
+        insertSound: /Audio/_HL14/Weapons/Guns/Reload/ar2_load.ogg
+        ejectSound: /Audio/_RMC14/Weapons/Guns/Reload/ar2_unload.ogg
         priority: 2
         whitelist:
           tags:
-          - RMCMagazineSmartGun
+          - HLMagazinePulselmg
   - type: GunDamageModifier
     multiplier: 1
   - type: GunToggleableAmmo
@@ -138,3 +138,30 @@
     rsi:
       sprite: _RMC14/Interface/MousePointer/smartgun_mouse.rsi
       state: all
+
+- type: entity
+  parent: CMMagazineRifleBase
+  id: HLMagazinePulselmg
+  name: "Pulse LMG Magazine(10x30mm)"
+  components:
+  - type: Tag
+    tags:
+    - HLMagazinePulselmg
+  - type: BallisticAmmoProvider
+    whitelist:
+      tags:
+      - CMCartridgeSmartGun10x30mm
+    proto: CMCartridgeSmartGun10x30mm
+    capacity: 120
+  - type: Sprite
+    sprite: _HL13/Objects/Weapons/Guns/Ammunition/Magazines/pulsemagazine.rsi
+    layers:
+    - state: base
+      map: ["enum.GunVisualLayers.Base"]
+    - state: mag-1
+      map: ["enum.GunVisualLayers.Mag"]
+  - type: Clothing
+    slots:
+    - suitStorage
+  - type: RefillableByBulletBox
+    bulletType: RMCBoxBulletsSmartGun

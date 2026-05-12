@@ -12,3 +12,12 @@
 
 - type: Tag
   id: HL14MagazinePistolUSPRubber
+
+- type: Tag
+  id:  HLMagazinePulselmg
+ 
+- type: Tag
+  id:  HLMagazineOSIPR
+
+- type: Tag
+  id:  HL14OSIPR
