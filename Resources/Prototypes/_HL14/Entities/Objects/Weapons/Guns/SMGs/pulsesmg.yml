@@ -7,10 +7,8 @@
   - type: Sprite
     sprite: _HL13/Objects/Weapons/Guns/SMGs/pulsesmg.rsi
     layers:
-    - state: bolt-open
+    - state: base
       map: [ "enum.GunVisualLayers.Base" ]
-    - state: mag-0
-      map: [ "enum.GunVisualLayers.Mag" ]
   - type: Clothing
     sprite: _HL13/Objects/Weapons/Guns/SMGs/pulsesmg.rsi
   - type: Gun
