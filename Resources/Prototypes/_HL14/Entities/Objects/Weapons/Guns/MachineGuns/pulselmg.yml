@@ -80,7 +80,7 @@
         name: Magazine
         startingItem: HLMagazinePulselmg
         insertSound: /Audio/_HL14/Weapons/Guns/Reload/ar2_load.ogg
-        ejectSound: /Audio/_RMC14/Weapons/Guns/Reload/ar2_unload.ogg
+        ejectSound: /Audio/_HL14/Weapons/Guns/Reload/ar2_unload.ogg
         priority: 2
         whitelist:
           tags:
