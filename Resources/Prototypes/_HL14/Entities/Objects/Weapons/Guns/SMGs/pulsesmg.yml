@@ -86,9 +86,9 @@
           - RMCAttachmentVerticalGrip
   - type: AttachableHolderVisuals
     offsets:
-      rmc-aslot-barrel: 0.8, 0.06
-      rmc-aslot-rail: 0.032, 0.155
-      rmc-aslot-underbarrel: 0.25, -0.25
+      rmc-aslot-barrel: 0.7.1, 0.14
+      rmc-aslot-rail: 0.15, 0.155
+      rmc-aslot-underbarrel: 0.35, -0.21
   - type: Tag
     tags:
     - HL14WeaponSMGPulsesmg
@@ -103,8 +103,12 @@
     layers:
     - state: base
       map: ["enum.GunVisualLayers.Base"]
-    - state: mag-1
+    - state: base-1
       map: ["enum.GunVisualLayers.Mag"]
+  - type: MagazineVisuals
+    magState: base
+    steps: 2
+    zeroVisible: false
   - type: BallisticAmmoProvider
     proto: RMCCartridgeRevolver44
     capacity: 30
