@@ -86,7 +86,7 @@
           - RMCAttachmentVerticalGrip
   - type: AttachableHolderVisuals
     offsets:
-      rmc-aslot-barrel: 0.7.1, 0.14
+      rmc-aslot-barrel: 0.71, 0.1
       rmc-aslot-rail: 0.15, 0.155
       rmc-aslot-underbarrel: 0.35, -0.21
   - type: Tag
