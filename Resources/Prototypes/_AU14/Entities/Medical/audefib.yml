@@ -29,8 +29,6 @@
     - OUTERCLOTHING
     - back
     quickEquip: false
-    equipDelay: 1
-    unequipDelay: 1
   - type: Speech
     speechVerb: Robotic
   - type: ItemToggle
@@ -73,7 +71,7 @@
     price: 100
   - type: GuideHelp
     guides:
-    - Medical Doctor
+    - MedicalDoctor
   - type: RequiresSkill
     skills:
       RMCSkillMedical: 2
@@ -90,7 +88,7 @@
 
 - type: entity
   id: AUCMDefibrillatorEmpty
-  parent: AU14BaseDefibrillator
+  parent: AU14CMDefibrillator
   suffix: AU14, Empty
   components:
   - type: ItemSlots

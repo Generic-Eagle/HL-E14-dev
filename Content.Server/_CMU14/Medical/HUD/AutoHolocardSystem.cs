@@ -6,6 +6,7 @@ using Content.Shared._CMU14.Medical.Organs.Events;
 using Content.Shared._CMU14.Medical.Wounds;
 using Content.Shared._RMC14.Medical.HUD;
 using Content.Shared._RMC14.Medical.HUD.Components;
+using Content.Shared._RMC14.Xenonids.Parasite;
 using Content.Shared.Body.Components;
 using Content.Shared.Body.Organ;
 using Content.Shared.Body.Part;
@@ -23,11 +24,11 @@ namespace Content.Server._CMU14.Medical.HUD;
 ///     Stable / Trauma / OrganFailure above manual statuses on the byte
 ///     axis, so we can't naively pick the higher byte — see <see cref="Priority"/>.
 /// </summary>
-public sealed class AutoHolocardSystem : EntitySystem
+public sealed partial class AutoHolocardSystem : EntitySystem
 {
-    [Dependency] private readonly IConfigurationManager _cfg = default!;
-    [Dependency] private readonly SharedBodySystem _body = default!;
-    [Dependency] private readonly SharedContainerSystem _containers = default!;
+    [Dependency] private IConfigurationManager _cfg = default!;
+    [Dependency] private SharedBodySystem _body = default!;
+    [Dependency] private SharedContainerSystem _containers = default!;
 
     private bool _medicalEnabled;
     private bool _diagnosticsEnabled;
@@ -37,6 +38,7 @@ public sealed class AutoHolocardSystem : EntitySystem
         base.Initialize();
         SubscribeLocalEvent<FractureComponent, ComponentStartup>(OnFractureSpawn);
         SubscribeLocalEvent<InternalBleedingComponent, ComponentStartup>(OnInternalBleedSpawn);
+        SubscribeLocalEvent<VictimInfectedComponent, ComponentStartup>(OnInfectedSpawn);
         // Broadcast subscription — <OrganHealthComponent, OrganStageChangedEvent>
         // is already owned by SharedCMUWoundsSystem and SS14's directed bus
         // enforces one handler per (component, event). Broadcast delivery
@@ -61,6 +63,13 @@ public sealed class AutoHolocardSystem : EntitySystem
             return;
         if (TryGetBodyForPart(ent.Owner) is { } body)
             UpgradeHolocard(body, HolocardStatus.Trauma);
+    }
+
+    private void OnInfectedSpawn(Entity<VictimInfectedComponent> ent, ref ComponentStartup args)
+    {
+        if (!IsEnabled())
+            return;
+        UpgradeHolocard(ent.Owner, HolocardStatus.Xeno);
     }
 
     private void OnOrganStageBroadcast(ref OrganStageChangedEvent args)

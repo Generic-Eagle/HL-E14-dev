@@ -16,15 +16,15 @@ using Robust.Shared.Timing;
 
 namespace Content.Shared._CMU14.Medical.BodyPart;
 
-public abstract class SharedBodyPartHealthSystem : EntitySystem
+public abstract partial class SharedBodyPartHealthSystem : EntitySystem
 {
-    [Dependency] protected readonly IConfigurationManager Cfg = default!;
-    [Dependency] protected readonly IGameTiming Timing = default!;
-    [Dependency] protected readonly INetManager Net = default!;
-    [Dependency] protected readonly SharedBodySystem Body = default!;
-    [Dependency] protected readonly SharedHitLocationSystem HitLocation = default!;
-    [Dependency] protected readonly RMCUnrevivableSystem Unrevivable = default!;
-    [Dependency] private readonly IPrototypeManager _prototypes = default!;
+    [Dependency] protected IConfigurationManager Cfg = default!;
+    [Dependency] protected IGameTiming Timing = default!;
+    [Dependency] protected INetManager Net = default!;
+    [Dependency] protected SharedBodySystem Body = default!;
+    [Dependency] protected SharedHitLocationSystem HitLocation = default!;
+    [Dependency] protected RMCUnrevivableSystem Unrevivable = default!;
+    [Dependency] private IPrototypeManager _prototypes = default!;
 
     private const float HealScanInterval = 1f;
     private static readonly ProtoId<DamageGroupPrototype> BruteGroup = "Brute";
@@ -67,14 +67,14 @@ public abstract class SharedBodyPartHealthSystem : EntitySystem
         var positive = DamageSpecifier.GetPositive(delta);
         var localizable = ExtractLocalizableDamage(positive);
         if (!localizable.Empty)
-            ApplyPartDamage(ent, localizable);
+            ApplyPartDamage(ent, localizable, args.Tool);
 
         var healing = GetHealingInGroup(delta, BruteGroup) + GetHealingInGroup(delta, BurnGroup);
         if (healing > FixedPoint2.Zero)
-            HealDamagedParts(ent.Owner, healing * (FixedPoint2)_bodyPartDamagePropagation);
+            HealDamagedParts(ent.Owner, healing * (FixedPoint2)_bodyPartDamagePropagation, args.Origin);
     }
 
-    private void ApplyPartDamage(Entity<HitLocationComponent> ent, DamageSpecifier damage)
+    private void ApplyPartDamage(Entity<HitLocationComponent> ent, DamageSpecifier damage, EntityUid? tool)
     {
         // No mob-state gate: dead bodies still take new wounds, fractures, organ
         // damage, and severance from external hits (overkill, desecration). The
@@ -86,29 +86,57 @@ public abstract class SharedBodyPartHealthSystem : EntitySystem
         if (resolved.ResolvedPartEntity is not { } partUid)
             return;
 
+        TryApplyPartDamage(ent.Owner, partUid, damage, tool: tool);
+    }
+
+    public bool TryApplyPartDamage(EntityUid body, EntityUid partUid, DamageSpecifier damage, float scale = 1f, EntityUid? tool = null)
+    {
+        if (!_medicalEnabled || !_bodyPartEnabled)
+            return false;
+
+        if (scale <= 0f)
+            return false;
+
+        var localizable = ExtractLocalizableDamage(DamageSpecifier.GetPositive(damage));
+        if (localizable.Empty)
+            return false;
+
+        if (scale != 1f)
+            localizable *= scale;
+
+        return TryApplyPartDamageToPart(body, partUid, localizable, tool);
+    }
+
+    private bool TryApplyPartDamageToPart(EntityUid body, EntityUid partUid, DamageSpecifier damage, EntityUid? tool)
+    {
         if (!TryComp<BodyPartHealthComponent>(partUid, out var health))
-            return;
+            return false;
 
         var modified = ApplyResistance(damage, health.Resistance);
         var total = (float)modified.GetTotal();
         if (total <= 0)
-            return;
+            return false;
 
         var deduction = FixedPoint2.New(total * _bodyPartDamagePropagation);
+        var severanceDeduction = GetDamageInGroup(modified, BruteGroup) * (FixedPoint2)_bodyPartDamagePropagation;
 
         health.Current -= deduction;
+        if (severanceDeduction > FixedPoint2.Zero)
+            health.SeveranceDamage += severanceDeduction;
         Dirty(partUid, health);
 
         var organs = CollectOrgans(partUid);
         var partType = TryComp<BodyPartComponent>(partUid, out var partComp) ? partComp.PartType : BodyPartType.Other;
-        var damaged = new BodyPartDamagedEvent(ent.Owner, partUid, partType, modified, health.Current, organs);
+        var damaged = new BodyPartDamagedEvent(body, partUid, partType, modified, health.Current, organs, tool);
         RaiseLocalEvent(partUid, ref damaged);
 
-        if (health.Current <= -health.SeveranceThreshold && !IsSeveranceLocked(partType))
+        if (health.SeveranceDamage >= health.Max + health.SeveranceThreshold && !IsSeveranceLocked(partType))
         {
-            var severed = new BodyPartSeveredEvent(ent.Owner, partUid, partType);
+            var severed = new BodyPartSeveredEvent(body, partUid, partType);
             RaiseLocalEvent(partUid, ref severed);
         }
+
+        return true;
     }
 
     private DamageSpecifier ExtractLocalizableDamage(DamageSpecifier damage)
@@ -117,6 +145,21 @@ public abstract class SharedBodyPartHealthSystem : EntitySystem
         AddPositiveGroupDamage(result, damage, BruteGroup);
         AddPositiveGroupDamage(result, damage, BurnGroup);
         return result;
+    }
+
+    private FixedPoint2 GetDamageInGroup(DamageSpecifier damage, ProtoId<DamageGroupPrototype> groupId)
+    {
+        if (!_prototypes.TryIndex(groupId, out var group))
+            return FixedPoint2.Zero;
+
+        var total = FixedPoint2.Zero;
+        foreach (var type in group.DamageTypes)
+        {
+            if (damage.DamageDict.TryGetValue(type, out var amount) && amount > FixedPoint2.Zero)
+                total += amount;
+        }
+
+        return total;
     }
 
     private void AddPositiveGroupDamage(DamageSpecifier dest, DamageSpecifier src, ProtoId<DamageGroupPrototype> groupId)
@@ -148,14 +191,28 @@ public abstract class SharedBodyPartHealthSystem : EntitySystem
         return total;
     }
 
-    private void HealDamagedParts(EntityUid body, FixedPoint2 amount)
+    private void HealDamagedParts(EntityUid body, FixedPoint2 amount, EntityUid? preferredPart = null)
     {
         if (amount <= FixedPoint2.Zero)
             return;
 
+        var remaining = amount;
+        if (preferredPart is { } preferred &&
+            TryComp<BodyPartComponent>(preferred, out var preferredPartComp) &&
+            preferredPartComp.Body == body &&
+            TryComp<BodyPartHealthComponent>(preferred, out var preferredHealth))
+        {
+            HealOneDamagedPart(body, preferred, preferredPartComp, preferredHealth, ref remaining);
+            if (remaining <= FixedPoint2.Zero)
+                return;
+        }
+
         var damaged = new List<(EntityUid Uid, BodyPartComponent Part, BodyPartHealthComponent Health)>();
         foreach (var (partUid, part) in Body.GetBodyChildren(body))
         {
+            if (partUid == preferredPart)
+                continue;
+
             if (!TryComp<BodyPartHealthComponent>(partUid, out var health))
                 continue;
 
@@ -168,26 +225,39 @@ public abstract class SharedBodyPartHealthSystem : EntitySystem
         damaged.Sort(static (a, b) =>
             (b.Health.Max - b.Health.Current).CompareTo(a.Health.Max - a.Health.Current));
 
-        var remaining = amount;
         foreach (var (partUid, part, health) in damaged)
         {
             if (remaining <= FixedPoint2.Zero)
                 break;
 
-            var missing = health.Max - health.Current;
-            if (missing <= FixedPoint2.Zero)
-                continue;
-
-            var prev = health.Current;
-            var healed = FixedPoint2.Min(missing, remaining);
-            var next = prev + healed;
-
-            health.Current = next;
-            Dirty(partUid, health);
-            RaiseHealedThresholdEvent(body, partUid, part.PartType, health, prev, next);
-
-            remaining -= healed;
+            HealOneDamagedPart(body, partUid, part, health, ref remaining);
         }
+    }
+
+    private void HealOneDamagedPart(
+        EntityUid body,
+        EntityUid partUid,
+        BodyPartComponent part,
+        BodyPartHealthComponent health,
+        ref FixedPoint2 remaining)
+    {
+        if (remaining <= FixedPoint2.Zero)
+            return;
+
+        var missing = health.Max - health.Current;
+        if (missing <= FixedPoint2.Zero)
+            return;
+
+        var prev = health.Current;
+        var healed = FixedPoint2.Min(missing, remaining);
+        var next = prev + healed;
+
+        health.Current = next;
+        health.SeveranceDamage = FixedPoint2.Max(FixedPoint2.Zero, health.SeveranceDamage - healed);
+        Dirty(partUid, health);
+        RaiseHealedThresholdEvent(body, partUid, part.PartType, health, prev, next);
+
+        remaining -= healed;
     }
 
     public override void Update(float frameTime)
@@ -209,19 +279,16 @@ public abstract class SharedBodyPartHealthSystem : EntitySystem
         var query = EntityQueryEnumerator<BodyPartHealthComponent, BodyPartComponent>();
         while (query.MoveNext(out var uid, out var health, out var part))
         {
+            if (part.Body is not { } body || Unrevivable.IsUnrevivable(body))
+                continue;
+
+            if (health.PassiveHealMultiplier <= 0 || health.Current >= health.Max)
+                continue;
+
             if (health.NextHealTick > now)
                 continue;
 
             health.NextHealTick = now + health.HealInterval;
-
-            if (part.Body is not { } body || Unrevivable.IsUnrevivable(body))
-                continue;
-
-            if (health.Current >= health.Max)
-                continue;
-
-            if (health.PassiveHealMultiplier <= 0)
-                continue;
 
             // Hand-rolled HasComp by name to avoid a forward reference to the wounds layer.
             if (health.BlockedByOpenWound && HasOpenWound(uid))
@@ -239,7 +306,8 @@ public abstract class SharedBodyPartHealthSystem : EntitySystem
         }
     }
 
-    private const float ThresholdFraction = 0.10f;
+    private const float HealedThresholdFraction = 0.10f;
+    private static readonly float[] PainThresholdFractions = { 0.10f, 0.25f };
 
     private void RaiseHealedThresholdEvent(
         EntityUid? body,
@@ -249,19 +317,40 @@ public abstract class SharedBodyPartHealthSystem : EntitySystem
         FixedPoint2 prev,
         FixedPoint2 next)
     {
-        // Raise BodyPartHealedEvent on the upward edge through 10% of Max so
-        // semi-permanent injury triggers don't spam at every regen step.
         if (body is not { } bodyUid || health.Max <= FixedPoint2.Zero)
             return;
 
         var maxFloat = health.Max.Float();
         var prevFraction = prev.Float() / maxFloat;
         var nextFraction = next.Float() / maxFloat;
-        if (prevFraction >= ThresholdFraction || nextFraction < ThresholdFraction)
+        RaisePainThresholdEvents(bodyUid, part, type, prevFraction, nextFraction);
+
+        // Raise BodyPartHealedEvent on the upward edge through 10% of Max so
+        // semi-permanent injury triggers don't spam at every regen step.
+        if (prevFraction >= HealedThresholdFraction || nextFraction < HealedThresholdFraction)
             return;
 
-        var healed = new BodyPartHealedEvent(bodyUid, part, type, prevFraction, nextFraction, ThresholdFraction);
+        var healed = new BodyPartHealedEvent(bodyUid, part, type, prevFraction, nextFraction, HealedThresholdFraction);
         RaiseLocalEvent(part, ref healed);
+    }
+
+    private void RaisePainThresholdEvents(
+        EntityUid body,
+        EntityUid part,
+        BodyPartType type,
+        float prevFraction,
+        float nextFraction)
+    {
+        foreach (var threshold in PainThresholdFractions)
+        {
+            var wasBelow = prevFraction < threshold;
+            var isBelow = nextFraction < threshold;
+            if (wasBelow == isBelow)
+                continue;
+
+            var ev = new BodyPartPainThresholdCrossedEvent(body, part, type, prevFraction, nextFraction, threshold);
+            RaiseLocalEvent(part, ref ev);
+        }
     }
 
     /// <summary>
@@ -278,20 +367,42 @@ public abstract class SharedBodyPartHealthSystem : EntitySystem
         _ => false,
     };
 
-    private DamageSpecifier ApplyResistance(DamageSpecifier d, Dictionary<Robust.Shared.Prototypes.ProtoId<Content.Shared.Damage.Prototypes.DamageGroupPrototype>, float> resistance)
+    private DamageSpecifier ApplyResistance(DamageSpecifier d, Dictionary<ProtoId<DamageGroupPrototype>, float> resistance)
     {
         if (resistance.Count == 0)
             return d;
 
-        var coefficients = new Dictionary<string, float>(resistance.Count);
-        foreach (var (group, multiplier) in resistance)
-            coefficients[group.Id] = multiplier;
-
-        var modifier = new DamageModifierSet
+        var result = new DamageSpecifier();
+        result.DamageDict.EnsureCapacity(d.DamageDict.Count);
+        foreach (var (type, amount) in d.DamageDict)
         {
-            Coefficients = coefficients,
-        };
-        return DamageSpecifier.ApplyModifierSet(d, modifier);
+            if (amount == FixedPoint2.Zero)
+                continue;
+
+            if (amount < FixedPoint2.Zero)
+            {
+                result.DamageDict[type] = amount;
+                continue;
+            }
+
+            var multiplier = 1f;
+            foreach (var (groupId, groupMultiplier) in resistance)
+            {
+                if (!_prototypes.TryIndex(groupId, out var group)
+                    || !group.DamageTypes.Contains(type))
+                {
+                    continue;
+                }
+
+                multiplier *= groupMultiplier;
+            }
+
+            var modified = FixedPoint2.New(amount.Float() * multiplier);
+            if (modified != FixedPoint2.Zero)
+                result.DamageDict[type] = modified;
+        }
+
+        return result;
     }
 
     private IReadOnlyList<EntityUid> CollectOrgans(EntityUid partUid)
@@ -317,7 +428,20 @@ public abstract class SharedBodyPartHealthSystem : EntitySystem
             return;
         if (newCurrent > part.Comp.Max)
             newCurrent = part.Comp.Max;
+        var prev = part.Comp.Current;
         part.Comp.Current = newCurrent;
+        part.Comp.SeveranceDamage = FixedPoint2.Min(
+            part.Comp.SeveranceDamage,
+            FixedPoint2.Max(FixedPoint2.Zero, part.Comp.Max - newCurrent));
         Dirty(part.Owner, part.Comp);
+
+        if (part.Comp.Max <= FixedPoint2.Zero)
+            return;
+        if (!TryComp<BodyPartComponent>(part.Owner, out var partBody) || partBody.Body is not { } body)
+            return;
+
+        var prevFraction = prev.Float() / part.Comp.Max.Float();
+        var nextFraction = newCurrent.Float() / part.Comp.Max.Float();
+        RaisePainThresholdEvents(body, part.Owner, partBody.PartType, prevFraction, nextFraction);
     }
 }

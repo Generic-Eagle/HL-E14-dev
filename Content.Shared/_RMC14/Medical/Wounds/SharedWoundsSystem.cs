@@ -1,9 +1,11 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.InteropServices;
+using Content.Shared._CMU14.Yautja;
 using Content.Shared._RMC14.CCVar;
 using Content.Shared._RMC14.Damage;
 using Content.Shared._RMC14.DoAfter;
 using Content.Shared._RMC14.Marines.Skills;
+using Content.Shared._RMC14.Synth;
 using Content.Shared.Damage;
 using Content.Shared.Damage.Prototypes;
 using Content.Shared.DoAfter;
@@ -26,20 +28,20 @@ using Robust.Shared.Utility;
 
 namespace Content.Shared._RMC14.Medical.Wounds;
 
-public abstract class SharedWoundsSystem : EntitySystem
+public abstract partial class SharedWoundsSystem : EntitySystem
 {
-    [Dependency] private readonly SharedAudioSystem _audio = default!;
-    [Dependency] private readonly SharedRMCDamageableSystem _rmcDamageable = default!;
-    [Dependency] private readonly IConfigurationManager _config = default!;
-    [Dependency] private readonly DamageableSystem _damageable = default!;
-    [Dependency] private readonly SharedDoAfterSystem _doAfter = default!;
-    [Dependency] private readonly INetManager _net = default!;
-    [Dependency] private readonly SharedPopupSystem _popup = default!;
-    [Dependency] private readonly IPrototypeManager _prototypes = default!;
-    [Dependency] private readonly RMCDoAfterSystem _rmcDoAfter = default!;
-    [Dependency] private readonly SkillsSystem _skills = default!;
-    [Dependency] private readonly SharedStackSystem _stacks = default!;
-    [Dependency] private readonly IGameTiming _timing = default!;
+    [Dependency] private SharedAudioSystem _audio = default!;
+    [Dependency] private SharedRMCDamageableSystem _rmcDamageable = default!;
+    [Dependency] private IConfigurationManager _config = default!;
+    [Dependency] private DamageableSystem _damageable = default!;
+    [Dependency] private SharedDoAfterSystem _doAfter = default!;
+    [Dependency] private INetManager _net = default!;
+    [Dependency] private SharedPopupSystem _popup = default!;
+    [Dependency] private IPrototypeManager _prototypes = default!;
+    [Dependency] private RMCDoAfterSystem _rmcDoAfter = default!;
+    [Dependency] private SkillsSystem _skills = default!;
+    [Dependency] private SharedStackSystem _stacks = default!;
+    [Dependency] private IGameTiming _timing = default!;
 
     private float _bloodlossMultiplier = 1;
     private float _bleedTimeMultiplier = 1;
@@ -130,8 +132,16 @@ public abstract class SharedWoundsSystem : EntitySystem
             return;
 
         if (HasComp<Content.Shared._CMU14.Medical.CMUHumanMedicalComponent>(args.Target.Value)
-            && HasComp<Content.Shared._CMU14.Medical.CMUHumanMedicalComponent>(args.User))
+            && (HasComp<Content.Shared._CMU14.Medical.CMUHumanMedicalComponent>(args.User)
+                || HasComp<YautjaMedicalItemComponent>(ent.Owner)))
         {
+            var hasSkills = _skills.HasAllSkills(args.User, ent.Comp.Skills);
+            if (!CanUseWoundTreater(args.User, args.Target.Value, ent, hasSkills))
+            {
+                args.Handled = true;
+                return;
+            }
+
             var ev = new Content.Shared._CMU14.Medical.Wounds.Events.CMUWoundTreaterInterceptEvent(
                 args.User, ent.Owner, args.Target.Value);
             RaiseLocalEvent(ref ev);
@@ -184,6 +194,9 @@ public abstract class SharedWoundsSystem : EntitySystem
 
         if (anyWounds)
         {
+            // Force the next WoundsSystem tick to resync BleedAmount immediately;
+            // otherwise the analyzer keeps reading stale bleed for up to UpdateCooldown.
+            wounded.UpdateAt = _timing.CurTime;
             Dirty(target, wounded);
         }
         else if (damage == FixedPoint2.Zero)
@@ -254,6 +267,15 @@ public abstract class SharedWoundsSystem : EntitySystem
         handle = false;
         wounded = default;
         damage = FixedPoint2.Zero;
+        if (HasComp<SynthComponent>(target))
+        {
+            handle = true;
+            if (doPopups)
+                _popup.PopupClient(Loc.GetString("cmu-medical-bandage-synth-requires-repair-tools"), target, user, PopupType.SmallCaution);
+
+            return false;
+        }
+
         if (!HasComp<WoundableComponent>(target) &&
             !TryComp(target, out wounded))
         {
@@ -265,13 +287,8 @@ public abstract class SharedWoundsSystem : EntitySystem
 
         var targetName = Identity.Name(target, EntityManager, user);
         var hasSkills = _skills.HasAllSkills(user, treater.Comp.Skills);
-        if (!treater.Comp.CanUseUnskilled && !hasSkills)
-        {
-            if (doPopups)
-                _popup.PopupClient(Loc.GetString("cm-wounds-failed-unskilled", ("treater", treater.Owner)), target, user, PopupType.SmallCaution);
-
+        if (!CanUseWoundTreater(user, target, treater, hasSkills, doPopups))
             return false;
-        }
 
         if (!TryComp(target, out wounded) ||
             wounded.Wounds.Count == 0)
@@ -358,6 +375,22 @@ public abstract class SharedWoundsSystem : EntitySystem
         }
 
         wounded = default;
+        return false;
+    }
+
+    private bool CanUseWoundTreater(
+        EntityUid user,
+        EntityUid popupTarget,
+        Entity<WoundTreaterComponent> treater,
+        bool hasSkills,
+        bool doPopups = true)
+    {
+        if (treater.Comp.CanUseUnskilled || hasSkills)
+            return true;
+
+        if (doPopups)
+            _popup.PopupClient(Loc.GetString("cm-wounds-failed-unskilled", ("treater", treater.Owner)), popupTarget, user, PopupType.SmallCaution);
+
         return false;
     }
 

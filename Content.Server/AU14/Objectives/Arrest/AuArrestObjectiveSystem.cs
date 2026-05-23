@@ -13,29 +13,37 @@ using Robust.Shared.Timing;
 
 namespace Content.Server.AU14.Objectives.Arrest
 {
-    public sealed class AuArrestObjectiveSystem : EntitySystem
+    public sealed partial class AuArrestObjectiveSystem : EntitySystem
     {
-        [Dependency] private readonly AuObjectiveSystem _objectiveSystem = default!;
-        [Dependency] private readonly IEntityManager _entityManager = default!;
-        [Dependency] private readonly JobSystem _jobSystem = default!;
-        [Dependency] private readonly SharedCuffableSystem _cuffableSystem = default!;
-        [Dependency] private readonly ILogManager _logManager = default!;
+        [Dependency] private AuObjectiveSystem _objectiveSystem = default!;
+        [Dependency] private IEntityManager _entityManager = default!;
+        [Dependency] private JobSystem _jobSystem = default!;
+        [Dependency] private SharedCuffableSystem _cuffableSystem = default!;
+        [Dependency] private ILogManager _logManager = default!;
 
         private ISawmill _sawmill = default!;
+        private bool _shuttingDown;
 
         public override void Initialize()
         {
             base.Initialize();
             _sawmill = _logManager.GetSawmill("au14-arrestobj");
+            _shuttingDown = false;
             SubscribeLocalEvent<ArrestObjectiveTrackerComponent, ComponentStartup>(OnMobStateStartup);
             SubscribeLocalEvent<MarkedForArrestComponent, CuffedStateChangeEvent>(OnCuffStateChanged);
+        }
+
+        public override void Shutdown()
+        {
+            _shuttingDown = true;
+            base.Shutdown();
         }
 
         private void OnMobStateStartup(EntityUid uid, ArrestObjectiveTrackerComponent comp, ref ComponentStartup args)
         {
             Timer.Spawn(TimeSpan.FromSeconds(0.2), () =>
             {
-                if (!EntityManager.EntityExists(uid))
+                if (_shuttingDown || !Exists(uid))
                     return;
                 TryMarkForArrestDelayed(uid);
             });
@@ -63,6 +71,9 @@ namespace Content.Server.AU14.Objectives.Arrest
 
         private void TryMarkForArrestDelayed(EntityUid uid)
         {
+            if (_shuttingDown)
+                return;
+
             var meta = EntityManager.GetComponentOrNull<MetaDataComponent>(uid);
             var protoId = meta?.EntityPrototype?.ID ?? string.Empty;
             var factionComp = EntityManager.GetComponentOrNull<NpcFactionMemberComponent>(uid);
@@ -76,10 +87,10 @@ namespace Content.Server.AU14.Objectives.Arrest
             var mind = mindContainer?.Mind;
             _sawmill.Info($"[ARREST OBJ DEBUG] TryMarkForArrestDelayed: Entity {uid} has MindContainerComponent: {mindContainer != null}, Mind: {mind != null}");
 
-            var query = EntityManager.EntityQueryEnumerator<ArrestObjectiveComponent>();
+            var query = EntityQueryEnumerator<ArrestObjectiveComponent>();
             while (query.MoveNext(out var objUid, out var arrestObj))
             {
-                if (EntityManager.EnsureComponent<AuObjectiveComponent>(objUid) is not { } auObj)
+                if (EnsureComp<AuObjectiveComponent>(objUid) is not { } auObj)
                     continue;
 
                 // Mark for all applicable objectives, not just the first
@@ -130,7 +141,7 @@ namespace Content.Server.AU14.Objectives.Arrest
         private void OnCuffStateChanged(EntityUid uid, MarkedForArrestComponent comp, ref CuffedStateChangeEvent args)
         {
             // Check if entity is cuffed
-            if (!EntityManager.TryGetComponent<CuffableComponent>(uid, out var cuffable))
+            if (!TryComp<CuffableComponent>(uid, out var cuffable))
                 return;
 
             if (!_cuffableSystem.IsCuffed((uid, cuffable), requireFullyCuffed: false))
@@ -155,9 +166,9 @@ namespace Content.Server.AU14.Objectives.Arrest
 
             foreach (var (objectiveUid, factionToCredit) in comp.AssociatedObjectives)
             {
-                if (!EntityManager.TryGetComponent<ArrestObjectiveComponent>(objectiveUid, out var arrestObj))
+                if (!TryComp<ArrestObjectiveComponent>(objectiveUid, out var arrestObj))
                     continue;
-                if (!EntityManager.TryGetComponent<AuObjectiveComponent>(objectiveUid, out var auObj))
+                if (!TryComp<AuObjectiveComponent>(objectiveUid, out var auObj))
                     continue;
                 if (!auObj.Active)
                     continue;
@@ -210,7 +221,7 @@ namespace Content.Server.AU14.Objectives.Arrest
 
                 if (arrestObj.SynthOnly)
                 {
-                    if (!EntityManager.HasComponent<SynthComponent>(uid))
+                    if (!HasComp<SynthComponent>(uid))
                     {
                         _sawmill.Info($"[ARREST OBJ SKIP] Entity {uid} does not have SynthComponent for objective {objectiveUid}.");
                         continue;
@@ -271,7 +282,7 @@ namespace Content.Server.AU14.Objectives.Arrest
 
         public void ActivateArrestObjectiveIfNeeded(EntityUid uid, AuObjectiveComponent comp)
         {
-            if (!EntityManager.TryGetComponent(uid, out ArrestObjectiveComponent? arrestObj))
+            if (!TryComp(uid, out ArrestObjectiveComponent? arrestObj))
                 return;
             if (!arrestObj.SpawnMob || arrestObj.MobsSpawned || string.IsNullOrEmpty(arrestObj.MobToArrest) || arrestObj.AmountToSpawn <= 0)
                 return;
@@ -279,7 +290,7 @@ namespace Content.Server.AU14.Objectives.Arrest
             // Find all relevant markers
             var markers = new List<EntityUid>();
             var genericMarkers = new List<EntityUid>();
-            var markerQuery = EntityManager.AllEntityQueryEnumerator<Content.Shared.AU14.Objectives.Fetch.FetchObjectiveMarkerComponent, TransformComponent>();
+            var markerQuery = AllEntityQuery<Content.Shared.AU14.Objectives.Fetch.FetchObjectiveMarkerComponent, TransformComponent>();
             while (markerQuery.MoveNext(out var markerUid, out var markerComp, out _))
             {
                 if (!string.IsNullOrEmpty(arrestObj.SpawnMarker) && markerComp.FetchId == arrestObj.SpawnMarker)
@@ -297,8 +308,8 @@ namespace Content.Server.AU14.Objectives.Arrest
             {
                 var markerIndex = i % markers.Count;
                 var markerUid = markers[markerIndex];
-                var xform = EntityManager.GetComponent<TransformComponent>(markerUid);
-                EntityManager.SpawnEntity(arrestObj.MobToArrest, xform.Coordinates);
+                var xform = Comp<TransformComponent>(markerUid);
+                Spawn(arrestObj.MobToArrest, xform.Coordinates);
             }
             arrestObj.MobsSpawned = true;
         }

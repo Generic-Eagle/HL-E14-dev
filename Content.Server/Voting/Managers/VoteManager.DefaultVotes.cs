@@ -24,10 +24,10 @@ namespace Content.Server.Voting.Managers
 {
     public sealed partial class VoteManager
     {
-        [Dependency] private readonly IPlayerLocator _locator = default!;
-        [Dependency] private readonly ILogManager _logManager = default!;
-        [Dependency] private readonly IBanManager _bans = default!;
-        [Dependency] private readonly VoteWebhooks _voteWebhooks = default!;
+        [Dependency] private IPlayerLocator _locator = default!;
+        [Dependency] private ILogManager _logManager = default!;
+        [Dependency] private IBanManager _bans = default!;
+        [Dependency] private VoteWebhooks _voteWebhooks = default!;
 
         private VotingSystem? _votingSystem;
         private RoleSystem? _roleSystem;
@@ -142,6 +142,7 @@ namespace Content.Server.Voting.Managers
             var options = new VoteOptions
             {
                 Title = Loc.GetString("ui-vote-restart-title"),
+                CarryoverKey = $"standard:{StandardVoteType.Restart}",
                 Options =
                 {
                     (Loc.GetString("ui-vote-restart-yes"), "yes"),
@@ -227,6 +228,7 @@ namespace Content.Server.Voting.Managers
             var options = new VoteOptions
             {
                 Title = Loc.GetString("ui-vote-gamemode-title"),
+                CarryoverKey = $"standard:{StandardVoteType.Preset}",
                 Duration = alone
                     ? TimeSpan.FromSeconds(_cfg.GetCVar(CCVars.VoteTimerAlone))
                     : TimeSpan.FromSeconds(_cfg.GetCVar(CCVars.VoteTimerPreset))
@@ -250,6 +252,7 @@ namespace Content.Server.Voting.Managers
                 if (args.Winner == null)
                 {
                     picked = (string) _random.Pick(args.Winners);
+                    args.ResolveWinner(picked);
                     _chatManager.DispatchServerAnnouncement(
                         Loc.GetString("ui-vote-gamemode-tie", ("picked", Loc.GetString(presets[picked]))));
                 }
@@ -273,6 +276,7 @@ namespace Content.Server.Voting.Managers
             var options = new VoteOptions
             {
                 Title = Loc.GetString("ui-vote-map-title"),
+                CarryoverKey = $"standard:{StandardVoteType.Map}",
                 Duration = alone
                     ? TimeSpan.FromSeconds(_cfg.GetCVar(CCVars.VoteTimerAlone))
                     : TimeSpan.FromSeconds(_cfg.GetCVar(CCVars.VoteTimerMap))
@@ -296,6 +300,7 @@ namespace Content.Server.Voting.Managers
                 if (args.Winner == null)
                 {
                     picked = (GameMapPrototype) _random.Pick(args.Winners);
+                    args.ResolveWinner(picked);
                     _chatManager.DispatchServerAnnouncement(
                         Loc.GetString("ui-vote-map-tie", ("picked", maps[picked])));
                 }

@@ -1,4 +1,19 @@
-﻿- type: entity
+- type: entity
+  id: OPFOR
+  categories: [ HideSpawnMenu ]
+  components:
+  - type: IFFFaction
+  - type: FactionFrequencies
+    channels:
+    - radioOpforAlpha
+    - radioOpforBravo
+    - radioOpforCharlie
+    - radioOpforCommand
+    - radioOpforIntel
+    - radioOpforJTAC
+    - radioOpforMILP
+
+- type: entity
   parent: CMIDCardBase
   id: AU14IDCardopforPlatCo
   name: platoon commander ID card
@@ -7,7 +22,7 @@
     job: AU14JobOpforPlatCo
   - type: ItemIFF
     factions:
-    - GOVFOR
+    - OPFOR
 
 - type: entity
   parent: CMIDCardBase
@@ -18,7 +33,7 @@
     job: AU14JobOpforPlatOp
   - type: ItemIFF
     factions:
-    - GOVFOR
+    - OPFOR
 
 - type: entity
   parent: CMIDCardBase
@@ -29,7 +44,7 @@
     job: AU14JobOpforDSPilot
   - type: ItemIFF
     factions:
-    - GOVFOR
+    - OPFOR
 
 - type: entity
   parent: CMIDCardBase
@@ -40,7 +55,7 @@
     job: AU14JobOpforDCC
   - type: ItemIFF
     factions:
-    - GOVFOR
+    - OPFOR
 
 - type: entity
   parent: CMIDCardBase
@@ -51,7 +66,7 @@
     job: AU14JobOpforSectionSergeant
   - type: ItemIFF
     factions:
-    - GOVFOR
+    - OPFOR
 
 - type: entity
   parent: CMIDCardBase
@@ -62,7 +77,7 @@
     job: AU14JobOpforSquadSergeant
   - type: ItemIFF
     factions:
-    - GOVFOR
+    - OPFOR
 
 - type: entity
   parent: CMIDCardBase
@@ -73,7 +88,7 @@
     job: AU14JobOpforSquadRifleman
   - type: ItemIFF
     factions:
-    - GOVFOR
+    - OPFOR
 
 - type: entity
   parent: CMIDCardBase
@@ -84,7 +99,7 @@
     job: AU14JobOpforSquadAutomaticRifleman
   - type: ItemIFF
     factions:
-    - GOVFOR
+    - OPFOR
 
 - type: entity
   parent: CMIDCardBase
@@ -95,7 +110,7 @@
     job: AU14JobOpforPlatoonCorpsman
   - type: ItemIFF
     factions:
-    - GOVFOR
+    - OPFOR
 
 - type: entity
   parent: CMIDCardBase
@@ -106,7 +121,7 @@
     job: AU14JobOpforRadioTelephoneOperator
   - type: ItemIFF
     factions:
-    - GOVFOR
+    - OPFOR
 
 - type: entity
   parent: CMIDCardBase
@@ -117,7 +132,7 @@
     job: AU14JobOPFORAuxSupportSynth
   - type: ItemIFF
     factions:
-    - GOVFOR
+    - OPFOR
 
 - type: entity
   parent: CMIDCardBase
@@ -128,7 +143,7 @@
     job: AU14JobOPFORSquadCombatTech
   - type: ItemIFF
     factions:
-    - GOVFOR
+    - OPFOR
 
 - type: entity
   parent: CMIDCardBase
@@ -139,7 +154,7 @@
     job: AU14JobOPFORadvisor
   - type: ItemIFF
     factions:
-    - GOVFOR
+    - OPFOR
 
 - type: entity
   parent: CMIDCardBase
@@ -150,7 +165,7 @@
     job: AU14JobOPFORMilitaryDoctor
   - type: ItemIFF
     factions:
-    - GOVFOR
+    - OPFOR
 
 - type: entity
   parent: CMIDCardBase
@@ -162,4 +177,4 @@
     job: AU14JobOPFORWorkingJoe
   - type: ItemIFF
     factions:
-    - GOVFOR
+    - OPFOR

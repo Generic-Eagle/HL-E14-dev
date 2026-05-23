@@ -3,10 +3,12 @@ using Content.Shared._RMC14.Xenonids.Plasma;
 using Content.Shared._RMC14.Dropship;
 using Content.Shared._RMC14.Dropship.AttachmentPoint;
 using Content.Shared._RMC14.CCVar;
+using Content.Shared._RMC14.Vehicle;
 using Content.Shared._RMC14.Xenonids.Energy;
 using Content.Shared.Explosion.EntitySystems;
 using Content.Shared.Weapons.Ranged.Events;
 using Content.Shared.Coordinates;
+using Content.Shared.Body.Part;
 using Content.Shared.Damage;
 using Content.Shared.Damage.Prototypes;
 using Content.Shared.DoAfter;
@@ -22,22 +24,22 @@ using Robust.Shared.Containers;
 
 namespace Content.Shared._RMC14.Xenonids.Acid;
 
-public abstract class SharedXenoAcidSystem : EntitySystem
+public abstract partial class SharedXenoAcidSystem : EntitySystem
 {
-    [Dependency] private readonly IConfigurationManager _config = default!;
-    [Dependency] private readonly SharedContainerSystem _container = default!;
-    [Dependency] private readonly DamageableSystem _damageable = default!;
-    [Dependency] private readonly SharedDoAfterSystem _doAfter = default!;
-    [Dependency] private readonly SharedDropshipSystem _dropship = default!;
-    [Dependency] private readonly SharedEntityStorageSystem _entityStorage = default!;
-    [Dependency] private readonly MobStateSystem _mobState = default!;
-    [Dependency] private readonly INetManager _net = default!;
-    [Dependency] private readonly SharedPopupSystem _popup = default!;
-    [Dependency] protected readonly IPrototypeManager PrototypeManager = default!;
-    [Dependency] private readonly IGameTiming _timing = default!;
-    [Dependency] private readonly SharedTransformSystem _transform = default!;
-    [Dependency] private readonly XenoPlasmaSystem _xenoPlasma = default!;
-    [Dependency] private readonly XenoEnergySystem _xenoEnergy = default!;
+    [Dependency] private IConfigurationManager _config = default!;
+    [Dependency] private SharedContainerSystem _container = default!;
+    [Dependency] private DamageableSystem _damageable = default!;
+    [Dependency] private SharedDoAfterSystem _doAfter = default!;
+    [Dependency] private SharedDropshipSystem _dropship = default!;
+    [Dependency] private SharedEntityStorageSystem _entityStorage = default!;
+    [Dependency] private MobStateSystem _mobState = default!;
+    [Dependency] private INetManager _net = default!;
+    [Dependency] private SharedPopupSystem _popup = default!;
+    [Dependency] protected IPrototypeManager PrototypeManager = default!;
+    [Dependency] private IGameTiming _timing = default!;
+    [Dependency] private SharedTransformSystem _transform = default!;
+    [Dependency] private XenoPlasmaSystem _xenoPlasma = default!;
+    [Dependency] private XenoEnergySystem _xenoEnergy = default!;
 
     protected int CorrosiveAcidTickDelaySeconds;
     protected ProtoId<DamageTypePrototype> CorrosiveAcidDamageTypeStr = "Heat";
@@ -137,7 +139,9 @@ public abstract class SharedXenoAcidSystem : EntitySystem
         if (args.Handled || args.Cancelled || args.Target is not { } target)
             return;
 
-        if (!TryComp(target, out CorrodibleComponent? corrodible) || !corrodible.IsCorrodible)
+        if (HasComp<BodyPartComponent>(target) ||
+            !TryComp(target, out CorrodibleComponent? corrodible) ||
+            !corrodible.IsCorrodible)
             return;
 
         if (!xeno.Comp.CanMeltStructures && corrodible.Structure)
@@ -197,7 +201,15 @@ public abstract class SharedXenoAcidSystem : EntitySystem
     {
         time = TimeSpan.Zero;
         mult = 1;
-        if (!TryComp(target, out CorrodibleComponent? corrodible) ||
+
+        if (HasComp<VehicleInteriorIndestructibleComponent>(target))
+        {
+            _popup.PopupClient(Loc.GetString("cm-xeno-acid-not-corrodible", ("target", target)), xeno, xeno, PopupType.SmallCaution);
+            return false;
+        }
+
+        if (HasComp<BodyPartComponent>(target) ||
+            !TryComp(target, out CorrodibleComponent? corrodible) ||
             !corrodible.IsCorrodible)
         {
             _popup.PopupClient(Loc.GetString("cm-xeno-acid-not-corrodible", ("target", target)), xeno, xeno, PopupType.SmallCaution);
@@ -236,6 +248,9 @@ public abstract class SharedXenoAcidSystem : EntitySystem
     public void ApplyAcid(EntProtoId acidId, XenoAcidStrength strength, EntityUid target, float dps, float lightDps, TimeSpan time, bool inherit = false)
     {
         if (_net.IsClient)
+            return;
+
+        if (HasComp<BodyPartComponent>(target))
             return;
 
         EntityUid acid;

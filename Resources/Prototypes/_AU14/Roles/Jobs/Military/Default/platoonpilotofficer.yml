@@ -16,15 +16,23 @@
     - NonResuscitable
     - Epilepsy
   ranks:
+    RMCRankMajor:
+    - !type:RoleTimeRequirement
+      role: AU14JobGOVFORDSPilot
+      time: 360000 # 100 hours, (540000 for 150 hours)
     RMCRankCaptain:
     - !type:RoleTimeRequirement
       role: AU14JobGOVFORDSPilot
-      time: 360000 # 100 hours
+      time: 180000 # 50 hours
     RMCRankFirstLT:
     - !type:RoleTimeRequirement
       role: AU14JobGOVFORDSPilot
-      time: 216000 # 60 hours
-    RMCRankSecondLT: []
+      time: 86400 # 24 hours
+    RMCRankSecondLT:
+    - !type:RoleTimeRequirement
+      role: AU14JobGOVFORDSPilot
+      time: 36000 # 10 hours
+    RMCRankChiefWarrantOfficer5: []
   startingGear: AU14GearGOVFORDSPilot
   dummyStartingGear: AU14GearGOVFORDSPilotDummy
   icon: "AU14JobIconPilotOfficer"
@@ -59,13 +67,26 @@
     - type: UserIFF
       factions:
       - GOVFOR
+    - type: MarineOrders
+      moveOrderSoundMale:
+        collection: AU14MaleMoveOrder
+      moveOrderSoundFemale:
+        collection: AU14FemaleMoveOrder
+      focusOrderSoundMale:
+        collection: AU14MaleFocusOrder
+      focusOrderSoundFemale:
+        collection: AU14FemaleFocusOrder
+      holdOrderSoundMale:
+        collection: AU14MaleHoldOrder
+      holdOrderSoundFemale:
+        collection: AU14FemaleHoldOrder
   hidden: false
 
 - type: startingGear
   id: AU14GearGOVFORDSPilot
   equipment:
     id: AU14IDCardGOVFORDSPilot
-    ears: AU14HeadsetSectionLeader
+    ears: AU14HeadsetGovforCommand
 - type: entity
   parent: CMSpawnPointJobBase
   id: AU14SpawnPointGOVFORDSPilot
@@ -84,4 +105,4 @@
     mask: AU14MaskUSASFPilotOxygen
     head: AU14USASFAirCrewHelmet
     jumpsuit: AU14USASFPilotJumpsuit
-    ears: AU14HeadsetSectionLeader
+    ears: AU14HeadsetGovforCommand

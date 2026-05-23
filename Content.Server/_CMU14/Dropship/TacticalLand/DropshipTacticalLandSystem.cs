@@ -30,19 +30,19 @@ using Robust.Shared.Timing;
 
 namespace Content.Server._CMU14.Dropship.TacticalLand;
 
-public sealed class DropshipTacticalLandSystem : SharedDropshipTacticalLandSystem
+public sealed partial class DropshipTacticalLandSystem : SharedDropshipTacticalLandSystem
 {
-    [Dependency] private readonly SharedDropshipSystem _dropship = default!;
-    [Dependency] private readonly SharedEyeSystem _eye = default!;
-    [Dependency] private readonly SharedMoverController _mover = default!;
-    [Dependency] private readonly SharedPopupSystem _popup = default!;
-    [Dependency] private readonly SharedTransformSystem _transform = default!;
-    [Dependency] private readonly SharedMapSystem _map = default!;
-    [Dependency] private readonly SharedUserInterfaceSystem _ui = default!;
-    [Dependency] private readonly IGameTiming _timing = default!;
-    [Dependency] private readonly TurfSystem _turf = default!;
-    [Dependency] private readonly SharedAudioSystem _audio = default!;
-    [Dependency] private readonly AreaSystem _area = default!;
+    [Dependency] private SharedDropshipSystem _dropship = default!;
+    [Dependency] private SharedEyeSystem _eye = default!;
+    [Dependency] private SharedMoverController _mover = default!;
+    [Dependency] private SharedPopupSystem _popup = default!;
+    [Dependency] private SharedTransformSystem _transform = default!;
+    [Dependency] private SharedMapSystem _map = default!;
+    [Dependency] private SharedUserInterfaceSystem _ui = default!;
+    [Dependency] private IGameTiming _timing = default!;
+    [Dependency] private TurfSystem _turf = default!;
+    [Dependency] private SharedAudioSystem _audio = default!;
+    [Dependency] private AreaSystem _area = default!;
 
     private static readonly TimeSpan FootprintTickInterval = TimeSpan.FromMilliseconds(150);
     private TimeSpan _nextFootprintTick;
@@ -70,6 +70,12 @@ public sealed class DropshipTacticalLandSystem : SharedDropshipTacticalLandSyste
 
         if (HasComp<DropshipTacticalLandSessionComponent>(ent))
             return;
+
+        if (!CanDesignateTacticalLanding(ent))
+        {
+            _popup.PopupEntity("This navigation console cannot designate tactical landings.", ent, pilot, PopupType.MediumCaution);
+            return;
+        }
 
         if (Transform(ent).GridUid is not { } gridUid ||
             !TryComp(gridUid, out DropshipComponent? dropship) ||
@@ -132,6 +138,13 @@ public sealed class DropshipTacticalLandSystem : SharedDropshipTacticalLandSyste
             return;
         }
 
+        if (!CanDesignateTacticalLanding(ent))
+        {
+            _popup.PopupEntity("This navigation console cannot designate tactical landings.", ent, args.Actor, PopupType.MediumCaution);
+            EndSession(ent, session);
+            return;
+        }
+
         if (!TryComp(eye, out TransformComponent? eyeXform))
         {
             EndSession(ent, session);
@@ -175,18 +188,18 @@ public sealed class DropshipTacticalLandSystem : SharedDropshipTacticalLandSyste
         if (lifetime < 2f)
             lifetime = 2f;
 
-        EntityUid? consoleUid = null;
+        Entity<DropshipNavigationComputerComponent>? console = null;
         var consoleQuery = EntityQueryEnumerator<DropshipNavigationComputerComponent, TransformComponent>();
-        while (consoleQuery.MoveNext(out var navUid, out _, out var navXform))
+        while (consoleQuery.MoveNext(out var navUid, out var navComp, out var navXform))
         {
             if (navXform.GridUid == dropshipGrid)
             {
-                consoleUid = navUid;
+                console = (navUid, navComp);
                 break;
             }
         }
 
-        var footprint = consoleUid is { } c ? GetFootprint(c, dropship) : dropship.TacticalLandFootprint;
+        var footprint = console is { } c ? GetFootprint(c, dropship) : dropship.TacticalLandFootprint;
 
         _audio.PlayPvs(WarningSound, destCoords, AudioParams.Default.WithVolume(2f));
         SpawnWarningBorder(destCoords, footprint, lifetime);
@@ -250,9 +263,12 @@ public sealed class DropshipTacticalLandSystem : SharedDropshipTacticalLandSyste
         }
     }
 
-    private Vector2i GetFootprint(EntityUid console, DropshipComponent dropship)
+    private Vector2i GetFootprint(Entity<DropshipNavigationComputerComponent> console, DropshipComponent dropship)
     {
-        if (TryComp(console, out WhitelistedShuttleComponent? whitelist) &&
+        if (console.Comp.TacticalLandFootprintOverride != Vector2i.Zero)
+            return console.Comp.TacticalLandFootprintOverride;
+
+        if (TryComp(console.Owner, out WhitelistedShuttleComponent? whitelist) &&
             string.Equals(whitelist.Faction, "thirdparty", StringComparison.OrdinalIgnoreCase))
         {
             return ThirdPartyFootprint;
@@ -513,6 +529,15 @@ public sealed class DropshipTacticalLandSystem : SharedDropshipTacticalLandSyste
             return whitelist.Faction;
 
         return null;
+    }
+
+    private bool CanDesignateTacticalLanding(Entity<DropshipNavigationComputerComponent> console)
+    {
+        if (console.Comp.CanTacticalLand)
+            return true;
+
+        return TryComp(console.Owner, out WhitelistedShuttleComponent? whitelist) &&
+               string.Equals(whitelist.Faction, "thirdparty", StringComparison.OrdinalIgnoreCase);
     }
 
     private string? GetPilotFaction(EntityUid pilot)

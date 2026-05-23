@@ -40,13 +40,16 @@
   - type: TimerStartOnSignal
   - type: DeviceLinkSink
     ports:
-      - Timer
+    - Timer
   - type: Explosive
     explosionType: RMC
     totalIntensity: 1400
     intensitySlope: 1.5
     maxIntensity: 80
     canCreateVacuum: false
+  - type: ProjectileGrenade
+    fillPrototype: CMProjectileShrapnel
+    capacity: 25
   - type: ExplodeOnTrigger
 
 - type: entity
@@ -72,19 +75,22 @@
   - type: TimerStartOnSignal
   - type: DeviceLinkSink
     ports:
-      - Timer
+    - Timer
   - type: Explosive
     explosionType: RMC
     totalIntensity: 1800
     intensitySlope: 1.5
     maxIntensity: 100
     canCreateVacuum: false
+  - type: ProjectileGrenade
+    fillPrototype: CMProjectileShrapnel
+    capacity: 35
   - type: ExplodeOnTrigger
 
 - type: entity
   name: improvised explosive vest
   description: A worn suicide explosive vest designed to cripple foot soldiers. Those who use it will never return...
-  parent: [BasePlasticExplosive, BaseSyndicateContraband]
+  parent: [RMCBaseJacket, BasePlasticExplosive, BaseSyndicateContraband]
   id: AU14IEDVest
   components:
   - type: Sprite
@@ -100,24 +106,33 @@
     quickEquip: false
     equipDelay: 10
     unequipDelay: 6
+  - type: ContainerContainer
+    containers:
+      storagebase: !type:Container
+      cluster-payload: !type:Container
   - type: OnUseTimerTrigger
     delay: 0.1
     delayOptions: [3, 4]
     initialBeepDelay: 0
     beepSound: /Audio/_AU14/IED/vestbeep.ogg
+    requiredWornSlots: OUTERCLOTHING
     startOnStick: true
     canToggleStartOnStick: true
   - type: PreventThrowWhenArmed
   - type: TimerStartOnSignal
+    requiredWornSlots: OUTERCLOTHING
   - type: DeviceLinkSink
     ports:
-      - Timer
+    - Timer
   - type: Explosive
     explosionType: RMC
     totalIntensity: 1500
-    intensitySlope: 5
+    intensitySlope: 10
     maxIntensity: 100
     canCreateVacuum: false
+  - type: ProjectileGrenade
+    fillPrototype: CMProjectileShrapnel
+    capacity: 40
   - type: ExplodeOnTrigger
   - type: GibOnTrigger
     deleteItems: false

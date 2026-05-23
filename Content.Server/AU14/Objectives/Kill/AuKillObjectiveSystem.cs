@@ -12,28 +12,36 @@ using Robust.Shared.Timing;
 
 namespace Content.Server.AU14.Objectives.Kill
 {
-    public sealed class AuKillObjectiveSystem : EntitySystem
+    public sealed partial class AuKillObjectiveSystem : EntitySystem
     {
-        [Dependency] private readonly AuObjectiveSystem _objectiveSystem = default!;
-        [Dependency] private readonly IEntityManager _entityManager = default!;
-        [Dependency] private readonly JobSystem _jobSystem = default!;
-        [Dependency] private readonly ILogManager _logManager = default!;
+        [Dependency] private AuObjectiveSystem _objectiveSystem = default!;
+        [Dependency] private IEntityManager _entityManager = default!;
+        [Dependency] private JobSystem _jobSystem = default!;
+        [Dependency] private ILogManager _logManager = default!;
 
         private ISawmill _sawmill = default!;
+        private bool _shuttingDown;
 
         public override void Initialize()
         {
             base.Initialize();
             _sawmill = _logManager.GetSawmill("au14-killobj");
+            _shuttingDown = false;
             SubscribeLocalEvent<KillObjectiveTrackerComponent, ComponentStartup>(OnMobStateStartup);
             SubscribeLocalEvent<MarkedForKillComponent, MobStateChangedEvent>(OnMobStateChanged);
+        }
+
+        public override void Shutdown()
+        {
+            _shuttingDown = true;
+            base.Shutdown();
         }
 
         private void OnMobStateStartup(EntityUid uid, KillObjectiveTrackerComponent comp, ref ComponentStartup args)
         {
             Timer.Spawn(TimeSpan.FromSeconds(0.2), () =>
             {
-                if (!EntityManager.EntityExists(uid))
+                if (_shuttingDown || !Exists(uid))
                     return;
                 TryMarkForKillDelayed(uid);
             });
@@ -62,6 +70,9 @@ namespace Content.Server.AU14.Objectives.Kill
 
         private void TryMarkForKillDelayed(EntityUid uid)
         {
+            if (_shuttingDown)
+                return;
+
             var meta = EntityManager.GetComponentOrNull<MetaDataComponent>(uid);
             var protoId = meta?.EntityPrototype?.ID ?? string.Empty;
             var factionComp = EntityManager.GetComponentOrNull<NpcFactionMemberComponent>(uid);
@@ -75,10 +86,10 @@ namespace Content.Server.AU14.Objectives.Kill
             var mind = mindContainer?.Mind;
             _sawmill.Info($"[KILL OBJ DEBUG] TryMarkForKillDelayed: Entity {uid} has MindContainerComponent: {mindContainer != null}, Mind: {mind != null}");
 
-            var query = EntityManager.EntityQueryEnumerator<KillObjectiveComponent>();
+            var query = EntityQueryEnumerator<KillObjectiveComponent>();
             while (query.MoveNext(out var objUid, out var killObj))
             {
-                if (EntityManager.EnsureComponent<AuObjectiveComponent>(objUid) is not { } auObj)
+                if (EnsureComp<AuObjectiveComponent>(objUid) is not { } auObj)
                     continue;
 
                 // Mark for all applicable objectives, not just the first
@@ -150,9 +161,9 @@ namespace Content.Server.AU14.Objectives.Kill
 
             foreach (var (objectiveUid, factionToCredit) in comp.AssociatedObjectives)
             {
-                if (!EntityManager.TryGetComponent<KillObjectiveComponent>(objectiveUid, out var killObj))
+                if (!TryComp<KillObjectiveComponent>(objectiveUid, out var killObj))
                     continue;
-                if (!EntityManager.TryGetComponent<AuObjectiveComponent>(objectiveUid, out var auObj))
+                if (!TryComp<AuObjectiveComponent>(objectiveUid, out var auObj))
                     continue;
                 if (!auObj.Active)
                     continue;
@@ -205,7 +216,7 @@ namespace Content.Server.AU14.Objectives.Kill
 
                 if (killObj.SynthOnly)
                 {
-                    if (!EntityManager.HasComponent<SynthComponent>(uid))
+                    if (!HasComp<SynthComponent>(uid))
                     {
                         _sawmill.Info($"[KILL OBJ SKIP] Entity {uid} does not have SynthComponent for objective {objectiveUid}.");
                         continue;
@@ -266,7 +277,7 @@ namespace Content.Server.AU14.Objectives.Kill
 
         public void ActivateKillObjectiveIfNeeded(EntityUid uid, AuObjectiveComponent comp)
         {
-            if (!EntityManager.TryGetComponent(uid, out KillObjectiveComponent? killObj))
+            if (!TryComp(uid, out KillObjectiveComponent? killObj))
                 return;
             if (!killObj.SpawnMob || killObj.MobsSpawned || string.IsNullOrEmpty(killObj.MobToKill) || killObj.AmountToSpawn <= 0)
                 return;
@@ -274,7 +285,7 @@ namespace Content.Server.AU14.Objectives.Kill
             // Find all relevant markers
             var markers = new List<EntityUid>();
             var genericMarkers = new List<EntityUid>();
-            var markerQuery = EntityManager.AllEntityQueryEnumerator<Content.Shared.AU14.Objectives.Fetch.FetchObjectiveMarkerComponent, TransformComponent>();
+            var markerQuery = AllEntityQuery<Content.Shared.AU14.Objectives.Fetch.FetchObjectiveMarkerComponent, TransformComponent>();
             while (markerQuery.MoveNext(out var markerUid, out var markerComp, out _))
             {
                 if (!string.IsNullOrEmpty(killObj.SpawnMarker) && markerComp.FetchId == killObj.SpawnMarker)
@@ -292,8 +303,8 @@ namespace Content.Server.AU14.Objectives.Kill
             {
                 var markerIndex = i % markers.Count;
                 var markerUid = markers[markerIndex];
-                var xform = EntityManager.GetComponent<TransformComponent>(markerUid);
-                EntityManager.SpawnEntity(killObj.MobToKill, xform.Coordinates);
+                var xform = Comp<TransformComponent>(markerUid);
+                Spawn(killObj.MobToKill, xform.Coordinates);
             }
             killObj.MobsSpawned = true;
         }

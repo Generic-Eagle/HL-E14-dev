@@ -16,6 +16,14 @@
     - NonResuscitable
     - Epilepsy
   ranks:
+    #RMCRankCaptain:
+    #- !type:RoleTimeRequirement
+    #  role: AU14JobGOVFORPlatOp
+    #  time: 360000 # 100 hours
+    RMCRankFirstLT:
+    - !type:RoleTimeRequirement
+      role: AU14JobGOVFORPlatOp
+      time: 86400 # 24 hours
     RMCRankSecondLT: []
   startingGear: AU14GearGOVFORPlatOp
   dummyStartingGear: AU14GearGOVFORPlatOpDummy
@@ -46,13 +54,26 @@
     - type: UserIFF
       factions:
       - GOVFOR
+    - type: MarineOrders
+      moveOrderSoundMale:
+        collection: AU14MaleMoveOrder
+      moveOrderSoundFemale:
+        collection: AU14FemaleMoveOrder
+      focusOrderSoundMale:
+        collection: AU14MaleFocusOrder
+      focusOrderSoundFemale:
+        collection: AU14FemaleFocusOrder
+      holdOrderSoundMale:
+        collection: AU14MaleHoldOrder
+      holdOrderSoundFemale:
+        collection: AU14FemaleHoldOrder
   hidden: false
 
 - type: startingGear
   id: AU14GearGOVFORPlatOp
   equipment:
     id: AU14IDCardGOVFORPlatOp
-    ears: AU14HeadsetSectionLeader
+    ears: AU14HeadsetGovforCommand
 - type: entity
   parent: CMSpawnPointJobBase
   id: AU14SpawnPointGOVFORPlatOp
@@ -69,4 +90,4 @@
     shoes: CMBootsBlack
     head: AU14JunglePatrolCap
     jumpsuit: CMJumpsuitXOFormal
-    ears: AU14HeadsetSectionLeader
+    ears: AU14HeadsetGovforCommand

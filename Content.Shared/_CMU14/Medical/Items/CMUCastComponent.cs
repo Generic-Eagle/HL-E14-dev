@@ -21,4 +21,13 @@ public sealed partial class CMUCastComponent : Component
 
     [DataField, AutoNetworkedField, AutoPausedField]
     public TimeSpan HealCompletesAt;
+
+    [DataField, AutoNetworkedField]
+    public bool ReadyToRemove;
+
+    [DataField, AutoNetworkedField, AutoPausedField]
+    public TimeSpan NextRemovePrompt;
 }
+
+[ByRefEvent]
+public readonly record struct CMUCastChangedEvent(EntityUid Part, bool Removed);

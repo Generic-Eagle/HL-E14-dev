@@ -1,6 +1,8 @@
 using Content.Shared._CMU14.Medical.Wounds;
 using Content.Shared._RMC14.Damage;
 using Content.Shared._RMC14.Medical.Wounds;
+using Content.Shared.Body.Components;
+using Content.Shared.Chemistry.EntitySystems;
 using Content.Shared.Damage;
 using Content.Shared.Damage.Prototypes;
 using Content.Shared.FixedPoint;
@@ -9,12 +11,11 @@ using Robust.Shared.Prototypes;
 
 namespace Content.Server._CMU14.Medical.Wounds;
 
-public sealed class CMUWoundsSystem : SharedCMUWoundsSystem
+public sealed partial class CMUWoundsSystem : SharedCMUWoundsSystem
 {
-    [Dependency] private readonly IPrototypeManager _proto = default!;
-    [Dependency] private readonly SharedRMCDamageableSystem _rmcDamageable = default!;
+    [Dependency] private SharedRMCDamageableSystem _rmcDamageable = default!;
+    [Dependency] private SharedSolutionContainerSystem _solutions = default!;
 
-    private static readonly ProtoId<DamageTypePrototype> Bloodloss = "Bloodloss";
     private static readonly ProtoId<DamageGroupPrototype> BruteGroup = "Brute";
     private static readonly ProtoId<DamageGroupPrototype> BurnGroup = "Burn";
 
@@ -22,11 +23,20 @@ public sealed class CMUWoundsSystem : SharedCMUWoundsSystem
     {
         if (amount <= 0f)
             return;
-        if (!_proto.TryIndex(Bloodloss, out _))
+
+        if (!TryComp<BloodstreamComponent>(body, out var bloodstream))
             return;
 
-        var spec = new DamageSpecifier { DamageDict = { [Bloodloss.Id] = (FixedPoint2)amount } };
-        Damageable.TryChangeDamage(body, spec, ignoreResistances: true, origin: part);
+        if (!_solutions.ResolveSolution(body, bloodstream.BloodSolutionName, ref bloodstream.BloodSolution, out var bloodSolution))
+            return;
+
+        var drain = FixedPoint2.Min((FixedPoint2) amount, bloodSolution.Volume);
+        if (drain <= FixedPoint2.Zero)
+            return;
+
+        var removed = bloodSolution.RemoveReagent(bloodstream.BloodReagent, drain, ignoreReagentData: true);
+        if (removed > FixedPoint2.Zero)
+            _solutions.UpdateChemicals(bloodstream.BloodSolution.Value);
     }
 
     protected override void ApplyWoundHealingDamage(EntityUid body, EntityUid part, WoundType type, FixedPoint2 amount)
@@ -68,7 +78,8 @@ public sealed class CMUWoundsSystem : SharedCMUWoundsSystem
         EntityUid user,
         EntityUid tool,
         ProtoId<DamageGroupPrototype> group,
-        FixedPoint2 damage)
+        FixedPoint2 damage,
+        EntityUid? origin = null)
     {
         if (damage == FixedPoint2.Zero)
             return false;
@@ -85,7 +96,7 @@ public sealed class CMUWoundsSystem : SharedCMUWoundsSystem
             ignoreResistances: true,
             interruptsDoAfters: false,
             damageable: damageable,
-            origin: user,
+            origin: origin ?? user,
             tool: tool) is not null;
     }
 }

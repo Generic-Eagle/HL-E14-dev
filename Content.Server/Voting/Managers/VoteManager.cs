@@ -28,23 +28,24 @@ namespace Content.Server.Voting.Managers
 {
     public sealed partial class VoteManager : IVoteManager
     {
-        [Dependency] private readonly IServerNetManager _netManager = default!;
-        [Dependency] private readonly IConfigurationManager _cfg = default!;
-        [Dependency] private readonly IGameTiming _timing = default!;
-        [Dependency] private readonly IPlayerManager _playerManager = default!;
-        [Dependency] private readonly IChatManager _chatManager = default!;
-        [Dependency] private readonly IAdminManager _adminMgr = default!;
-        [Dependency] private readonly IRobustRandom _random = default!;
-        [Dependency] private readonly IPrototypeManager _prototypeManager = default!;
-        [Dependency] private readonly IGameMapManager _gameMapManager = default!;
-        [Dependency] private readonly IEntityManager _entityManager = default!;
-        [Dependency] private readonly IAdminLogManager _adminLogger = default!;
-        [Dependency] private readonly ISharedPlaytimeManager _playtimeManager = default!;
+        [Dependency] private IServerNetManager _netManager = default!;
+        [Dependency] private IConfigurationManager _cfg = default!;
+        [Dependency] private IGameTiming _timing = default!;
+        [Dependency] private IPlayerManager _playerManager = default!;
+        [Dependency] private IChatManager _chatManager = default!;
+        [Dependency] private IAdminManager _adminMgr = default!;
+        [Dependency] private IRobustRandom _random = default!;
+        [Dependency] private IPrototypeManager _prototypeManager = default!;
+        [Dependency] private IGameMapManager _gameMapManager = default!;
+        [Dependency] private IEntityManager _entityManager = default!;
+        [Dependency] private IAdminLogManager _adminLogger = default!;
+        [Dependency] private ISharedPlaytimeManager _playtimeManager = default!;
 
         private int _nextVoteId = 1;
 
         private readonly Dictionary<int, VoteReg> _votes = new();
         private readonly Dictionary<int, VoteHandle> _voteHandles = new();
+        private readonly Dictionary<string, Dictionary<string, int>> _carryoverVotes = new();
 
         private readonly Dictionary<StandardVoteType, TimeSpan> _standardVoteTimeout = new();
         private readonly Dictionary<NetUserId, TimeSpan> _voteTimeout = new();
@@ -144,7 +145,7 @@ namespace Content.Server.Voting.Managers
             var remQueue = new RemQueue<int>();
             foreach (var v in _votes.Values)
             {
-                // Logger.Debug($"{_timing.ServerTime}");
+                // Logger.GetSawmill("content").Debug($"{_timing.ServerTime}");
                 if (_timing.RealTime >= v.EndTime)
                     EndVote(v);
 
@@ -205,13 +206,32 @@ namespace Content.Server.Voting.Managers
         public IVoteHandle CreateVote(VoteOptions options)
         {
             var id = _nextVoteId++;
-
-            var entries = options.Options.Select(o => new VoteEntry(o.data, o.text)).ToArray();
+            var carryoverKey = GetCarryoverKey(options);
+            var entries = new VoteEntry[options.Options.Count];
+            var optionKeys = new string[options.Options.Count];
+            var carryoverVotes = new int[options.Options.Count];
+            for (var i = 0; i < options.Options.Count; i++)
+            {
+                var option = options.Options[i];
+                var optionKey = GetOptionCarryoverKey(option.text, option.data);
+                var optionCarryoverVotes = GetCarryoverVotes(carryoverKey, optionKey);
+                optionKeys[i] = optionKey;
+                carryoverVotes[i] = optionCarryoverVotes;
+                entries[i] = new VoteEntry(option.data, GetCarryoverOptionText(option.text, optionCarryoverVotes));
+            }
 
             var start = _timing.RealTime;
             var end = start + options.Duration;
             var reg = new VoteReg(id, entries, options.Title, options.InitiatorText,
-                options.InitiatorPlayer, start, end, options.VoterEligibility, options.DisplayVotes, options.TargetEntity);
+                options.InitiatorPlayer,
+                start,
+                end,
+                options.VoterEligibility,
+                options.DisplayVotes,
+                options.TargetEntity,
+                carryoverKey,
+                optionKeys,
+                carryoverVotes);
 
             var handle = new VoteHandle(this, reg);
 
@@ -392,25 +412,104 @@ namespace Content.Server.Voting.Managers
                 }
             }
 
+            var effectiveVotes = GetEffectiveVotes(v);
+
             // Find winner or stalemate.
             var winners = v.Entries
+                .Select((entry, i) => (entry.Data, Votes: effectiveVotes[i]))
                 .GroupBy(e => e.Votes)
                 .OrderByDescending(g => g.Key)
                 .First()
                 .Select(e => e.Data)
                 .ToImmutableArray();
+
             // Store all votes in order for webhooks
             var voteTally = new List<int>();
-            foreach(var entry in v.Entries)
+            foreach (var votes in effectiveVotes)
             {
-                voteTally.Add(entry.Votes);
+                voteTally.Add(votes);
             }
 
             v.Finished = true;
             v.Dirty = true;
             var args = new VoteFinishedEventArgs(winners.Length == 1 ? winners[0] : null, winners, voteTally);
             v.OnFinished?.Invoke(_voteHandles[v.Id], args);
+            UpdateCarryoverVotes(v, args);
             DirtyCanCallVoteAll();
+        }
+
+        private string? GetCarryoverKey(VoteOptions options)
+        {
+            if (!options.CarryoverEnabled || !options.DisplayVotes || !_cfg.GetCVar(CCVars.VoteCarryoverEnabled))
+                return null;
+
+            return options.CarryoverKey ?? options.Title;
+        }
+
+        private static string GetCarryoverOptionText(string text, int carryoverVotes)
+        {
+            return carryoverVotes > 0 ? $"{text} [+{carryoverVotes}]" : text;
+        }
+
+        private int GetCarryoverVotes(string? carryoverKey, string optionKey)
+        {
+            if (carryoverKey == null)
+                return 0;
+
+            if (_carryoverVotes.TryGetValue(carryoverKey, out var optionVotes) &&
+                optionVotes.TryGetValue(optionKey, out var votes))
+            {
+                return votes;
+            }
+
+            return 0;
+        }
+
+        private void UpdateCarryoverVotes(VoteReg vote, VoteFinishedEventArgs args)
+        {
+            if (vote.CarryoverKey == null)
+                return;
+
+            var updatedVotes = new Dictionary<string, int>(vote.Entries.Length);
+            for (var i = 0; i < vote.Entries.Length; i++)
+            {
+                updatedVotes[vote.OptionKeys[i]] = vote.CarryoverVotes[i] + vote.Entries[i].Votes;
+            }
+
+            if (args.SelectedWinner != null)
+            {
+                for (var i = 0; i < vote.Entries.Length; i++)
+                {
+                    if (!Equals(vote.Entries[i].Data, args.SelectedWinner))
+                        continue;
+
+                    updatedVotes[vote.OptionKeys[i]] = 0;
+                    break;
+                }
+            }
+
+            _carryoverVotes[vote.CarryoverKey] = updatedVotes;
+        }
+
+        private static int[] GetEffectiveVotes(VoteReg vote)
+        {
+            var effectiveVotes = new int[vote.Entries.Length];
+            for (var i = 0; i < vote.Entries.Length; i++)
+            {
+                effectiveVotes[i] = vote.Entries[i].Votes + vote.CarryoverVotes[i];
+            }
+
+            return effectiveVotes;
+        }
+
+        private static string GetOptionCarryoverKey(string text, object data)
+        {
+            return data switch
+            {
+                IPrototype prototype => $"{prototype.GetType().FullName}:{prototype.ID}",
+                string value => $"string:{value}",
+                _ => $"{data.GetType().FullName}:{data}|{text}"
+            };
         }
 
         private void CancelVote(VoteReg v)
@@ -493,7 +592,7 @@ namespace Content.Server.Voting.Managers
 
         #region Vote Data
 
-        private sealed class VoteReg
+        private sealed partial class VoteReg
         {
             public readonly int Id;
             public readonly Dictionary<ICommonSession, int> CastVotes = new();
@@ -506,6 +605,9 @@ namespace Content.Server.Voting.Managers
             public readonly VoterEligibility VoterEligibility;
             public readonly bool DisplayVotes;
             public readonly NetEntity? TargetEntity;
+            public readonly string? CarryoverKey;
+            public readonly string[] OptionKeys;
+            public readonly int[] CarryoverVotes;
 
             public bool Cancelled;
             public bool Finished;
@@ -516,7 +618,15 @@ namespace Content.Server.Voting.Managers
             public ICommonSession? Initiator { get; }
 
             public VoteReg(int id, VoteEntry[] entries, string title, string initiatorText,
-                ICommonSession? initiator, TimeSpan start, TimeSpan end, VoterEligibility voterEligibility, bool displayVotes, NetEntity? targetEntity)
+                ICommonSession? initiator,
+                TimeSpan start,
+                TimeSpan end,
+                VoterEligibility voterEligibility,
+                bool displayVotes,
+                NetEntity? targetEntity,
+                string? carryoverKey,
+                string[] optionKeys,
+                int[] carryoverVotes)
             {
                 Id = id;
                 Entries = entries;
@@ -528,6 +638,9 @@ namespace Content.Server.Voting.Managers
                 VoterEligibility = voterEligibility;
                 DisplayVotes = displayVotes;
                 TargetEntity = targetEntity;
+                CarryoverKey = carryoverKey;
+                OptionKeys = optionKeys;
+                CarryoverVotes = carryoverVotes;
             }
         }
 
@@ -557,7 +670,7 @@ namespace Content.Server.Voting.Managers
 
         #region IVoteHandle API surface
 
-        private sealed class VoteHandle : IVoteHandle
+        private sealed partial class VoteHandle : IVoteHandle
         {
             private readonly VoteManager _mgr;
             private readonly VoteReg _reg;
@@ -606,7 +719,7 @@ namespace Content.Server.Voting.Managers
                 _mgr.CancelVote(_reg);
             }
 
-            private sealed class VoteDict : IReadOnlyDictionary<object, int>
+            private sealed partial class VoteDict : IReadOnlyDictionary<object, int>
             {
                 private readonly VoteReg _reg;
 
@@ -617,7 +730,9 @@ namespace Content.Server.Voting.Managers
 
                 public IEnumerator<KeyValuePair<object, int>> GetEnumerator()
                 {
-                    return _reg.Entries.Select(e => KeyValuePair.Create(e.Data, e.Votes)).GetEnumerator();
+                    return _reg.Entries
+                        .Select((e, i) => KeyValuePair.Create(e.Data, e.Votes + _reg.CarryoverVotes[i]))
+                        .GetEnumerator();
                 }
 
                 IEnumerator IEnumerable.GetEnumerator()
@@ -634,10 +749,12 @@ namespace Content.Server.Voting.Managers
 
                 public bool TryGetValue(object key, out int value)
                 {
-                    var entry = _reg.Entries.FirstOrNull(a => a.Data.Equals(key));
-                    if (entry != null)
+                    for (var i = 0; i < _reg.Entries.Length; i++)
                     {
-                        value = entry.Value.Votes;
+                        if (!_reg.Entries[i].Data.Equals(key))
+                            continue;
+
+                        value = _reg.Entries[i].Votes + _reg.CarryoverVotes[i];
                         return true;
                     }
 
@@ -659,7 +776,7 @@ namespace Content.Server.Voting.Managers
                 }
 
                 public IEnumerable<object> Keys => _reg.Entries.Select(c => c.Data);
-                public IEnumerable<int> Values => _reg.Entries.Select(c => c.Votes);
+                public IEnumerable<int> Values => _reg.Entries.Select((c, i) => c.Votes + _reg.CarryoverVotes[i]);
             }
         }
 

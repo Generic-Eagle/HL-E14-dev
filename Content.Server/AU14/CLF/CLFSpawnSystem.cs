@@ -12,15 +12,17 @@ namespace Content.Server.AU14.CLF;
 
 /// <summary>
 /// Handles CLF spawning at round start (at a chosen safehouse) and additional entity spawning.
-/// Command roles (Cell Leader, Physician) always spawn at the safehouse.
+/// Command roles (Cell Leader, Physician, Surgeon) always spawn at the safehouse.
 /// Guerilla roles have a 66% chance to spawn at colony civilian spawn points and 34% at the safehouse.
 /// </summary>
-public sealed class ClfSpawnSystem : EntitySystem
+public sealed partial class ClfSpawnSystem : EntitySystem
 {
-    [Dependency] private readonly IPrototypeManager _prototypeManager = default!;
-    [Dependency] private readonly IRobustRandom _random = default!;
-    [Dependency] private readonly StationSpawningSystem _stationSpawning = default!;
-    [Dependency] private readonly IEntityManager _entityManager = default!;
+    private static readonly ProtoId<CLFSpawnConfigPrototype> ClfSpawnConfig = "CLFSpawnConfig";
+
+    [Dependency] private IPrototypeManager _prototypeManager = default!;
+    [Dependency] private IRobustRandom _random = default!;
+    [Dependency] private StationSpawningSystem _stationSpawning = default!;
+    [Dependency] private IEntityManager _entityManager = default!;
 
     private EntityCoordinates? _chosenSafehouseLocation;
     private bool _hasSpawnedAdditionalEntities;
@@ -32,12 +34,20 @@ public sealed class ClfSpawnSystem : EntitySystem
     {
         "AU14JobCLFCellLeader",
         "AU14JobCLFPhysician",
+        "AU14JobCLFSurgeon",
     };
 
     /// <summary>
     /// The colony civilian job whose spawn points guerillas may use.
     /// </summary>
     private const string ColonyCivilianJobId = "AU14JobCivilianColonist";
+    private const string ClfSurgeonJobId = "AU14JobCLFSurgeon";
+
+    private static readonly string[] ClfSurgeonRoundstartEquipment =
+    {
+        "CMPortableSurgicalBedSpawnFolded",
+        "RMCSurgicalTray",
+    };
 
     /// <summary>
     /// Chance (0-1) for a guerilla to spawn at a colony civilian spawn point instead of the safehouse.
@@ -120,6 +130,7 @@ public sealed class ClfSpawnSystem : EntitySystem
                     args.Job,
                     args.HumanoidCharacterProfile,
                     args.Station);
+                SpawnJobEquipment(jobId, args.SpawnResult.Value);
                 Log.Info($"CLF Spawn System: Spawned guerilla {jobId} at colony civilian spawn point");
                 return;
             }
@@ -134,7 +145,20 @@ public sealed class ClfSpawnSystem : EntitySystem
             args.Job,
             args.HumanoidCharacterProfile,
             args.Station);
+        SpawnJobEquipment(jobId, args.SpawnResult.Value);
         Log.Info($"CLF Spawn System: Spawned {(isCommand ? "command" : "guerilla")} {jobId} at safehouse");
+    }
+
+    private void SpawnJobEquipment(string jobId, EntityUid mob)
+    {
+        if (!string.Equals(jobId, ClfSurgeonJobId, StringComparison.OrdinalIgnoreCase))
+            return;
+
+        var coordinates = Transform(mob).Coordinates;
+        foreach (var protoId in ClfSurgeonRoundstartEquipment)
+        {
+            _entityManager.SpawnEntity(protoId, coordinates);
+        }
     }
 
     /// <summary>
@@ -162,7 +186,7 @@ public sealed class ClfSpawnSystem : EntitySystem
             return;
 
         // Get CLF spawn config
-        if (!_prototypeManager.TryIndex<CLFSpawnConfigPrototype>("CLFSpawnConfig", out var config))
+        if (!_prototypeManager.TryIndex(ClfSpawnConfig, out var config))
         {
             Log.Info("CLF Spawn System: No CLFSpawnConfig found, skipping additional entity spawning");
             return;
@@ -188,6 +212,5 @@ public sealed class ClfSpawnSystem : EntitySystem
     /// </summary>
     public EntityCoordinates? GetChosenSafehouse() => _chosenSafehouseLocation;
 }
-
 
 

@@ -25,3 +25,6 @@ public sealed partial class InternalBleedingComponent : Component
     [DataField, AutoPausedField]
     public TimeSpan NextBleedTick;
 }
+
+[ByRefEvent]
+public readonly record struct InternalBleedingChangedEvent(EntityUid Body, EntityUid Part, bool Removed);

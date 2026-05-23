@@ -40,11 +40,14 @@
   requireAdminNotify: false
   joinNotifyCrew: false
   supervisors: au14-job-supervisors-colonycivilian
+  spawnMenuRoleName: WY Liaison (CMU)
   accessGroups:
   - Colonist
   - auadmin
   - AUPrisonStaff
   - auwy
+  access:
+  - AU14AccessCorporateWEYULiaison
   roleWeight: 0.25
   special:
   - !type:AddComponentSpecial
@@ -70,11 +73,10 @@
       whitelist:
         tags:
         - SquadPMC
-    - type: NpcFactionMember
-      factions:
-      - GOVFOR
-    - type: Marine
-      Faction: govfor
+  requirements:
+  - !type:DepartmentTimeRequirement
+    department: AU14DepartmentCorporate
+    time: 72000 # 20 hours
   hidden: false
 
 - type: startingGear

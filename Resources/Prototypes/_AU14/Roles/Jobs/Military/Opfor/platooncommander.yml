@@ -54,15 +54,28 @@
     - type: UserIFF
       factions:
       - OPFOR
+    - type: MarineOrders
+      moveOrderSoundMale:
+        collection: AU14MaleMoveOrder
+      moveOrderSoundFemale:
+        collection: AU14FemaleMoveOrder
+      focusOrderSoundMale:
+        collection: AU14MaleFocusOrder
+      focusOrderSoundFemale:
+        collection: AU14FemaleFocusOrder
+      holdOrderSoundMale:
+        collection: AU14MaleHoldOrder
+      holdOrderSoundFemale:
+        collection: AU14FemaleHoldOrder
   hidden: false
 
 - type: startingGear
   id: AU14GearopforPlatCo
   equipment:
     id: AU14IDCardopforPlatCo
-    ears: AU14HeadsetSectionLeaderopfor
+    ears: AU14HeadsetOpforCommand
   inhand:
-   -  RMCTabletOpfor
+   -  AU14TabletOpfor
 - type: entity
   parent: CMSpawnPointJobBase
   id: AU14SpawnPointopforPlatCo
@@ -79,4 +92,4 @@
     shoes: CMBootsBlack
     head: CMHeadCapPeakedFormal
     jumpsuit: CMJumpsuitXOFormal
-    ears: AU14HeadsetSectionLeaderopfor
+    ears: AU14HeadsetOpforCommand

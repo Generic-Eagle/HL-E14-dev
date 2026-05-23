@@ -3,12 +3,13 @@
   id: AU14JobCivilianEthicsAndWellnessAdvisor
   name: au14-job-name-ethicsandwellnessadvisor
   description: au14-job-description-ethicsandwellnessadvisor
-  setPreference: false
+  setPreference: true
   playTimeTracker: AU14JobCivilianEthicsAndWellnessAdvisor
   ranks:
     RMCRankCivilian: []
   startingGear: AU14GearCivilianEthicsAndWellnessAdvisor
-  icon: "CMJobIconEmpty"
+  icon: "AU14JobIconColonyAdvisor"
+  hasIcon: false
   requireAdminNotify: false
   joinNotifyCrew: false
   supervisors: au14-job-supervisors-colonycivilian

@@ -2,6 +2,7 @@ using Content.Shared._RMC14.Actions;
 using Content.Shared._RMC14.Emote;
 using Content.Shared._RMC14.Explosion;
 using Content.Shared._RMC14.Xenonids.Sweep;
+using Content.Shared._CMU14.Medical.BodyPart;
 using Content.Shared.Coordinates;
 using Content.Shared.Damage;
 using Content.Shared.Effects;
@@ -15,18 +16,19 @@ using Robust.Shared.Timing;
 
 namespace Content.Shared._RMC14.Xenonids.Rend;
 
-public sealed class XenoRendSystem : EntitySystem
+public sealed partial class XenoRendSystem : EntitySystem
 {
-    [Dependency] private readonly SharedRMCActionsSystem _actions = default!;
-    [Dependency] private readonly SharedRMCEmoteSystem _emote = default!;
-    [Dependency] private readonly EntityLookupSystem _entityLookup = default!;
-    [Dependency] private readonly SharedTransformSystem _transform = default!;
-    [Dependency] private readonly XenoSystem _xeno = default!;
-    [Dependency] private readonly SharedInteractionSystem _interact = default!;
-    [Dependency] private readonly DamageableSystem _damage = default!;
-    [Dependency] private readonly SharedColorFlashEffectSystem _colorFlash = default!;
-    [Dependency] private readonly INetManager _net = default!;
-    [Dependency] private readonly SharedAudioSystem _audio = default!;
+    [Dependency] private SharedRMCActionsSystem _actions = default!;
+    [Dependency] private SharedRMCEmoteSystem _emote = default!;
+    [Dependency] private EntityLookupSystem _entityLookup = default!;
+    [Dependency] private SharedTransformSystem _transform = default!;
+    [Dependency] private XenoSystem _xeno = default!;
+    [Dependency] private SharedInteractionSystem _interact = default!;
+    [Dependency] private DamageableSystem _damage = default!;
+    [Dependency] private SharedColorFlashEffectSystem _colorFlash = default!;
+    [Dependency] private INetManager _net = default!;
+    [Dependency] private SharedAudioSystem _audio = default!;
+    [Dependency] private SharedHitLocationSystem _hitLocation = default!;
     public override void Initialize()
     {
         SubscribeLocalEvent<XenoRendComponent, XenoRendActionEvent>(OnXenoRendAction);
@@ -45,6 +47,7 @@ public sealed class XenoRendSystem : EntitySystem
         EnsureComp<XenoSweepingComponent>(xeno);
         _emote.TryEmoteWithChat(xeno, xeno.Comp.HissEmote);
 
+        using var targetingSuppression = _hitLocation.SuppressBodyZoneTargeting(xeno.Owner);
         foreach (var ent in _entityLookup.GetEntitiesInRange<MobStateComponent>(_transform.GetMapCoordinates(xeno), xeno.Comp.Range))
         {
             if (!_xeno.CanAbilityAttackTarget(xeno, ent))

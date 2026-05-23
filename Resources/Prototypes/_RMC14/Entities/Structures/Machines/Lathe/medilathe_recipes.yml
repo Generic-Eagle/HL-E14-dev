@@ -20,7 +20,7 @@
   result: CMBoneGel
   completetime: 5
   materials:
-    RMCPlastic: 250 # 150
+    RMCPlastic: 187 # 150
 
 - type: latheRecipe
   id: CMUSplintItem
@@ -71,6 +71,14 @@
   completetime: 4
   materials:
     RMCPlastic: 9375 # 7500
+
+- type: latheRecipe
+  id: CMUOrganClamp
+  result: CMUOrganClampItem
+  completetime: 4
+  materials:
+    RMCPlastic: 1200
+    CMSteel: 2350
 
 - type: latheRecipe
   id: CMStasisBag

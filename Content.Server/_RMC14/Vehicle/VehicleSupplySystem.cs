@@ -23,22 +23,22 @@ using Robust.Shared.Timing;
 
 namespace Content.Server._RMC14.Vehicle;
 
-public sealed class VehicleSupplySystem : EntitySystem
+public sealed partial class VehicleSupplySystem : EntitySystem
 {
     private readonly record struct HardpointItemInfo(string ProtoId, HashSet<ProtoId<TagPrototype>> Tags);
     private const int VendedHardpointAmmoCount = 3;
 
-    [Dependency] private readonly AudioSystem _audio = default!;
-    [Dependency] private readonly IntelSystem _intel = default!;
-    [Dependency] private readonly IComponentFactory _compFactory = default!;
-    [Dependency] private readonly IGameTiming _timing = default!;
-    [Dependency] private readonly IPrototypeManager _prototypes = default!;
-    [Dependency] private readonly PhysicsSystem _physics = default!;
-    [Dependency] private readonly ItemSlotsSystem _itemSlots = default!;
-    [Dependency] private readonly SharedTransformSystem _transform = default!;
-    [Dependency] private readonly SharedUserInterfaceSystem _ui = default!;
-    [Dependency] private readonly SharedCMAutomatedVendorSystem _vendor = default!;
-    [Dependency] private readonly VehicleSystem _rmcVehicles = default!;
+    [Dependency] private AudioSystem _audio = default!;
+    [Dependency] private IntelSystem _intel = default!;
+    [Dependency] private IComponentFactory _compFactory = default!;
+    [Dependency] private IGameTiming _timing = default!;
+    [Dependency] private IPrototypeManager _prototypes = default!;
+    [Dependency] private PhysicsSystem _physics = default!;
+    [Dependency] private ItemSlotsSystem _itemSlots = default!;
+    [Dependency] private SharedTransformSystem _transform = default!;
+    [Dependency] private SharedUserInterfaceSystem _ui = default!;
+    [Dependency] private SharedCMAutomatedVendorSystem _vendor = default!;
+    [Dependency] private VehicleSystem _rmcVehicles = default!;
 
     private readonly Dictionary<string, List<HardpointItemInfo>> _hardpointItemsByType = new();
     private readonly Dictionary<string, string> _hardpointTypeByProto = new();
@@ -1519,7 +1519,9 @@ public sealed class VehicleSupplySystem : EntitySystem
     private HashSet<string> BuildUnlockedSet()
     {
         var unlocked = new HashSet<string>();
-        var tech = EnsureSupplyTech();
+        if (!TryGetSupplyTech(out var tech))
+            return unlocked;
+
         foreach (var id in tech.Comp.Unlocked)
         {
             if (string.IsNullOrWhiteSpace(id))
@@ -1529,6 +1531,19 @@ public sealed class VehicleSupplySystem : EntitySystem
         }
 
         return unlocked;
+    }
+
+    private bool TryGetSupplyTech(out Entity<VehicleSupplyTechComponent> tech)
+    {
+        var query = EntityQueryEnumerator<VehicleSupplyTechComponent>();
+        if (query.MoveNext(out var uid, out var comp))
+        {
+            tech = (uid, comp);
+            return true;
+        }
+
+        tech = default;
+        return false;
     }
 
     private static bool IsEntryUnlocked(VehicleSupplyEntry entry, HashSet<string> unlocked)

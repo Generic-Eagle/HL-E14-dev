@@ -102,6 +102,8 @@
     xenoArmor: 25
     explosionArmor: 100
   - type: XenoWordQueen
+  - type: VehicleDamageMultiplier
+    multiplier: 4
   - type: InnateCommandSpeech
   - type: RMCInnateRadioTextIncrease
     radioTextIncrease: 3
@@ -120,8 +122,10 @@
   - type: XenoOvipositorCapable
   - type: Tackle
     chance: 0.55
-    stunMin: 5
-    stunMax: 6
+    min: 2
+    max: 3
+    stunMin: 4
+    stunMax: 5
   - type: TunnelRenamer
   - type: Fixtures
     fixtures:
@@ -201,11 +205,8 @@
     deadThreshold: 1100
     addComponents:
     - type: XenoScreech
-    - type: XenoToggleSpit
     addActions:
     - ActionXenoScreech
-    - ActionXenoSpitQueen
-    - ActionXenoToggleSpitType
   - type: RMCSize
     size: Immobile
   - type: RMCXenoDamageVisuals
@@ -238,9 +239,8 @@
   - type: XenoHeal
   - type: StunOnExplosionReceived
     weak: false
-  - type: XenoSpit
-    projectileId: XenoQueenNeuroSpitProjectile
-    plasmaCost: 50
+  - type: XenoMeleeSever
+    chance: 0.4
   - type: CommendationGiver
   - type: XenoInhands
     prefix: queen
@@ -262,6 +262,7 @@
     whitelist:
       components:
       - StunFriendlyXenoOnStep
+  - type: StunHostilesOnStep
   - type: XenoToggleChargingKnockback
     enabled: false
   - type: XenoToggleChargingStop

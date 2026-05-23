@@ -13,9 +13,9 @@ namespace Content.Shared.Ghost
     /// System for the <see cref="GhostComponent"/>.
     /// Prevents ghosts from interacting when <see cref="GhostComponent.CanGhostInteract"/> is false.
     /// </summary>
-    public abstract class SharedGhostSystem : EntitySystem
+    public abstract partial class SharedGhostSystem : EntitySystem
     {
-        [Dependency] protected readonly SharedPopupSystem Popup = default!;
+        [Dependency] protected SharedPopupSystem Popup = default!;
 
         public override void Initialize()
         {
@@ -109,7 +109,7 @@ namespace Content.Shared.Ghost
     /// Response is sent via <see cref="GhostWarpsResponseEvent"/>
     /// </summary>
     [Serializable, NetSerializable]
-    public sealed class GhostWarpsRequestEvent : EntityEventArgs
+    public sealed partial class GhostWarpsRequestEvent : EntityEventArgs
     {
     }
 
@@ -120,11 +120,32 @@ namespace Content.Shared.Ghost
     [Serializable, NetSerializable]
     public struct GhostWarp
     {
-        public GhostWarp(NetEntity entity, string displayName, bool isWarpPoint)
+        public GhostWarp(
+            NetEntity entity,
+            string displayName,
+            bool isWarpPoint,
+            string? roleName = null,
+            string? tab = null,
+            string? section = null,
+            string? iconPrototype = null,
+            string? entityPrototype = null,
+            string? jobPrototype = null,
+            int sortWeight = 0,
+            int? xenoTier = null,
+            bool isXeno = false)
         {
             Entity = entity;
             DisplayName = displayName;
             IsWarpPoint = isWarpPoint;
+            RoleName = roleName;
+            Tab = tab;
+            Section = section;
+            IconPrototype = iconPrototype;
+            EntityPrototype = entityPrototype;
+            JobPrototype = jobPrototype;
+            SortWeight = sortWeight;
+            XenoTier = xenoTier;
+            IsXeno = isXeno;
         }
 
         /// <summary>
@@ -142,6 +163,51 @@ namespace Content.Shared.Ghost
         /// Whether this warp represents a warp point or a player
         /// </summary>
         public bool IsWarpPoint { get;  }
+
+        /// <summary>
+        /// The role or job title to show separately from the target name.
+        /// </summary>
+        public string? RoleName { get; }
+
+        /// <summary>
+        /// The top-level faction tab this warp should appear under.
+        /// </summary>
+        public string? Tab { get; }
+
+        /// <summary>
+        /// The subsection within the faction tab.
+        /// </summary>
+        public string? Section { get; }
+
+        /// <summary>
+        /// Optional job icon prototype to use for the row.
+        /// </summary>
+        public string? IconPrototype { get; }
+
+        /// <summary>
+        /// Optional entity prototype to use as a row preview icon.
+        /// </summary>
+        public string? EntityPrototype { get; }
+
+        /// <summary>
+        /// Optional job prototype used to build a dressed off-map preview.
+        /// </summary>
+        public string? JobPrototype { get; }
+
+        /// <summary>
+        /// Higher values sort earlier inside a subsection.
+        /// </summary>
+        public int SortWeight { get; }
+
+        /// <summary>
+        /// Xeno tier used by the UI for caste grouping.
+        /// </summary>
+        public int? XenoTier { get; }
+
+        /// <summary>
+        /// Whether this target is a xeno.
+        /// </summary>
+        public bool IsXeno { get; }
     }
 
     /// <summary>
@@ -149,7 +215,7 @@ namespace Content.Shared.Ghost
     /// Contains players, and locations a ghost can warp to
     /// </summary>
     [Serializable, NetSerializable]
-    public sealed class GhostWarpsResponseEvent : EntityEventArgs
+    public sealed partial class GhostWarpsResponseEvent : EntityEventArgs
     {
         public GhostWarpsResponseEvent(List<GhostWarp> warps)
         {
@@ -166,7 +232,7 @@ namespace Content.Shared.Ghost
     ///  A client to server request for their ghost to be warped to an entity
     /// </summary>
     [Serializable, NetSerializable]
-    public sealed class GhostWarpToTargetRequestEvent : EntityEventArgs
+    public sealed partial class GhostWarpToTargetRequestEvent : EntityEventArgs
     {
         public NetEntity Target { get; }
 
@@ -180,13 +246,13 @@ namespace Content.Shared.Ghost
     /// A client to server request for their ghost to be warped to the most followed entity.
     /// </summary>
     [Serializable, NetSerializable]
-    public sealed class GhostnadoRequestEvent : EntityEventArgs;
+    public sealed partial class GhostnadoRequestEvent : EntityEventArgs;
 
     /// <summary>
     /// A client to server request for their ghost to return to body
     /// </summary>
     [Serializable, NetSerializable]
-    public sealed class GhostReturnToBodyRequest : EntityEventArgs
+    public sealed partial class GhostReturnToBodyRequest : EntityEventArgs
     {
     }
 
@@ -194,7 +260,7 @@ namespace Content.Shared.Ghost
     /// A server to client update with the available ghost role count
     /// </summary>
     [Serializable, NetSerializable]
-    public sealed class GhostUpdateGhostRoleCountEvent : EntityEventArgs
+    public sealed partial class GhostUpdateGhostRoleCountEvent : EntityEventArgs
     {
         public int AvailableGhostRoles { get; }
 
@@ -204,7 +270,7 @@ namespace Content.Shared.Ghost
         }
     }
 
-    public sealed class GhostAttemptHandleEvent(MindComponent mind, bool canReturnGlobal) : HandledEntityEventArgs
+    public sealed partial class GhostAttemptHandleEvent(MindComponent mind, bool canReturnGlobal) : HandledEntityEventArgs
     {
         public MindComponent Mind { get; } = mind;
         public bool CanReturnGlobal { get; } = canReturnGlobal;

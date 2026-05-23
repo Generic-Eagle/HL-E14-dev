@@ -13,6 +13,7 @@ using Robust.Shared.Player;
 using Content.Shared._RMC14.Xenonids;
 using Robust.Shared.Audio.Systems;
 using System.Linq;
+using Content.Shared._CMU14.Medical.BodyPart;
 using Content.Server._RMC14.Decals;
 using Content.Server.Spawners.Components;
 using Content.Shared.Body.Events;
@@ -21,22 +22,23 @@ using Content.Shared._RMC14.Stun;
 
 namespace Content.Server._RMC14.Xenonids.AcidBloodSplash;
 
-public sealed class AcidBloodSplashSystem : EntitySystem
+public sealed partial class AcidBloodSplashSystem : EntitySystem
 {
-    [Dependency] private readonly SharedAudioSystem _audio = default!;
-    [Dependency] private readonly IComponentFactory _compFactory = default!;
-    [Dependency] private readonly DamageableSystem _damageable = default!;
-    [Dependency] private readonly SharedRMCEmoteSystem _emote = default!;
-    [Dependency] private readonly EntityLookupSystem _entityLookup = default!;
-    [Dependency] private readonly MobStateSystem _mobState = default!;
-    [Dependency] private readonly IRobustRandom _random = default!;
-    [Dependency] private readonly IPrototypeManager _prototypes = default!;
-    [Dependency] private readonly SharedPopupSystem _popup = default!;
-    [Dependency] private readonly RMCDecalSystem _rmcDecal = default!;
-    [Dependency] private readonly SharedColorFlashEffectSystem _colorFlash = default!;
-    [Dependency] private readonly IGameTiming _timing = default!;
-    [Dependency] private readonly XenoSystem _xeno = default!;
-    [Dependency] private readonly SharedTransformSystem _transform = default!;
+    [Dependency] private SharedAudioSystem _audio = default!;
+    [Dependency] private IComponentFactory _compFactory = default!;
+    [Dependency] private DamageableSystem _damageable = default!;
+    [Dependency] private SharedRMCEmoteSystem _emote = default!;
+    [Dependency] private EntityLookupSystem _entityLookup = default!;
+    [Dependency] private MobStateSystem _mobState = default!;
+    [Dependency] private IRobustRandom _random = default!;
+    [Dependency] private IPrototypeManager _prototypes = default!;
+    [Dependency] private SharedPopupSystem _popup = default!;
+    [Dependency] private RMCDecalSystem _rmcDecal = default!;
+    [Dependency] private SharedColorFlashEffectSystem _colorFlash = default!;
+    [Dependency] private IGameTiming _timing = default!;
+    [Dependency] private XenoSystem _xeno = default!;
+    [Dependency] private SharedTransformSystem _transform = default!;
+    [Dependency] private SharedHitLocationSystem _hitLocation = default!;
 
     private static readonly ProtoId<EmotePrototype> ScreamProto = "Scream";
     private static readonly ProtoId<DamageGroupPrototype> BruteGroup = "Brute";
@@ -78,6 +80,7 @@ public sealed class AcidBloodSplashSystem : EntitySystem
         var closeRangeTargets = _entityLookup.GetEntitiesInRange(ent.Owner.ToCoordinates(), ent.Comp.CloseSplashRadius);
         var targetsList = targetsSet.ToList(); // shuffle don't work on HashSet
         _random.Shuffle(targetsList);
+        using var targetingSuppression = _hitLocation.SuppressBodyZoneTargeting(ent.Owner);
         foreach (var target in targetsList)
         {
             if (!_xeno.CanAbilityAttackTarget(ent, target))
@@ -94,7 +97,7 @@ public sealed class AcidBloodSplashSystem : EntitySystem
                 continue;
 
             ent.Comp.NextSplashAvailable = _timing.CurTime + ent.Comp.SplashCooldown;
-            _damageable.TryChangeDamage(target, _xeno.TryApplyXenoAcidDamageMultiplier(target, ent.Comp.Damage));
+            _damageable.TryChangeDamage(target, _xeno.TryApplyXenoAcidDamageMultiplier(target, ent.Comp.Damage), origin: ent.Owner);
             i++;
 
             _audio.PlayPvs(ent.Comp.AcidSplashSound, target);

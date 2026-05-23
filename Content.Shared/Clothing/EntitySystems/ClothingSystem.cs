@@ -10,11 +10,11 @@ using Robust.Shared.GameStates;
 
 namespace Content.Shared.Clothing.EntitySystems;
 
-public abstract class ClothingSystem : EntitySystem
+public abstract partial class ClothingSystem : EntitySystem
 {
-    [Dependency] private readonly SharedItemSystem _itemSys = default!;
-    [Dependency] private readonly InventorySystem _invSystem = default!;
-    [Dependency] private readonly SharedHandsSystem _handsSystem = default!;
+    [Dependency] private SharedItemSystem _itemSys = default!;
+    [Dependency] private InventorySystem _invSystem = default!;
+    [Dependency] private SharedHandsSystem _handsSystem = default!;
 
     public override void Initialize()
     {
@@ -119,6 +119,8 @@ public abstract class ClothingSystem : EntitySystem
     private void OnEquipDoAfter(Entity<ClothingComponent> ent, ref ClothingEquipDoAfterEvent args)
     {
         if (args.Handled || args.Cancelled || args.Target is not { } target)
+            return;
+        if (!_handsSystem.IsHolding(args.User, ent.Owner, out _))
             return;
         args.Handled = _invSystem.TryEquip(args.User, target, ent, args.Slot, clothing: ent.Comp, predicted: true, checkDoafter: false);
     }

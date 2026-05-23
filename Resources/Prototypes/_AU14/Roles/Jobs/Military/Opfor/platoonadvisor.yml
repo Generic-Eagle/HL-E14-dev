@@ -51,13 +51,26 @@
     - type: UserIFF
       factions:
       - OPFOR
+    - type: MarineOrders
+      moveOrderSoundMale:
+        collection: AU14MaleMoveOrder
+      moveOrderSoundFemale:
+        collection: AU14FemaleMoveOrder
+      focusOrderSoundMale:
+        collection: AU14MaleFocusOrder
+      focusOrderSoundFemale:
+        collection: AU14FemaleFocusOrder
+      holdOrderSoundMale:
+        collection: AU14MaleHoldOrder
+      holdOrderSoundFemale:
+        collection: AU14FemaleHoldOrder
   hidden: false
 
 - type: startingGear
   id: AU14GearOPFORadvisor
   equipment:
     id: AU14IDCardOPFORAdvisor
-    ears: AU14HeadsetSectionLeaderopfor
+    ears: AU14HeadsetOpforCommand
     back: AU14SatchelMarineAdvisorMilitary
 
 - type: entity
@@ -76,4 +89,4 @@
     shoes: CMBootsBrownFilled
     head: CMHeadCapDrill
     jumpsuit: CMJumpsuitBO
-    ears: AU14HeadsetSectionLeaderopfor
+    ears: AU14HeadsetOpforCommand

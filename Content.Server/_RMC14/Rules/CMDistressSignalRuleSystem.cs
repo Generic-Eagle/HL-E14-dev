@@ -107,63 +107,63 @@ using Robust.Shared.Utility;
 
 namespace Content.Server._RMC14.Rules;
 
-public sealed class CMDistressSignalRuleSystem : GameRuleSystem<CMDistressSignalRuleComponent>
+public sealed partial class CMDistressSignalRuleSystem : GameRuleSystem<CMDistressSignalRuleComponent>
 {
-    [Dependency] private readonly SharedActionsSystem _actions = default!;
-    [Dependency] private readonly IAdminLogManager _adminLog = default!;
-    [Dependency] private readonly ARESSystem _ares = default!;
-    [Dependency] private readonly AudioSystem _audio = default!;
-    [Dependency] private readonly IBanManager _bans = default!;
-    [Dependency] private readonly IChatManager _chatManager = default!;
-    [Dependency] private readonly IComponentFactory _compFactory = default!;
-    [Dependency] private readonly IConfigurationManager _config = default!;
-    [Dependency] private readonly ContainerSystem _containers = default!;
-    [Dependency] private readonly DropshipSystem _dropship = default!;
-    [Dependency] private readonly FaxSystem _fax = default!;
-    [Dependency] private readonly GunIFFSystem _gunIFF = default!;
-    [Dependency] private readonly XenoHiveSystem _hive = default!;
-    [Dependency] private readonly HungerSystem _hunger = default!;
-    [Dependency] private readonly ItemCamouflageSystem _camo = default!;
-    [Dependency] private readonly MapLoaderSystem _mapLoader = default!;
-    [Dependency] private readonly IMapManager _mapManager = default!;
-    [Dependency] private readonly MapSystem _mapSystem = default!;
-    [Dependency] private readonly MarineAnnounceSystem _marineAnnounce = default!;
-    [Dependency] private readonly MindSystem _mind = default!;
-    [Dependency] private readonly MobStateSystem _mobState = default!;
-    [Dependency] private readonly IPlayerManager _player = default!;
-    [Dependency] private readonly PlayTimeTrackingSystem _playTime = default!;
-    [Dependency] private readonly IServerPreferencesManager _prefsManager = default!;
-    [Dependency] private readonly IPrototypeManager _prototypes = default!;
-    [Dependency] private readonly IRobustRandom _random = default!;
-    [Dependency] private readonly RMCMapSystem _rmcMap = default!;
-    [Dependency] private readonly RMCPlanetSystem _rmcPlanet = default!;
-    [Dependency] private readonly RMCStationJobsSystem _rmcStationJobs = default!;
-    [Dependency] private readonly RoleSystem _roles = default!;
-    [Dependency] private readonly RoundEndSystem _roundEnd = default!;
-    [Dependency] private readonly ScalingSystem _scaling = default!;
-    [Dependency] private readonly StationJobsSystem _stationJobs = default!;
-    [Dependency] private readonly StationSpawningSystem _stationSpawning = default!;
-    [Dependency] private readonly SquadSystem _squad = default!;
-    [Dependency] private readonly TransformSystem _transform = default!;
-    [Dependency] private readonly IVoteManager _voteManager = default!;
-    [Dependency] private readonly XenoSystem _xeno = default!;
-    [Dependency] private readonly XenoEvolutionSystem _xenoEvolution = default!;
-    [Dependency] private readonly XenoTunnelSystem _xenoTunnel = default!;
-    [Dependency] private readonly StunSystem _stuns = default!;
-    [Dependency] private readonly RMCCameraShakeSystem _rmcCameraShake = default!;
-    [Dependency] private readonly ThermalCloakSystem _thermalCloak = default!;
-    [Dependency] private readonly SharedGhillieSuitSystem _ghillieSuit = default!;
-    [Dependency] private readonly MapInsertSystem _mapInsert = default!;
-    [Dependency] private readonly SharedDestructibleSystem _destruction = default!;
-    [Dependency] private readonly IntelSystem _intel = default!;
-    [Dependency] private readonly SharedXenoParasiteSystem _parasite = default!;
-    [Dependency] private readonly RMCAmbientLightSystem _rmcAmbientLight = default!;
-    [Dependency] private readonly RMCPowerSystem _rmcPower = default!;
-    [Dependency] private readonly RMCGameRuleExtrasSystem _gameRulesExtras = default!;
-    [Dependency] private readonly PopupSystem _popup = default!;
-    [Dependency] private readonly GhostSystem _ghost = default!;
-    [Dependency] private readonly ISerializationManager _serialization = default!;
-    [Dependency] private readonly XenoMaturingSystem _maturing = default!;
+    [Dependency] private SharedActionsSystem _actions = default!;
+    [Dependency] private IAdminLogManager _adminLog = default!;
+    [Dependency] private ARESSystem _ares = default!;
+    [Dependency] private AudioSystem _audio = default!;
+    [Dependency] private IBanManager _bans = default!;
+    [Dependency] private IChatManager _chatManager = default!;
+    [Dependency] private IComponentFactory _compFactory = default!;
+    [Dependency] private IConfigurationManager _config = default!;
+    [Dependency] private ContainerSystem _containers = default!;
+    [Dependency] private DropshipSystem _dropship = default!;
+    [Dependency] private FaxSystem _fax = default!;
+    [Dependency] private GunIFFSystem _gunIFF = default!;
+    [Dependency] private XenoHiveSystem _hive = default!;
+    [Dependency] private HungerSystem _hunger = default!;
+    [Dependency] private ItemCamouflageSystem _camo = default!;
+    [Dependency] private MapLoaderSystem _mapLoader = default!;
+    [Dependency] private IMapManager _mapManager = default!;
+    [Dependency] private MapSystem _mapSystem = default!;
+    [Dependency] private MarineAnnounceSystem _marineAnnounce = default!;
+    [Dependency] private MindSystem _mind = default!;
+    [Dependency] private MobStateSystem _mobState = default!;
+    [Dependency] private IPlayerManager _player = default!;
+    [Dependency] private PlayTimeTrackingSystem _playTime = default!;
+    [Dependency] private IServerPreferencesManager _prefsManager = default!;
+    [Dependency] private IPrototypeManager _prototypes = default!;
+    [Dependency] private IRobustRandom _random = default!;
+    [Dependency] private RMCMapSystem _rmcMap = default!;
+    [Dependency] private RMCPlanetSystem _rmcPlanet = default!;
+    [Dependency] private RMCStationJobsSystem _rmcStationJobs = default!;
+    [Dependency] private RoleSystem _roles = default!;
+    [Dependency] private RoundEndSystem _roundEnd = default!;
+    [Dependency] private ScalingSystem _scaling = default!;
+    [Dependency] private StationJobsSystem _stationJobs = default!;
+    [Dependency] private StationSpawningSystem _stationSpawning = default!;
+    [Dependency] private SquadSystem _squad = default!;
+    [Dependency] private TransformSystem _transform = default!;
+    [Dependency] private IVoteManager _voteManager = default!;
+    [Dependency] private XenoSystem _xeno = default!;
+    [Dependency] private XenoEvolutionSystem _xenoEvolution = default!;
+    [Dependency] private XenoTunnelSystem _xenoTunnel = default!;
+    [Dependency] private StunSystem _stuns = default!;
+    [Dependency] private RMCCameraShakeSystem _rmcCameraShake = default!;
+    [Dependency] private ThermalCloakSystem _thermalCloak = default!;
+    [Dependency] private SharedGhillieSuitSystem _ghillieSuit = default!;
+    [Dependency] private MapInsertSystem _mapInsert = default!;
+    [Dependency] private SharedDestructibleSystem _destruction = default!;
+    [Dependency] private IntelSystem _intel = default!;
+    [Dependency] private SharedXenoParasiteSystem _parasite = default!;
+    [Dependency] private RMCAmbientLightSystem _rmcAmbientLight = default!;
+    [Dependency] private RMCPowerSystem _rmcPower = default!;
+    [Dependency] private RMCGameRuleExtrasSystem _gameRulesExtras = default!;
+    [Dependency] private PopupSystem _popup = default!;
+    [Dependency] private GhostSystem _ghost = default!;
+    [Dependency] private ISerializationManager _serialization = default!;
+    [Dependency] private XenoMaturingSystem _maturing = default!;
 
     private readonly HashSet<string> _operationNames = new();
     private readonly HashSet<string> _operationPrefixes = new();
@@ -178,7 +178,6 @@ public sealed class CMDistressSignalRuleSystem : GameRuleSystem<CMDistressSignal
     private float _maximumSurvivors;
     private float _minimumSurvivors;
     private int _mapVoteExcludeLast;
-    private bool _useCarryoverVoting;
     private readonly TimeSpan _hijackStunTime = TimeSpan.FromSeconds(5);
     private bool _landingZoneMiasmaEnabled;
     private TimeSpan _sunsetDuration;
@@ -213,8 +212,6 @@ public sealed class CMDistressSignalRuleSystem : GameRuleSystem<CMDistressSignal
     public string? OperationName { get; private set; }
 
     public string? ActiveNightmareScenario { get; set; }
-
-    private readonly Dictionary<EntProtoId<RMCPlanetMapPrototypeComponent>, int> _carryoverVotes = new();
 
     private IVoteHandle? _currentVote;
 
@@ -253,7 +250,6 @@ public sealed class CMDistressSignalRuleSystem : GameRuleSystem<CMDistressSignal
         Subs.CVar(_config, RMCCVars.RMCSurvivorsMaximum, v => _maximumSurvivors = v, true);
         Subs.CVar(_config, RMCCVars.RMCSurvivorsMinimum, v => _minimumSurvivors = v, true);
         Subs.CVar(_config, RMCCVars.RMCPlanetMapVoteExcludeLast, v => _mapVoteExcludeLast = v, true);
-        Subs.CVar(_config, RMCCVars.RMCUseCarryoverVoting, v => _useCarryoverVoting = v, true);
         Subs.CVar(_config, RMCCVars.RMCLandingZoneMiasmaEnabled, v => _landingZoneMiasmaEnabled = v, true);
         Subs.CVar(_config, RMCCVars.RMCSunsetDuration, v => _sunsetDuration = TimeSpan.FromSeconds(v), true);
         Subs.CVar(_config, RMCCVars.RMCSunriseDuration, v => _sunriseDuration = TimeSpan.FromSeconds(v), true);
@@ -484,7 +480,8 @@ public sealed class CMDistressSignalRuleSystem : GameRuleSystem<CMDistressSignal
                 if (!IsAllowed(id, comp.QueenJob))
                     continue;
 
-                if (profile.JobPriorities.TryGetValue(comp.QueenJob, out var priority) &&
+                var jobPriorities = profile.GetJobPrioritiesForGamemode("DistressSignal");
+                if (jobPriorities.TryGetValue(comp.QueenJob, out var priority) &&
                     priority > JobPriority.Never)
                 {
                     xenoCandidates[(int) priority].Add(id);
@@ -524,7 +521,8 @@ public sealed class CMDistressSignalRuleSystem : GameRuleSystem<CMDistressSignal
                     if (!IsAllowed(id, comp.XenoSelectableJob))
                         continue;
 
-                    if (profile.JobPriorities.TryGetValue(comp.XenoSelectableJob, out var priority) &&
+                    var jobPriorities = profile.GetJobPrioritiesForGamemode("DistressSignal");
+                    if (jobPriorities.TryGetValue(comp.XenoSelectableJob, out var priority) &&
                         priority > JobPriority.Never)
                     {
                         xenoCandidates[(int) priority].Add(id);
@@ -595,7 +593,8 @@ public sealed class CMDistressSignalRuleSystem : GameRuleSystem<CMDistressSignal
                         { // Override the job
                             foreach (var (originalJob, overrideJob) in comp.ColonyJobOverrides)
                             {
-                                if (profile.JobPriorities.TryGetValue(originalJob, out var originalPriority) &&
+                                var jobPriorities = profile.GetJobPrioritiesForGamemode("DistressSignal");
+                                if (jobPriorities.TryGetValue(originalJob, out var originalPriority) &&
                                     originalPriority > JobPriority.Never && overrideJob == job)
                                 {
                                     players[(int)originalPriority].Add(id);
@@ -608,7 +607,8 @@ public sealed class CMDistressSignalRuleSystem : GameRuleSystem<CMDistressSignal
                         if (overriden)
                             continue;
 
-                        if (profile.JobPriorities.TryGetValue(job, out var priority) &&
+                        var effectiveJobPriorities = profile.GetJobPrioritiesForGamemode("DistressSignal");
+                        if (effectiveJobPriorities.TryGetValue(job, out var priority) &&
                             priority > JobPriority.Never)
                         {
                             players[(int)priority].Add(id);
@@ -624,7 +624,7 @@ public sealed class CMDistressSignalRuleSystem : GameRuleSystem<CMDistressSignal
 
             // don't open shitcode inside
             spawnedDropships = true;
-            var dropshipMap = _mapManager.CreateMap();
+            _mapSystem.CreateMap(out var dropshipMap);
             var dropshipPoints = EntityQueryEnumerator<DropshipDestinationComponent, TransformComponent>();
             var ships = new[] { new ResPath("/Maps/_RMC14/alamo.yml"), new ResPath("/Maps/_RMC14/normandy.yml") };
             var shipIndex = 0;
@@ -694,7 +694,7 @@ public sealed class CMDistressSignalRuleSystem : GameRuleSystem<CMDistressSignal
                     if (!paper.TryGet(out var paperComponent, _prototypes, _compFactory))
                         continue;
 
-                    if (!_prototypes.TryIndex(paper.Id, out var entProto, logError: false))
+                    if (!_prototypes.Resolve(paper.Id, out var entProto))
                         continue;
 
                     var content = Loc.GetString(paperComponent.Content);
@@ -800,7 +800,7 @@ public sealed class CMDistressSignalRuleSystem : GameRuleSystem<CMDistressSignal
             };
 
             if (audio != null)
-                _audio.PlayGlobal(_audio.GetSound(audio), Filter.Broadcast(), true, AudioParams.Default.WithVolume(-8));
+                _audio.PlayGlobal(_audio.ResolveSound(audio), Filter.Broadcast(), true, AudioParams.Default.WithVolume(-8));
         }
     }
 
@@ -1124,12 +1124,13 @@ public sealed class CMDistressSignalRuleSystem : GameRuleSystem<CMDistressSignal
                 if (_prefsManager.TryGetCachedPreferences(player.UserId, out var preferences))
                 {
                     var profile = (HumanoidCharacterProfile) preferences.GetProfile(preferences.SelectedCharacterIndex);
-                    if (profile.JobPriorities.TryGetValue(distress.XenoSelectableJob, out var xenoPriority) &&
+                    var jobPriorities = profile.GetJobPrioritiesForGamemode("DistressSignal");
+                    if (jobPriorities.TryGetValue(distress.XenoSelectableJob, out var xenoPriority) &&
                         xenoPriority > JobPriority.Never)
                     {
                         xenoCandidates++;
                     }
-                    else if (profile.JobPriorities.TryGetValue(distress.QueenJob, out var queenPriority) &&
+                    else if (jobPriorities.TryGetValue(distress.QueenJob, out var queenPriority) &&
                         queenPriority > JobPriority.Never)
                     {
                         xenoCandidates++;
@@ -1735,25 +1736,12 @@ public sealed class CMDistressSignalRuleSystem : GameRuleSystem<CMDistressSignal
             return;
 
         var planets = _rmcPlanet.GetCandidatesInRotation();
-        if (!_useCarryoverVoting)
-        {
-            foreach (var planet in planets)
-            {
-                _carryoverVotes[planet.Proto.ID] = 0;
-            }
-        }
-
         planets.RemoveAll(p => _lastPlanetMaps.Contains(p.Proto.ID));
 
         var options = new List<(string text, object data)>();
         foreach (var planet in planets)
         {
-            var name = planet.Proto.Name;
-            var votes = _carryoverVotes.GetValueOrDefault(planet.Proto.ID);
-            if (votes > 0)
-                name = $"{name} [+{votes}]";
-
-            options.Add((name, planet.Comp.MapId.ToString()));
+            options.Add((planet.Proto.Name, planet.Comp.MapId.ToString()));
         }
 
         var vote = new VoteOptions
@@ -1769,30 +1757,17 @@ public sealed class CMDistressSignalRuleSystem : GameRuleSystem<CMDistressSignal
         {
             _currentVote = null;
             RMCPlanet picked;
-
-            var adjustedVotes = planets
-                .Zip(args.Votes, (planet, newVotes) => (
-                    planet,
-                    newVotes,
-                    totalVotes: newVotes + _carryoverVotes.GetValueOrDefault(planet.Proto.ID)
-                ))
-                .ToList();
-            var maxVotes = adjustedVotes.Max(v => v.totalVotes);
-            var winningMaps = adjustedVotes
-                .Where(v => v.totalVotes == maxVotes)
-                .Select(v => v.planet)
-                .ToList();
+            var totalVotes = planets.Zip(args.Votes, (planet, votes) => (planet, votes)).ToList();
+            var maxVotes = totalVotes.Max(v => v.votes);
+            var winningMaps = totalVotes.Where(v => v.votes == maxVotes).Select(v => v.planet).ToList();
 
             var sb = new StringBuilder();
             sb.AppendLine(Loc.GetString("rmc-distress-signal-next-map-header"));
-            foreach (var result in adjustedVotes)
+            foreach (var result in totalVotes)
             {
-                sb.AppendLine(Loc.GetString(result.newVotes > 0
-                    ? "rmc-distress-signal-next-map-votes-new"
-                    : "rmc-distress-signal-next-map-votes",
+                sb.AppendLine(Loc.GetString("rmc-distress-signal-next-map-votes",
                     ("map", result.planet.Proto.Name),
-                    ("votes", result.totalVotes),
-                    ("newVotes", result.newVotes)));
+                    ("votes", result.votes)));
             }
 
             if (winningMaps.Count > 1)
@@ -1803,6 +1778,7 @@ public sealed class CMDistressSignalRuleSystem : GameRuleSystem<CMDistressSignal
                     sb.AppendLine($"    {map.Proto.Name}");
                 }
                 picked = _random.Pick(winningMaps);
+                args.ResolveWinner(picked.Comp.MapId.ToString());
             }
             else
             {
@@ -1811,14 +1787,6 @@ public sealed class CMDistressSignalRuleSystem : GameRuleSystem<CMDistressSignal
             sb.AppendLine(Loc.GetString("rmc-distress-signal-next-map-win", ("winner", picked.Proto.Name)));
 
             _chatManager.DispatchServerAnnouncement(sb.ToString());
-
-            foreach (var (planet, votes) in planets.Zip(args.Votes))
-            {
-                var id = planet.Proto.ID;
-                _carryoverVotes[id] = _useCarryoverVoting ? _carryoverVotes.GetValueOrDefault(id) + votes : 0;
-            }
-
-            _carryoverVotes[picked.Proto.ID] = 0;
             SelectedPlanetMap = picked;
         };
         _currentVote.OnCancelled += _ => _currentVote = null;
@@ -2039,6 +2007,9 @@ public sealed class CMDistressSignalRuleSystem : GameRuleSystem<CMDistressSignal
 
     private void OnXenoComponentInit(Entity<XenoComponent> ent, ref ComponentInit args)
     {
+        if (!TryComp<HiveComponent>(TheHive, out _))
+            return;
+
         _hive.SetHive(ent.Owner, TheHive);
         if (!_queenBuildingBoostEnabled)
             return;
@@ -2108,7 +2079,7 @@ public sealed class CMDistressSignalRuleSystem : GameRuleSystem<CMDistressSignal
     }
 }
 
-public sealed class Spawners
+public sealed partial class Spawners
 {
     public readonly Dictionary<EntProtoId, Dictionary<ProtoId<JobPrototype>, List<EntityUid>>> Squad = new();
     public readonly Dictionary<EntProtoId, List<EntityUid>> SquadAny = new();

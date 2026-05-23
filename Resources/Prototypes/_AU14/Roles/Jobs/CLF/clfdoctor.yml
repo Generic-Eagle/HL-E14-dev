@@ -7,22 +7,28 @@
   ignoreAllegiance: true
   playTimeTracker: AU14JobCLFPhysician
   requirements:
-  - !type:OverallPlaytimeRequirement
-    time: 14400 # 4 hours
+  - !type:RoleTimeRequirement
+    role: AU14JobCLFGuerilla
+    time: 18000 # 5 hours
+  - !type:DepartmentTimeRequirement
+    department: AU14DepartmentColonyMedical
+    time: 18000 # 5 hours
   - !type:TraitsRequirement
     inverted: true
     traits:
     - NonResuscitable
     - Epilepsy
   ranks:
-    RMCRankCivilian: []
+    RMCRankCivilianDoctor: []
   startingGear: AU14GearCLFPhysician
-  icon: "CMJobIconEmpty"
+  icon: "RMCJobIconCLFMedic"
+  hasIcon: false
   requireAdminNotify: false
   joinNotifyCrew: false
   supervisors: au14-job-supervisors-clflrs
   accessGroups:
   - Colonist
+  - aumed
   roleWeight: 0.25
   special:
   - !type:AddComponentSpecial
@@ -31,6 +37,7 @@
       factions:
       - CLF
     - type: CLFMember
+      statusIcon: CLFFactionMedic
     - type: Skills
       skills:
         RMCSkillFireman: 1
@@ -43,6 +50,8 @@
         RMCSkillPolice: 1
     - type: JobPrefix
       prefix: au14-job-prefix-clfphysician
+    - type: StartingMindRole
+      mindRole: MindRoleCLFPhysician
     - type: TacticalMapIcon
       icon:
         sprite: /Textures/_RMC14/Interface/map_blips.rsi
@@ -55,14 +64,12 @@
 - type: startingGear
   id: AU14GearCLFPhysician
   equipment:
-    gloves: CMHandsLatex
-    jumpsuit: AU14RMCJumpsuitCivilianCLF
-    outerClothing: RMCLabcoatOpened
-    shoes: CMBootsBlackFilled
     ears2: RMCFlashlightPen
     suitstorage: RMCFlashlight
-    id: AU14IDCardCLFCivilian
+    id: AU14IDCardCLFPhysician
     neck: RMCCLFArmband
+  inhand:
+  - AU14CLFHeadset
 
 - type: entity
   parent: CMSpawnPointJobBase

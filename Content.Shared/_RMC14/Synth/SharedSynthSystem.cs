@@ -3,6 +3,7 @@ using Content.Shared._RMC14.Medical.HUD.Components;
 using Content.Shared._RMC14.Medical.Unrevivable;
 using Content.Shared._RMC14.Repairable;
 using Content.Shared._RMC14.StatusEffect;
+using Content.Shared.Actions;
 using Content.Shared.Bed.Sleep;
 using Content.Shared.Body.Systems;
 using Content.Shared.Damage;
@@ -15,34 +16,43 @@ using Content.Shared.Interaction.Events;
 using Content.Shared.Mobs;
 using Content.Shared.Mobs.Components;
 using Content.Shared.Mobs.Systems;
+using Content.Shared.Overlays;
 using Content.Shared.Popups;
 using Content.Shared.Stacks;
+using Content.Shared.Tools.Components;
 using Content.Shared.Tools.Systems;
 using Content.Shared.Weapons.Ranged.Events;
 using Content.Shared.Whitelist;
 using Robust.Shared.Prototypes;
 using Robust.Shared.Serialization;
+using Robust.Shared.Timing;
 
 namespace Content.Shared._RMC14.Synth;
 
-public abstract class SharedSynthSystem : EntitySystem
+public abstract partial class SharedSynthSystem : EntitySystem
 {
-    [Dependency] private readonly RMCRepairableSystem _repairable = default!;
-    [Dependency] private readonly IPrototypeManager _prototypes = default!;
-    [Dependency] private readonly DamageableSystem _damageable = default!;
-    [Dependency] private readonly SharedToolSystem _tool = default!;
-    [Dependency] private readonly SharedPopupSystem _popup = default!;
-    [Dependency] private readonly SharedDoAfterSystem _doAfter = default!;
-    [Dependency] private readonly SharedStackSystem _stack = default!;
-    [Dependency] private readonly RMCStatusEffectSystem _rmcStatusEffects = default!;
-    [Dependency] private readonly MobThresholdSystem _mobThreshold = default!;
-    [Dependency] private readonly EntityWhitelistSystem _whitelist = default!;
+    private static readonly TimeSpan UnableUsePopupCooldown = TimeSpan.FromSeconds(1);
+
+    [Dependency] private RMCRepairableSystem _repairable = default!;
+    [Dependency] private SharedActionsSystem _actions = default!;
+    [Dependency] private IPrototypeManager _prototypes = default!;
+    [Dependency] private DamageableSystem _damageable = default!;
+    [Dependency] private SharedToolSystem _tool = default!;
+    [Dependency] private SharedPopupSystem _popup = default!;
+    [Dependency] private SharedDoAfterSystem _doAfter = default!;
+    [Dependency] private SharedStackSystem _stack = default!;
+    [Dependency] private RMCStatusEffectSystem _rmcStatusEffects = default!;
+    [Dependency] private MobThresholdSystem _mobThreshold = default!;
+    [Dependency] private EntityWhitelistSystem _whitelist = default!;
+    [Dependency] private IGameTiming _timing = default!;
 
     public override void Initialize()
     {
         base.Initialize();
 
-        SubscribeLocalEvent<SynthComponent, MapInitEvent>(OnMapInit, after: [typeof(SharedBloodstreamSystem)]);
+        SubscribeLocalEvent<SynthComponent, ComponentStartup>(OnSynthStartup);
+        SubscribeLocalEvent<SynthComponent, ComponentShutdown>(OnShutdown);
+        SubscribeLocalEvent<SynthComponent, RMCToggleSynthHudActionEvent>(OnToggleSynthHud);
         SubscribeLocalEvent<SynthComponent, AttackAttemptEvent>(OnMeleeAttempted);
         SubscribeLocalEvent<SynthComponent, ShotAttemptedEvent>(OnShotAttempted);
         SubscribeLocalEvent<SynthComponent, TryingToSleepEvent>(OnSleepAttempt);
@@ -52,18 +62,46 @@ public abstract class SharedSynthSystem : EntitySystem
         SubscribeLocalEvent<UseOnSynthBlockedComponent, BeforeRangedInteractEvent>(OnSynthBlockedBeforeRangedInteract);
     }
 
-    private void OnMapInit(Entity<SynthComponent> ent, ref MapInitEvent args)
+    // Change any mob to a synth, even after it has already been map-initialized
+    private void OnSynthStartup(Entity<SynthComponent> ent, ref ComponentStartup args)
     {
         MakeSynth(ent);
     }
 
+    private void OnShutdown(Entity<SynthComponent> ent, ref ComponentShutdown args)
+    {
+        _actions.RemoveAction(ent.Owner, ent.Comp.ToggleHudActionEntity);
+    }
+
+    private void OnToggleSynthHud(Entity<SynthComponent> ent, ref RMCToggleSynthHudActionEvent args)
+    {
+        if (args.Handled)
+            return;
+
+        args.Handled = true;
+
+        if (args.Performer != ent.Owner)
+            return;
+
+        SetSynthHud(ent, !ent.Comp.HudActive);
+    }
+
     protected virtual void MakeSynth(Entity<SynthComponent> ent)
     {
+        if (ent.Comp.Initialized)
+            return;
+        ent.Comp.Initialized = true; // execute one time
+        Dirty(ent);
+
         if (_prototypes.TryIndex(ent.Comp.AddComponents, out var addComponents))
             EntityManager.AddComponents(ent.Owner, addComponents.Components);
 
         if (_prototypes.TryIndex(ent.Comp.RemoveComponents, out var removeComponents))
             EntityManager.RemoveComponents(ent.Owner, removeComponents.Components);
+
+        SetSynthHud(ent, ent.Comp.HudActive);
+        _actions.AddAction(ent.Owner, ref ent.Comp.ToggleHudActionEntity, ent.Comp.ToggleHudAction);
+        _actions.SetToggled(ent.Comp.ToggleHudActionEntity, ent.Comp.HudActive);
 
         if (ent.Comp.StunResistance != null)
             _rmcStatusEffects.GiveStunResistance(ent.Owner, ent.Comp.StunResistance.Value);
@@ -75,8 +113,10 @@ public abstract class SharedSynthSystem : EntitySystem
         }
 
         if (TryComp<MobThresholdsComponent>(ent.Owner, out var thresholds))
+        {
             _mobThreshold.SetMobStateThreshold(ent.Owner, ent.Comp.CritThreshold, MobState.Critical, thresholds);
-
+            _mobThreshold.SetMobStateThreshold(ent.Owner, ent.Comp.DeadThreshold, MobState.Dead, thresholds);
+        }
         if (TryComp<RMCHealthIconsComponent>(ent.Owner, out var healthIcons))
         {
             if (ent.Comp.UseHumanHealthIcons)
@@ -90,6 +130,26 @@ public abstract class SharedSynthSystem : EntitySystem
         RemCompDeferred<SlowOnDamageComponent>(ent.Owner);
     }
 
+    private void SetSynthHud(Entity<SynthComponent> ent, bool active)
+    {
+        ent.Comp.HudActive = active;
+        Dirty(ent);
+
+        if (!_prototypes.TryIndex(ent.Comp.HudComponents, out var hudComponents))
+            return;
+
+        if (active)
+        {
+            EntityManager.AddComponents(ent.Owner, hudComponents.Components);
+        }
+        else
+        {
+            EntityManager.RemoveComponents(ent.Owner, hudComponents.Components);
+        }
+
+        _actions.SetToggled(ent.Comp.ToggleHudActionEntity, active);
+    }
+
     public void SetGunRestriction(EntityUid ent, bool value)
     {
         if (TryComp<SynthComponent>(ent, out var comp))
@@ -97,7 +157,6 @@ public abstract class SharedSynthSystem : EntitySystem
             comp.CanUseGuns = value;
             DirtyEntity(ent);
         }
-        else return;
     }
 
     public void SetMeleeRestriction(EntityUid ent, bool value)
@@ -107,7 +166,6 @@ public abstract class SharedSynthSystem : EntitySystem
             comp.CanUseMeleeWeapons = value;
             DirtyEntity(ent);
         }
-        else return;
     }
 
     private void OnMeleeAttempted(Entity<SynthComponent> ent, ref AttackAttemptEvent args)
@@ -152,6 +210,14 @@ public abstract class SharedSynthSystem : EntitySystem
         var user = args.User;
         var selfRepair = args.User == synth.Owner;
 
+        var attemptEv = new RMCSynthRepairToolUseAttemptEvent(user, used, synth.Owner);
+        RaiseLocalEvent(synth.Owner, attemptEv);
+        if (attemptEv.Handled)
+        {
+            args.Handled = true;
+            return;
+        }
+
         var ev = new RMCSynthRepairEvent();
         var repairTime = selfRepair ? synth.Comp.SelfRepairTime : synth.Comp.RepairTime;
         var doAfter = new DoAfterArgs(EntityManager, user, repairTime, ev, synth, used: args.Used)
@@ -186,10 +252,10 @@ public abstract class SharedSynthSystem : EntitySystem
         }
         else if (HasComp<RMCCableCoilComponent>(used))
         {
-            args.Handled = true;
-
             if (HasDamage(synth, synth.Comp.CableCoilDamageGroup))
             {
+                args.Handled = true;
+
                 if (_doAfter.TryStartDoAfter(doAfter))
                 {
                     var selfMsg = Loc.GetString("rmc-synth-repair-burn-start-self", ("user", user), ("target", synth), ("tool", used), ("limb", "chest"));
@@ -201,10 +267,7 @@ public abstract class SharedSynthSystem : EntitySystem
                     _popup.PopupPredicted(selfMsg, othersMsg, user, user);
                 }
             }
-            else
-            {
-                _popup.PopupClient(Loc.GetString("rmc-repairable-not-damaged", ("target", synth)), user, user, PopupType.SmallCaution);
-            }
+            // No damage: leave InteractUsing unhandled so AfterInteract can open synth surgery dispatch.
         }
     }
 
@@ -286,6 +349,15 @@ public abstract class SharedSynthSystem : EntitySystem
 
     public void DoSynthUnableToUsePopup(EntityUid synth, EntityUid tool)
     {
+        if (!TryComp<SynthComponent>(synth, out var synthComp))
+            return;
+
+        var time = _timing.CurTime;
+        if (time < synthComp.NextUnableUsePopup)
+            return;
+
+        synthComp.NextUnableUsePopup = time + UnableUsePopupCooldown;
+
         var msg = Loc.GetString("rmc-species-synth-programming-prevents-use", ("user", synth), ("tool", tool));
         _popup.PopupClient(msg, synth, synth, PopupType.SmallCaution);
     }
@@ -293,3 +365,10 @@ public abstract class SharedSynthSystem : EntitySystem
 
 [Serializable, NetSerializable]
 public sealed partial class RMCSynthRepairEvent : SimpleDoAfterEvent;
+
+public sealed partial class RMCSynthRepairToolUseAttemptEvent(EntityUid user, EntityUid used, EntityUid target) : HandledEntityEventArgs
+{
+    public EntityUid User { get; } = user;
+    public EntityUid Used { get; } = used;
+    public EntityUid Target { get; } = target;
+}

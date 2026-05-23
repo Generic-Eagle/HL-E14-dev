@@ -13,6 +13,7 @@
   - type: FixedIdentity
     name: cm-chatsan-replacement-human
   - type: CMUHumanMedical
+  - type: YautjaTrophySource
   - type: HitLocation
   - type: PainShock
   - type: BodyZoneTargeting
@@ -35,6 +36,15 @@
         requireInputValidation: false
       enum.CMMobStateActionsUI.Key:
         type: CMGhostActionBui
+        requireInputValidation: false
+      enum.TacticalMapUserUi.Key:
+        type: TacticalMapUserBui
+      enum.SquadLeaderTrackerUI.Key:
+        type: SquadInfoBui
+      enum.DialogUiKey.Key:
+        type: DialogBui
+      enum.ViewIntelObjectivesUI.Key:
+        type: ViewIntelObjectivesBui
       enum.BodyPartPickerUIKey.Key:
         type: BodyPartPickerBui
       enum.CMUSurgeryUIKey.Key:

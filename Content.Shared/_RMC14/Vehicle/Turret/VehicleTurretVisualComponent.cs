@@ -3,9 +3,9 @@ using Robust.Shared.GameObjects;
 
 namespace Content.Shared._RMC14.Vehicle;
 
-[RegisterComponent, NetworkedComponent, AutoGenerateComponentState]
+[RegisterComponent, NetworkedComponent, AutoGenerateComponentState(true)]
 public sealed partial class VehicleTurretVisualComponent : Component
 {
-    [DataField, AutoNetworkedField]
+    [AutoNetworkedField]
     public NetEntity Turret;
 }

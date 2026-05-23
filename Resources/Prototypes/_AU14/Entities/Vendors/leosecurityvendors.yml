@@ -9,6 +9,7 @@
   - type: Sprite
     sprite: _RMC14/Structures/Machines/VendingMachines/ColMarTech/requisitions_ammo.rsi
   - type: CMAutomatedVendor
+    jobs: [ AU14JobLEOLeaderBase, AU14JobLEOBase, AU14JobCivilianCMBDeputy, AU14JobCivilianCMBMarshal, AU14JobCivilianCWPSRanger, AU14JobCiviliannspaConstable, AU14JobCivilianNSPAInspector ]
     sections:
     - name: Clothes
       takeAll: CMUCMBEssentialEquipmentClothes
@@ -17,6 +18,10 @@
       - id: RMCHeadCapBureau
       - id: RMCBootsPMCFilled
       - id: CMGlassesSecurity
+    - name: Headgear
+      choices: { CMUCMBDutyHeadgear: 1 }
+      entries:
+      - id: AU14HeadCommandoBeanie
     - name: Outerwear
       choices: { CMUCMBDutyJacket: 1 }
       entries:
@@ -82,6 +87,7 @@
   - type: Sprite
     sprite: _RMC14/Structures/Machines/VendingMachines/ColMarTech/requisitions_ammo.rsi
   - type: CMAutomatedVendor
+    jobs: [ AU14JobLEOLeaderBase, AU14JobLEOBase, AU14JobCivilianCMBDeputy, AU14JobCivilianCMBMarshal, AU14JobCivilianCWPSRanger, AU14JobCiviliannspaConstable, AU14JobCivilianNSPAInspector ]
     sections:
     - name: Clothes
       takeAll: CMUCMBEssentialEquipmentClothes
@@ -95,6 +101,7 @@
       entries:
       - id: AU14CWPSCampaignHat
       - id: AU14CWPSCap
+      - id: AU14HeadCommandoBeanie
     - name: Belt
       takeAll: CMUCMBEssentialEquipmentBelt
       entries:
@@ -155,6 +162,7 @@
   - type: Sprite
     sprite: _RMC14/Structures/Machines/VendingMachines/ColMarTech/requisitions_ammo.rsi
   - type: CMAutomatedVendor
+    jobs: [ AU14JobLEOLeaderBase, AU14JobLEOBase, AU14JobCivilianCMBDeputy, AU14JobCivilianCMBMarshal, AU14JobCivilianCWPSRanger, AU14JobCiviliannspaConstable, AU14JobCivilianNSPAInspector ]
     sections:
     - name: Clothes
       takeAll: CMUCMBEssentialEquipmentClothes
@@ -176,6 +184,7 @@
         name: peaked NSPA cap (gold and silver)
       - id: RMCHeadCapTSEPAPeaked
         name: peaked NSPA cap (red and gold)
+      - id: AU14HeadCommandoBeanie
     - name: Outerwear
       choices: { CMUCMBDutyJacket: 1 }
       entries:
@@ -242,6 +251,7 @@
   - type: Sprite
     sprite: _RMC14/Structures/Machines/VendingMachines/ColMarTech/requisitions_ammo.rsi
   - type: CMAutomatedVendor
+    jobs: [ AU14JobLEOLeaderBase, AU14JobLEOBase, AU14JobCivilianCMBDeputy, AU14JobCivilianCMBMarshal, AU14JobCivilianCWPSRanger, AU14JobCiviliannspaConstable, AU14JobCivilianNSPAInspector, AU14JobCivilianPaPOfficer ]
     sections:
     - name: Clothes
       takeAll: CMUCMBEssentialEquipmentClothes
@@ -251,6 +261,10 @@
       - id: CMHeadCapSPPPeakedPolice
       - id: RMCBootsPMCFilled
       - id: CMGlassesSecurity
+    - name: Headgear
+      choices: { CMUCMBDutyHeadgear: 1 }
+      entries:
+      - id: AU14HeadCommandoBeanie
     - name: Belt
       takeAll: CMUCMBEssentialEquipmentBelt
       entries:

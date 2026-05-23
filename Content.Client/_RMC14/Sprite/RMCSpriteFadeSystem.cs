@@ -8,14 +8,16 @@ using Robust.Client.State;
 using Robust.Client.UserInterface.CustomControls;
 using Robust.Client.UserInterface;
 using Robust.Shared.Map;
+using Robust.Shared.Map.Components;
 using Robust.Shared.Physics.Systems;
 using Robust.Shared.Physics;
 using Robust.Client.Graphics;
 using Content.Shared.Ghost;
+using Robust.Shared.GameObjects;
 
 namespace Content.Client._RMC14.Sprite;
 
-public sealed class RMCSpriteFadeSystem : EntitySystem
+public sealed partial class RMCSpriteFadeSystem : EntitySystem
 {
     /*
     * If the player entity is obstructed under the specified components then it will drop the alpha for that entity
@@ -23,15 +25,15 @@ public sealed class RMCSpriteFadeSystem : EntitySystem
     * Supports fading entire sprite or individual layers based on component configuration.
     */
 
-    [Dependency] private readonly IPlayerManager _playerManager = default!;
-    [Dependency] private readonly IStateManager _stateManager = default!;
-    [Dependency] private readonly FixtureSystem _fixtures = default!;
-    [Dependency] private readonly SharedTransformSystem _transform = default!;
-    [Dependency] private readonly IUserInterfaceManager _uiManager = default!;
-    [Dependency] private readonly IInputManager _inputManager = default!;
-    [Dependency] private readonly SharedPhysicsSystem _physics = default!;
-    [Dependency] private readonly SpriteSystem _sprite = default!;
-    [Dependency] private readonly IEyeManager _eyeManager = default!;
+    [Dependency] private IPlayerManager _playerManager = default!;
+    [Dependency] private IStateManager _stateManager = default!;
+    [Dependency] private FixtureSystem _fixtures = default!;
+    [Dependency] private SharedTransformSystem _transform = default!;
+    [Dependency] private IUserInterfaceManager _uiManager = default!;
+    [Dependency] private IInputManager _inputManager = default!;
+    [Dependency] private SharedPhysicsSystem _physics = default!;
+    [Dependency] private SpriteSystem _sprite = default!;
+    [Dependency] private IEyeManager _eyeManager = default!;
 
     private List<(MapCoordinates Point, bool ExcludeBoundingBox)> _points = new();
     private readonly HashSet<RMCFadingSpriteComponent> _comps = new();
@@ -130,15 +132,15 @@ public sealed class RMCSpriteFadeSystem : EntitySystem
                 }
             }
 
-            // If player is on a grid, fade all fade-enabled sprites on that same grid (e.g. van roofs) while inside.
-            if (playerXform != null && playerXform.GridUid is { } playerGrid)
+            // Fade shared-grid sprites on the grid currently being viewed, not just the player's physical grid.
+            if (TryGetViewedGrid(player, playerXform, out var viewedGrid, out var viewedMap))
             {
                 var gridQuery = AllEntityQuery<RMCSpriteFadeComponent, TransformComponent>();
                 while (gridQuery.MoveNext(out var uid, out var fade, out var xform))
                 {
                     if (!fade.FadeOnSharedGrid)
                         continue;
-                    if (xform.GridUid != playerGrid)
+                    if (xform.GridUid != viewedGrid && xform.MapID != viewedMap)
                         continue;
                     if (!_spriteQuery.TryGetComponent(uid, out var sprite))
                         continue;
@@ -147,6 +149,44 @@ public sealed class RMCSpriteFadeSystem : EntitySystem
                 }
             }
         }
+    }
+
+    private bool TryGetViewedGrid(EntityUid? player, TransformComponent? playerXform, out EntityUid viewedGrid, out MapId viewedMap)
+    {
+        viewedGrid = EntityUid.Invalid;
+        viewedMap = MapId.Nullspace;
+
+        if (player != null &&
+            TryComp(player.Value, out EyeComponent? eye) &&
+            eye.Target is { } target &&
+            TryComp(target, out TransformComponent? targetXform))
+        {
+            viewedMap = targetXform.MapID;
+
+            if (targetXform.GridUid is { } targetGrid)
+            {
+                viewedGrid = targetGrid;
+                return true;
+            }
+
+            if (HasComp<MapGridComponent>(target))
+            {
+                viewedGrid = target;
+                return true;
+            }
+
+            if (viewedMap != MapId.Nullspace)
+                return true;
+        }
+
+        if (playerXform?.GridUid is { } playerGrid)
+        {
+            viewedGrid = playerGrid;
+            viewedMap = playerXform.MapID;
+            return true;
+        }
+
+        return false;
     }
 
     private void TryApplyFade(EntityUid ent, SpriteComponent sprite, RMCSpriteFadeComponent fadeComponent, float frameTime)

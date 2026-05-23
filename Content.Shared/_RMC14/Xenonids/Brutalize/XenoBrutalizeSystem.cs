@@ -1,4 +1,5 @@
 using System.Linq;
+using Content.Shared._CMU14.Medical.BodyPart;
 using Content.Shared._RMC14.Shields;
 using Content.Shared._RMC14.Xenonids.Charge;
 using Content.Shared.Actions;
@@ -14,16 +15,17 @@ using Robust.Shared.Player;
 
 namespace Content.Shared._RMC14.Xenonids.Brutalize;
 
-public sealed class XenoBrutalizeSystem : EntitySystem
+public sealed partial class XenoBrutalizeSystem : EntitySystem
 {
-    [Dependency] private readonly XenoSystem _xeno = default!;
-    [Dependency] private readonly EntityLookupSystem _entityLookup = default!;
-    [Dependency] private readonly SharedTransformSystem _transform = default!;
-    [Dependency] private readonly MobStateSystem _mobState = default!;
-    [Dependency] private readonly DamageableSystem _damageable = default!;
-    [Dependency] private readonly SharedColorFlashEffectSystem _colorFlash = default!;
-    [Dependency] private readonly INetManager _net = default!;
-    [Dependency] private readonly SharedActionsSystem _actions = default!;
+    [Dependency] private XenoSystem _xeno = default!;
+    [Dependency] private EntityLookupSystem _entityLookup = default!;
+    [Dependency] private SharedTransformSystem _transform = default!;
+    [Dependency] private MobStateSystem _mobState = default!;
+    [Dependency] private DamageableSystem _damageable = default!;
+    [Dependency] private SharedColorFlashEffectSystem _colorFlash = default!;
+    [Dependency] private INetManager _net = default!;
+    [Dependency] private SharedActionsSystem _actions = default!;
+    [Dependency] private SharedHitLocationSystem _hitLocation = default!;
 
     public override void Initialize()
     {
@@ -50,6 +52,7 @@ public sealed class XenoBrutalizeSystem : EntitySystem
         int currHits = 0;
         var damage = xeno.Comp.Damage;
 
+        using var targetingSuppression = _hitLocation.SuppressBodyZoneTargeting(xeno.Owner);
         foreach (var extra in _entityLookup.GetEntitiesInRange<MobStateComponent>(_transform.GetMapCoordinates(mainTarget.Value), xeno.Comp.Range))
         {
             if (!_xeno.CanAbilityAttackTarget(xeno, extra) || _mobState.IsDead(extra))

@@ -7,7 +7,8 @@
   canBeAntag: false
   requirements:
   - !type:OverallPlaytimeRequirement
-    time: 3600 # Set to 72000 once we are fully launched AU14 todo
+    time: 3600
+    # time: 72000 (uncomment on AU14 release) # 20 hours
   - !type:AgeRequirement
     requiredAge: 21
   - !type:TraitsRequirement
@@ -19,6 +20,14 @@
     - !type:RoleTimeRequirement
       role: AU14JobGOVFORadvisor
       time: 360000 # 100 hours
+    RMCRankMasterGunnerySergeant:
+    - !type:RoleTimeRequirement
+      role: AU14JobGOVFORadvisor
+      time: 86400 # 24 hours
+    #RMCRankFirstSergeant:
+    #- !type:RoleTimeRequirement
+    #  role: AU14JobGOVFORadvisor
+    #  time: 43200 # 12 hours
     RMCRankFirstSergeant: []
   startingGear: AU14GearGOVFORadvisor
   dummyStartingGear: AU14GearGOVFORadvisorDummy
@@ -51,13 +60,26 @@
     - type: UserIFF
       factions:
       - GOVFOR
+    - type: MarineOrders
+      moveOrderSoundMale:
+        collection: AU14MaleMoveOrder
+      moveOrderSoundFemale:
+        collection: AU14FemaleMoveOrder
+      focusOrderSoundMale:
+        collection: AU14MaleFocusOrder
+      focusOrderSoundFemale:
+        collection: AU14FemaleFocusOrder
+      holdOrderSoundMale:
+        collection: AU14MaleHoldOrder
+      holdOrderSoundFemale:
+        collection: AU14FemaleHoldOrder
   hidden: false
 
 - type: startingGear
   id: AU14GearGOVFORadvisor
   equipment:
     id: AU14IDCardSquadAdvisor
-    ears: AU14HeadsetSectionLeader
+    ears: AU14HeadsetGovforCommand
     back: AU14SatchelMarineAdvisorMilitary
 
 - type: entity
@@ -76,4 +98,4 @@
     shoes: CMBootsBrownFilled
     head: CMHeadCapDrill
     jumpsuit: CMJumpsuitBO
-    ears: AU14HeadsetSectionLeader
+    ears: AU14HeadsetGovforCommand

@@ -8,8 +8,6 @@
   - type: Item
     size: Large
   - type: PowerLoaderGrabbable
-    virtualRight: RMCVirtualPowerLoaderRight
-    virtualLeft: RMCVirtualPowerLoaderLeft
   - type: RemoveComponents
     components:
     - type: Pullable
@@ -215,6 +213,7 @@
     repairRate: 0.0125
   - type: HardpointIntegrity
     maxIntegrity: 100
+    integrity: 100
   - type: HardpointVisual
     vehicleState: freight_0
 
@@ -287,4 +286,3 @@
     muzzleOffset: "0,0"
     angleOffset: -90
     useAimDirection: true
-

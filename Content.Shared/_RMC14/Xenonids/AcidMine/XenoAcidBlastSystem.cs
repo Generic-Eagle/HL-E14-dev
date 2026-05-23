@@ -1,4 +1,4 @@
-﻿using Content.Shared._RMC14.Actions;
+using Content.Shared._RMC14.Actions;
 using Content.Shared._RMC14.Emplacements;
 using Content.Shared._RMC14.Entrenching;
 using Content.Shared._RMC14.Sentry;
@@ -6,6 +6,7 @@ using Content.Shared._RMC14.Xenonids.Construction.DeployedTraps;
 using Content.Shared._RMC14.Xenonids.DeployTraps;
 using Content.Shared._RMC14.Xenonids.Hive;
 using Content.Shared._RMC14.Xenonids.Projectile.Spit.Charge;
+using Content.Shared._CMU14.Medical.BodyPart;
 using Content.Shared.Actions;
 using Content.Shared.Damage;
 using Content.Shared.Effects;
@@ -19,24 +20,25 @@ using Robust.Shared.Utility;
 
 namespace Content.Shared._RMC14.Xenonids.AcidMine;
 
-public sealed class XenoAcidBlastSystem : EntitySystem
+public sealed partial class XenoAcidBlastSystem : EntitySystem
 {
     private const float TrappedMobDamageMultiplier = 1.45f;
     private const float EmpoweredMobDamageMultiplier = 1.25f;
     private const float EmpoweredStructureDamageMultiplier = 1.70f;
 
-    [Dependency] private readonly IGameTiming _timing = default!;
-    [Dependency] private readonly INetManager _net = default!;
-    [Dependency] private readonly SharedActionsSystem _actions = default!;
-    [Dependency] private readonly SharedRMCActionsSystem _rmcActions = default!;
-    [Dependency] private readonly DamageableSystem _damage = default!;
-    [Dependency] private readonly SharedColorFlashEffectSystem _colorFlash = default!;
-    [Dependency] private readonly EntityLookupSystem _lookup = default!;
-    [Dependency] private readonly SharedXenoHiveSystem _hive = default!;
-    [Dependency] private readonly XenoSystem _xeno = default!;
-    [Dependency] private readonly SharedAudioSystem _audio = default!;
-    [Dependency] private readonly MountableWeaponSystem _mg = default!;
-    [Dependency] private readonly SharedTransformSystem _transform = default!;
+    [Dependency] private IGameTiming _timing = default!;
+    [Dependency] private INetManager _net = default!;
+    [Dependency] private SharedActionsSystem _actions = default!;
+    [Dependency] private SharedRMCActionsSystem _rmcActions = default!;
+    [Dependency] private DamageableSystem _damage = default!;
+    [Dependency] private SharedColorFlashEffectSystem _colorFlash = default!;
+    [Dependency] private EntityLookupSystem _lookup = default!;
+    [Dependency] private SharedXenoHiveSystem _hive = default!;
+    [Dependency] private XenoSystem _xeno = default!;
+    [Dependency] private SharedAudioSystem _audio = default!;
+    [Dependency] private MountableWeaponSystem _mg = default!;
+    [Dependency] private SharedTransformSystem _transform = default!;
+    [Dependency] private SharedHitLocationSystem _hitLocation = default!;
 
     public override void Initialize()
     {
@@ -116,6 +118,9 @@ public sealed class XenoAcidBlastSystem : EntitySystem
     {
         var hits = 0;
         var position = _transform.GetMapCoordinates(ent);
+        using var targetingSuppression = ent.Comp.Attached is { } attached
+            ? _hitLocation.SuppressBodyZoneTargeting(attached)
+            : default;
 
         foreach (var target in _lookup.GetEntitiesInRange(position, ent.Comp.BlastRadius))
         {

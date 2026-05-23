@@ -1,4 +1,5 @@
 using Content.Shared._CMU14.Medical.Bones;
+using Content.Shared.FixedPoint;
 using Robust.Shared.GameStates;
 
 namespace Content.Shared._CMU14.Medical.Items;
@@ -12,4 +13,13 @@ public sealed partial class CMUSplintedComponent : Component
 {
     [DataField, AutoNetworkedField]
     public FractureSeverity MaxSuppressed = FractureSeverity.Simple;
+
+    [DataField, AutoNetworkedField]
+    public bool BreakOnDamage = true;
+
+    [DataField, AutoNetworkedField]
+    public FixedPoint2 BreakDamageThreshold = FixedPoint2.Zero;
 }
+
+[ByRefEvent]
+public readonly record struct CMUSplintChangedEvent(EntityUid Part, bool Removed);

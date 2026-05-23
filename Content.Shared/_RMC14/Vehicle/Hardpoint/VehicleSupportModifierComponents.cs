@@ -114,7 +114,7 @@ public sealed partial class VehicleGunnerViewComponent : Component
 /// <summary>
 /// Added to gunners to increase their view while operating a vehicle with a view module installed.
 /// </summary>
-[RegisterComponent, NetworkedComponent, AutoGenerateComponentState]
+[RegisterComponent, NetworkedComponent, AutoGenerateComponentState(true)]
 [Access(typeof(VehicleWeaponsSystem), typeof(VehicleGunnerViewSystem))]
 public sealed partial class VehicleGunnerViewUserComponent : Component
 {
@@ -129,4 +129,21 @@ public sealed partial class VehicleGunnerViewUserComponent : Component
 
     [DataField, AutoNetworkedField]
     public float CursorPvsIncrease;
+}
+
+/// <summary>
+/// Aggregated vehicle-wide movement penalties from named hardpoint failures.
+/// </summary>
+[RegisterComponent, NetworkedComponent, AutoGenerateComponentState]
+[Access(typeof(HardpointSystem), typeof(Content.Shared.Vehicle.GridVehicleMoverSystem))]
+public sealed partial class VehicleMechanicalFailureModifierComponent : Component
+{
+    [DataField, AutoNetworkedField]
+    public float SpeedMultiplier = 1f;
+
+    [DataField, AutoNetworkedField]
+    public float ReverseSpeedMultiplier = 1f;
+
+    [DataField, AutoNetworkedField]
+    public float AccelerationMultiplier = 1f;
 }

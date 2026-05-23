@@ -1,2 +1,8 @@
 - type: Tag
   id: CMUGasMaskFilter
+
+- type: Tag
+  id: CMUGrain
+
+- type: Tag
+  id: CMUYautjaToolbelt
