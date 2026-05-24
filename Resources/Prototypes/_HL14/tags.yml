@@ -26,5 +26,28 @@
   id:  HL14WeaponSMGPulsesmg
 
 - type: Tag
-  id:  HLMagazinePulsesmg
+  id:  HL14MagazinePulsesmg
 
+- type: Tag
+  id:  HL14ShellShotgunHeavy
+
+- type: Tag
+  id: HL14ShellShotgunHeavyBuckshot
+
+- type: Tag
+  id: HL14ShellShotgunHeavySlugs
+
+- type: Tag
+  id: HL14ShellShotgunHeavyBeanbag
+
+- type: Tag
+  id: HL14ShellShotgunHeavyFlechette
+
+- type: Tag
+  id: HL14ShellShotgunIncendiaryHeavyBuckshot
+
+- type: Tag
+  id:  HL14SShellShotgun
+
+- type: Tag
+  id:  HL14WeaponShotgunHeavyShotgun

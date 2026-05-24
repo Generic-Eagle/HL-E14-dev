@@ -46,7 +46,7 @@
   - type: RevolverAmmoProvider
     whitelist:
       tags:
-      - HLMagazinePulsesmg
+      - HL14MagazinePulsesmg
     proto: RMCCartridgeRevolver44
     capacity: 30
     chambers: [ True, True, True,  True, True, True,  True, True, True,  True, True, True,  True, True, True,  True, True, True,  True, True, True,  True, True, True,  True, True, True,  True, True, True, ]
@@ -116,4 +116,4 @@
   - type: Tag
     tags:
     - RMCMagazineRevolver
-    - HLMagazinePulsesmg
+    - HL14MagazinePulsesmg
