@@ -51,7 +51,7 @@
 - type: loadoutGroup
   id: CivFootwearAU14
   name: au14-loadout-group-civilian-footwear
-  minLimit: 0
+  minLimit: 1
   maxLimit: 1
   loadouts:
   - ShoesBlackAU14
@@ -164,6 +164,18 @@
   - RMCPouchConstructionRightAU14
 
 # Nurse/Doctor
+
+- type: loadoutGroup
+  id: CivilianPhysicianSpecializationAU14
+  name: au14-loadout-group-role-specific-ID
+  minLimit: 1
+  maxLimit: 1
+  loadouts:
+  - CivilianPhysicianSpecializationDefaultAU14
+  - CivilianPhysicianSpecializationSurgeonAU14
+  - CivilianPhysicianSpecializationPharmacistAU14
+  - CivilianPhysicianSpecializationGeneralPractitionerAU14
+
 - type: loadoutGroup
   id: MedJumpsuitAU14
   name: au14-loadout-group-civilian-jumpsuit
@@ -194,7 +206,7 @@
 - type: loadoutGroup
   id: MedHatsAU14
   name: au14-loadout-group-civilian-hat
-  minLimit: 0
+  minLimit: 1
   maxLimit: 1
   loadouts:
   - HeadCapSurgBlueAU14
@@ -203,7 +215,7 @@
 - type: loadoutGroup
   id: MedJacketAU14
   name: au14-loadout-group-civilian-jacket
-  minLimit: 0
+  minLimit: 1
   maxLimit: 1
   loadouts:
   - LabcoatRMC
@@ -645,6 +657,16 @@
   - CLFFakeEmergencyResponseOfficerParamedicAU14
   - CLFFakeEmergencyResponseOfficerFirefighterAU14
 
+- type: loadoutGroup
+  id: CLFPhycisianSpecializationAU14
+  name: au14-loadout-group-role-specific-ID
+  minLimit: 1
+  maxLimit: 1
+  loadouts:
+  - CLFPhysicianSpecializationDefaultAU14
+  - CLFPhysicianSpecializationPharmacistAU14
+  - CLFPhysicianSpecializationGeneralPractitionerAU14
+
 # govfor/opfor
 
 # synthetics
@@ -678,6 +700,9 @@
   - HardHatWhiteRMC
   - HardHatBlueRMC
   - HeadCapOfficerRMC
+  - BeretIOAU14
+  - BeretSOAU14
+  - BeretADJAU14
 
 - type: loadoutGroup
   id: SynthBackpackAU14
@@ -758,6 +783,7 @@
   - GogglesPolarizedOrangeRMC
   - GogglesM1A1BlueRMC
   - GlassesSecurityRMC
+  - RMCGlassesExperimentalMeson
 
 - type: loadoutGroup
   id: SynthUniformAU14
@@ -882,6 +908,14 @@
   - MaintenanceJackAU14
   - PortableDialysisAU14
 
+- type: loadoutGroup
+  id: SynthAccesoriesSpecialAU14
+  name: au14-loadout-group-synth-equipment
+  minLimit: 1
+  maxLimit: 1
+  loadouts:
+  - WebbingSurgicalBlueAU14
+
 # Doctor
 
 - type: loadoutGroup
@@ -912,3 +946,15 @@
   maxLimit: 1
   loadouts:
   - GOVFORAuxTechClothingAU14Fatigues
+
+# Commander
+
+- type: loadoutGroup
+  id: GOVFORPlatCOSidearmBeltAU14
+  name: au14-loadout-group-commander-sidearm-belt
+  minLimit: 1
+  maxLimit: 1
+  loadouts:
+  - PlatCOSidearmM48A5AU14
+  - PlatCOSidearmMatebaCustomAU14
+  - PlatCOSidearmMatebaSpecialAU14

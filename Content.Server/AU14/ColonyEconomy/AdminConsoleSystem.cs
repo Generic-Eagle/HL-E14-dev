@@ -1,7 +1,9 @@
 using System.Linq;
 using Content.Server.AU14.Ambassador;
+using Content.Server.AU14.Round;
 using Content.Server.AU14.ThirdParty;
 using Content.Server.Chat.Systems;
+using Content.Server.Popups;
 using Content.Shared.AU14.Ambassador;
 using Content.Shared.AU14.ColonyEconomy;
 using Content.Shared.AU14.Threats;
@@ -10,13 +12,15 @@ using Robust.Shared.Prototypes;
 
 namespace Content.Server.AU14.ColonyEconomy;
 
-public sealed class AdminConsoleSystem : EntitySystem
+public sealed partial class AdminConsoleSystem : EntitySystem
 {
-    [Dependency] private readonly UserInterfaceSystem _ui = default!;
-    [Dependency] private readonly ColonyBudgetSystem _colonyBudget = default!;
-    [Dependency] private readonly ChatSystem _chat = default!;
-    [Dependency] private readonly AuThirdPartySystem _thirdParty = default!;
-    [Dependency] private readonly IPrototypeManager _proto = default!;
+    [Dependency] private UserInterfaceSystem _ui = default!;
+    [Dependency] private ColonyBudgetSystem _colonyBudget = default!;
+    [Dependency] private ChatSystem _chat = default!;
+    [Dependency] private AuThirdPartySystem _thirdParty = default!;
+    [Dependency] private AuRoundSystem _auRound = default!;
+    [Dependency] private IPrototypeManager _proto = default!;
+    [Dependency] private PopupSystem _popup = default!;
 
     public override void Initialize()
     {
@@ -161,8 +165,16 @@ public sealed class AdminConsoleSystem : EntitySystem
             return;
         if (!_proto.TryIndex<AuThirdPartyPrototype>(msg.ThirdPartyId, out var partyProto))
             return;
+        if (!_auRound.IsThirdPartyAllowedForCurrentContext(partyProto))
+            return;
         if (!_proto.TryIndex(partyProto.PartySpawn, out var spawnProto))
             return;
+
+        if (!_thirdParty.SpawnThirdParty(partyProto, spawnProto, false))
+        {
+            _popup.PopupEntity("Unable to dispatch support at this time.", uid, msg.Actor);
+            return;
+        }
 
         _colonyBudget.AddToBudget(-cost);
 
@@ -171,7 +183,6 @@ public sealed class AdminConsoleSystem : EntitySystem
         while (q.MoveNext(out _, out var c))
             c.CalledParties.Add(msg.ThirdPartyId);
 
-        _thirdParty.SpawnThirdParty(partyProto, spawnProto, false);
         UpdateAllUi();
     }
 
@@ -186,7 +197,8 @@ public sealed class AdminConsoleSystem : EntitySystem
         var thirdParties = new Dictionary<string, (string DisplayName, float Cost)>();
         foreach (var (id, cost) in comp.CallableParties)
         {
-            if (_proto.TryIndex<AuThirdPartyPrototype>(id, out var proto))
+            if (_proto.TryIndex<AuThirdPartyPrototype>(id, out var proto) &&
+                _auRound.IsThirdPartyAllowedForCurrentContext(proto))
                 thirdParties[id] = (proto.DisplayName ?? proto.ID, cost);
         }
         _ui.SetUiState(uid, AdminConsoleThirdPartyUi.Key,

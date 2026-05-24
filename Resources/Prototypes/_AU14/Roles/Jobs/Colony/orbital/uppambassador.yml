@@ -12,11 +12,14 @@
   requireAdminNotify: false
   joinNotifyCrew: false
   whitelisted: true
+  whitelistParent: AU14JobGeneralWhitelist
   supervisors: au14-job-supervisors-orbital
   accessGroups:
   - Colonist
   - auadmin
   - AUPrisonStaff
+  access:
+  - AU14AccessColonyAmbassador
   roleWeight: 0.25
   special:
   - !type:AddComponentSpecial

@@ -5,22 +5,22 @@ using Robust.Shared.Random;
 
 namespace Content.Server._RMC14.Marines.Orders;
 
-public sealed class MarineOrdersSystem : SharedMarineOrdersSystem
+public sealed partial class MarineOrdersSystem : SharedMarineOrdersSystem
 {
-    [Dependency] private readonly ActionsSystem _actions = default!;
-    [Dependency] private readonly ChatSystem _chat = default!;
-    [Dependency] private readonly IRobustRandom _random = default!;
+    [Dependency] private ActionsSystem _actions = default!;
+    [Dependency] private ChatSystem _chat = default!;
+    [Dependency] private IRobustRandom _random = default!;
 
     public override void Initialize()
     {
         base.Initialize();
-        SubscribeLocalEvent<MarineOrdersComponent, MapInitEvent>(OnOrdersMapInit);
+        SubscribeLocalEvent<MarineOrdersComponent, ComponentStartup>(OnOrdersStartup);
         SubscribeLocalEvent<MarineOrdersComponent, ComponentShutdown>(OnOrdersShutdown);
     }
-
-    private void OnOrdersMapInit(Entity<MarineOrdersComponent> ent, ref MapInitEvent ev)
+    private void OnOrdersStartup(Entity<MarineOrdersComponent> ent, ref ComponentStartup ev)
     {
         var comp = ent.Comp;
+        if (comp.MoveActionEntity != null || comp.HoldActionEntity != null || comp.FocusActionEntity != null) return;
 
         // All the SetUseDelay calls are required because even tho we set the cooldown on all of them once an order
         // is issued for some reason the order that was pressed uses its delays and does not care about its cooldown

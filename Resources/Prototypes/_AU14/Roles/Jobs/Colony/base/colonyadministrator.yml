@@ -6,8 +6,29 @@
   setPreference: true
   playTimeTracker: AU14JobCivilianColonyAdministrator
   requirements:
-  - !type:OverallPlaytimeRequirement
+  - !type:DepartmentTimeRequirement
+    department: AU14DepartmentCivilian
+    time: 32000 # 10 hours
+  - !type:DepartmentTimeRequirement
+    department: AU14DepartmentColonySecurity
     time: 18000 # 5 hours
+  - !type:DepartmentTimeRequirement
+    department: AU14DepartmentColonyMedical
+    time: 18000 # 5 hours
+  - !type:DepartmentTimeRequirement
+    department: AU14DepartmentLabor
+    time: 18000 # 5 hours
+  - !type:DepartmentTimeRequirement
+    department: AU14DepartmentCorporate
+    time: 18000 # 5 hours
+  # - !type:DepartmentTimeRequirement
+  #   department: AU14DepartmentServices
+  #   time: 18000 # 5 hours
+  # - !type:DepartmentTimeRequirement
+  #   department: AU14DepartmentEngineering
+  #   time: 18000 # 5 hours
+  # - !type:OverallPlaytimeRequirement
+  #   time: 18000 # 5 hours
   - !type:AgeRequirement
     requiredAge: 21
   - !type:TraitsRequirement
@@ -30,6 +51,10 @@
   - auadmin
   - Colonist
   - CMCargoTech
+  - auheadsofcolony
+  access:
+  - AU14AccessColonyAdministrator
+  - AU14AccessColonyMarshall
   roleWeight: 0.25
   special:
   - !type:AddComponentSpecial

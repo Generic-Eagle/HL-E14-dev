@@ -1,5 +1,6 @@
 using System.Globalization;
 using System.Numerics;
+using Content.Client._CMU14.Medical.UI;
 using Content.Client._RMC14.Medical.HUD;
 using Content.Client.Message;
 using Content.Shared._CMU14.Medical.Wounds;
@@ -26,17 +27,18 @@ using static Robust.Client.UserInterface.Controls.BoxContainer;
 namespace Content.Client._RMC14.Medical.Scanner;
 
 [UsedImplicitly]
-public sealed class HealthScannerBui : BoundUserInterface
+public sealed partial class HealthScannerBui : BoundUserInterface
 {
-    [Dependency] private readonly IEntityManager _entities = default!;
-    [Dependency] private readonly IPlayerManager _player = default!;
-    [Dependency] private readonly IPrototypeManager _prototype = default!;
+    [Dependency] private IEntityManager _entities = default!;
+    [Dependency] private IPlayerManager _player = default!;
 
     [ViewVariables]
     private HealthScannerWindow? _window;
     private NetEntity _lastTarget;
+    private bool _hasLastTarget;
 
     private readonly ShowHolocardIconsSystem _holocardIcons;
+    private readonly RMCReagentSystem _reagent;
     private readonly SkillsSystem _skills;
 
     private Dictionary<EntProtoId<SkillDefinitionComponent>, int> BloodPackSkill = new() { ["RMCSkillSurgery"] = 1 };
@@ -48,6 +50,7 @@ public sealed class HealthScannerBui : BoundUserInterface
     public HealthScannerBui(EntityUid owner, Enum uiKey) : base(owner, uiKey)
     {
         _holocardIcons = _entities.System<ShowHolocardIconsSystem>();
+        _reagent = _entities.System<RMCReagentSystem>();
         _skills = _entities.System<SkillsSystem>();
     }
 
@@ -73,12 +76,15 @@ public sealed class HealthScannerBui : BoundUserInterface
     private void UpdateState(HealthScannerBuiState uiState)
     {
         _window = EnsureWindow();
-        _window.ShowServerLoadingPulse();
 
         if (_entities.GetEntity(uiState.Target) is not { Valid: true } target)
             return;
 
+        if (_hasLastTarget && _lastTarget != uiState.Target)
+            _window.ShowServerLoadingPulse();
+
         _lastTarget = uiState.Target;
+        _hasLastTarget = true;
 
         _window.PatientLabel.Text = Loc.GetString("rmc-health-analyzer-patient", ("name", Identity.Name(target, _entities, _player.LocalEntity)));
 
@@ -175,7 +181,7 @@ public sealed class HealthScannerBui : BoundUserInterface
         {
             foreach (var reagent in uiState.Chemicals.Contents)
             {
-                if (!_prototype.TryIndexReagent(reagent.Reagent.Prototype, out ReagentPrototype? prototype))
+                if (!_reagent.TryIndex(reagent.Reagent, out var prototype))
                     continue;
 
                 if (prototype.Unknown)
@@ -189,7 +195,7 @@ public sealed class HealthScannerBui : BoundUserInterface
                 if (prototype.Overdose != null && reagent.Quantity > prototype.Overdose)
                     text = $"[bold][color=red]{FormattedMessage.EscapeText(text)} OD[/color][/bold]";
 
-                var label = new RichTextLabel();
+                var label = new CMUScaledRichTextLabel();
                 label.SetMarkupPermissive(text);
                 _window.ChemicalsContainer.AddChild(label);
                 anyChemicals = true;
@@ -262,6 +268,8 @@ public sealed class HealthScannerBui : BoundUserInterface
         {
             _window.OpenCentered();
         }
+
+        _window.ApplyUniformScale(true);
     }
 
     private HealthScannerWindow EnsureWindow()
@@ -453,6 +461,7 @@ public sealed class HealthScannerBui : BoundUserInterface
             Text = PartDisplayName(part.Type, part.Symmetry),
             MinWidth = 112,
             VerticalAlignment = Control.VAlignment.Center,
+            ClipText = true,
         });
 
         row.AddChild(new Label
@@ -474,7 +483,11 @@ public sealed class HealthScannerBui : BoundUserInterface
             FontColorOverride = SeverityTextColor(sev),
         });
 
-        var chipStrip = new BoxContainer { Orientation = LayoutOrientation.Horizontal };
+        var chipStrip = new BoxContainer
+        {
+            Orientation = LayoutOrientation.Horizontal,
+            HorizontalExpand = true,
+        };
         AppendFractureChip(chipStrip, uiState, part);
         AppendBleedChip(chipStrip, uiState, part);
         AppendWoundChip(chipStrip, part);
@@ -509,13 +522,20 @@ public sealed class HealthScannerBui : BoundUserInterface
             },
         };
 
-        var row = new BoxContainer
+        var stack = new BoxContainer
         {
-            Orientation = LayoutOrientation.Horizontal,
+            Orientation = LayoutOrientation.Vertical,
             Margin = new Thickness(8, 6),
             HorizontalExpand = true,
         };
-        card.AddChild(row);
+        card.AddChild(stack);
+
+        var row = new BoxContainer
+        {
+            Orientation = LayoutOrientation.Horizontal,
+            HorizontalExpand = true,
+        };
+        stack.AddChild(row);
 
         row.AddChild(new PanelContainer
         {
@@ -528,6 +548,7 @@ public sealed class HealthScannerBui : BoundUserInterface
             Text = PartDisplayName(type, sym),
             MinWidth = 112,
             VerticalAlignment = Control.VAlignment.Center,
+            ClipText = true,
         });
         // Em-dash instead of "0%" so a missing limb reads visually
         // distinct from a 0-HP attached one.
@@ -539,6 +560,7 @@ public sealed class HealthScannerBui : BoundUserInterface
             FontColorOverride = SeverityTextColor(PartSeverity.Severed),
         });
         row.AddChild(BuildHpBar(0f, PartSeverity.Severed));
+
         row.AddChild(new Label
         {
             Text = SeverityWord(PartSeverity.Severed),
@@ -1121,7 +1143,7 @@ public sealed class HealthScannerBui : BoundUserInterface
             PanelOverride = new StyleBoxFlat { BackgroundColor = accent },
         });
 
-        var label = new RichTextLabel();
+        var label = new CMUScaledRichTextLabel();
         label.SetMarkupPermissive(recommendation.Text);
         label.HorizontalExpand = true;
         row.AddChild(label);

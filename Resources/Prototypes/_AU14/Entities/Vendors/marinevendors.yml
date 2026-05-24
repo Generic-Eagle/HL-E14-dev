@@ -77,11 +77,13 @@
         amount: 15
       - id: AU14JungleFlapCap
         amount: 15
+      - id: AU14HeadCommandoBeanie
+        amount: 10
     - name: Headsets
       entries:
       - id: RMCM5CameraGear
         amount: 30
-      - id: AU14HeadsetSectionMarine
+      - id: AU14HeadsetGovforMarine
         name: empty headset
         amount: 20
     - name: Heads Up Display
@@ -145,7 +147,7 @@
       - id: RMCBeltHolsterPistol
         amount: 20
       - id: RMCBeltHolsterRevolver
-        amount: 20
+        amount: 10
       - id: CMBeltKnifeFilled
         name: M276 Knife Rig (Full)
         amount: 2
@@ -530,8 +532,24 @@
         amount: 15
       - id: CMPillCanisterTricordrazine
         amount: 15
-#      - id: CMPillCanisterPeridaxon
-#      - id: CMPillCanisterTramadol
+      - id: RMCPillCanisterIron
+        amount: 15
+      - id: AU14PillCanisterParacetamol
+        amount: 15
+      - id: AU14PillCanisterTramadol
+        amount: 15
+      - id: AU14PillCanisterOxycodone
+        amount: 15
+      - id: AU14PillCanisterCardiocaine
+        amount: 15
+      - id: AU14PillCanisterHepatocytin
+        amount: 15
+      - id: AU14PillCanisterNephronate
+        amount: 15
+      - id: AU14PillCanisterOsteoCalc
+        amount: 15
+      - id: AU14PillCanisterPulmovine
+        amount: 15
     - name: Injectors
       entries:
       - id: CMEpinephrineAutoInjector
@@ -543,6 +561,16 @@
       - id: CMDexalinPlusAutoInjector
         amount: 15
       - id: CMTricordrazineAutoInjector
+        amount: 15
+      - id: CMBicaridineAutoInjector
+        amount: 15
+      - id: CMKelotaneAutoInjector
+        amount: 15
+      - id: AU14ParacetamolAutoInjector
+        amount: 15
+      - id: AU14TramadolAutoInjector
+        amount: 15
+      - id: AU14OxycodoneAutoInjector
         amount: 15
     - name: Medical Gloves
       choices: { CMUPlatoonMedicalGloves: 1 }
@@ -601,7 +629,9 @@
         amount: 5
     - name: Headsets
       entries:
-      - id: AU14HeadsetSectionLeader
+      - id: AU14HeadsetGovforCommand
+        amount: 2
+      - id: AU14HeadsetGovforAuxiliary
         amount: 2
     - name: Backpack
       entries:
@@ -611,14 +641,28 @@
       entries:
       - id: AU14PouchCommandFill
         amount: 10
-    - name: Miscellaneous
+    - name: Equipment
+      takeAll: CMStandard
       entries:
       - id: RMCLaserDesignator
+      - id: RMCWhistle
+      - id: RMCPackFlareCAS
+    - name: Spare Equipment
+      entries:
+      - id: RMCExplosiveBreachingCharge
+        amount: 4
+      - id: RMCBinoculars
+        amount: 5
+      - id: RMCLaserDesignator
+        amount: 2
+      - id: RMCFulton20
         amount: 4
       - id: RMCWhistle
         amount: 10
+      - id: RMCBoxPackFlareCAS
+        amount: 1
       - id: RMCPackFlareCAS
-        amount: 10
+        amount: 6
 
 - type: entity
   parent: ColMarTechBase
@@ -663,7 +707,7 @@
   id: AU14USCMsectionleaderequipmentvendor
   name: USCM section leader vendor
   description: >-
-    An automated supervisor rack, hooked up to a compact storage of US Colonial Marine Corps section-leadership equipment.
+    An automated equipment rack, hooked up to a compact storage of US Colonial Marine Corps section-leadership equipment.
     Designed for immediate readiness following cryogenic hypersleep or rapid mobilization orders.
   components:
   - type: AccessReader
@@ -673,26 +717,20 @@
   - type: CMAutomatedVendor
     sections:
     - name: Helmets and Hats
+      choices: { CMHat: 1 }
       entries:
       - id: AU14DesertM11Helmet
-        amount: 1
       - id: AU14JungleM11Helmet
-        amount: 1
       - id: RMCHeadBeretSquad
-        amount: 1
         name: Black Beret
       - id: AU14JunglePatrolCap
-        amount: 1
       - id: AU14DesertPatrolCap
-        amount: 1
-    - name: Miscellaneous
+    - name: Equipment
+      takeAll: CMStandard
       entries:
       - id: RMCLaserDesignator
-        amount: 1
       - id: RMCWhistle
-        amount: 1
       - id: RMCPackFlareCAS
-        amount: 2
 
 - type: entity
   parent: ColMarTechBase
@@ -796,7 +834,7 @@
       - id: AU14CaseXM99A
         amount: 1
 
-# Equipment Vendor (universal)
+# Equipment Vendor (universal except UPP/RMC)
 - type: entity
   parent: ColMarTechBase
   id: AU14USCMequipmentvendor
@@ -955,13 +993,21 @@
       - id: AU14BackpackRTOPackGray
       - id: AU14BackpackRTOPackBlack
     - name: Equipment
+      takeAll: CMStandard
       entries:
       - id: RMCLaserDesignator
-        amount: 1
       - id: RMCWhistle
-        amount: 1
       - id: RMCPackFlareCAS
+    - name: Spare Equipment
+      entries:
+      - id: RMCExplosiveBreachingCharge
         amount: 2
+      - id: RMCBinoculars
+        amount: 2
+      - id: RMCFulton20
+        amount: 1
+      - id: RMCBoxPackFlareCAS
+        amount: 1
 
 # AirCrew Weapons (universal)
 - type: entity
@@ -1019,12 +1065,13 @@
       takeAll: CMEngineerSet
       entries:
       - id: AU14VendorBundleCombatTechnicianEssentials
-    - name: Automated Sentry Gun
+    - name: Support Equipment
       choices:  { CMHandheldDefense : 1 }
       entries:
       - id: AU14CaseSentry
       - id: AU14CaseSentryMini
       - id: AU14CaseSentrySniper
+      - id: RMCM271A2BruteLauncherRigFilled
     - name: Tool Storage
       choices: { CMUCTToolStorage: 1 }
       entries:
@@ -1150,6 +1197,7 @@
       - id: RMCBoxZiptie
       - id: RMCGuidebookLawMarine
       - id: RMCGuidebookSOP
+      - id: AU14Scissors
     - name: Uniform
       choices: { AU14Uniform: 1 }
       entries:
@@ -1217,16 +1265,20 @@
         amount: 10
     - name: special issue firearms
       entries:
+      - id: RMCWeaponRifleM54C
+        amount: 8
+      - id: WeaponRifleM4SPR
+        amount: 6
       - id: WeaponShotgunM42A1
         amount: 2
       - id: WeaponShotgunM42A2
         amount: 1
-      - id: WeaponRifleM4SPR
-        amount: 3
       - id: AU14WeaponPistolM4A4Empty
-        amount: 5
+        amount: 8
       - id: RMCWeaponRevolverM44Empty
         amount: 5
+      - id: RMCML66DCase
+        amount: 1
     - name: primary ammunition
       entries:
       - id: CMMagazineRifleM54CMK1
@@ -1247,6 +1299,16 @@
         amount: 10
       - id: RMCMagazineRifleM4SPRWP
         amount: 5
+      - id: CMMagazineRifleM54C
+        amount: 100
+      - id: CMMagazineRifleM54CAP
+        amount: 15
+      - id: CMMagazineRifleM54CExt
+        amount: 10
+      - id: RMCMagazineRifleM54CWP
+        amount: 5
+      - id: RMCMagazineRifleM54CHEAPEmpty
+        amount: 0
       - id: RMCBoxShotgunBuckshot
         amount: 20
       - id: RMCBoxShotgunFlechette
@@ -1301,6 +1363,8 @@
         amount: 8
       - id: RMCWeaponLauncherDisposableFolded
         amount: 2
+      - id: RMCRocketM5510Brute
+        amount: 12
     - name: Barrel Attachments
       entries:
       - id: RMCAttachmentExtendedBarrel
@@ -1331,6 +1395,8 @@
       entries:
       - id: RMCAttachmentM54CStockCollapsible
         amount: 30
+      - id: RMCAttachmentM54CStockSolid
+        amount: 5
       - id: RMCAttachmentM63StockCollapsible
         amount: 15
       - id: RMCAttachmentM63Stock
@@ -1358,10 +1424,8 @@
     - name: RTO Packs
       entries:
       - id: AU14BackpackRTOPackJungle
-        amount: 1
+        amount: 2
       - id: AU14BackpackRTOPackDesert
-        amount: 1
-      - id: AU14BackpackRTOPackGray
         amount: 1
     - name: Tents
       entries:
@@ -1376,4 +1440,8 @@
       - id: AU14TentBigFoldedSurgical
         amount: 1
       - id: RMCTentUNMCExtendedMessFolded
+        amount: 1
+    - name: Flag
+      entries:
+      - id: AU14FlagCarriableUA
         amount: 1

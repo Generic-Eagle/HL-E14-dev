@@ -17,24 +17,26 @@ using Content.Shared._RMC14.Dialog;
 using Robust.Shared.Containers;
 using Robust.Shared.Player;
 using Robust.Shared.Prototypes;
+using Content.Shared._RMC14.Weapons.Ranged.IFF;
 
 namespace Content.Server.AU14.CLF;
 
-public sealed class TattooSystem : EntitySystem
+public sealed partial class TattooSystem : EntitySystem
 {
-    [Dependency] private readonly IAdminLogManager _adminLog = default!;
-    [Dependency] private readonly AntagSelectionSystem _antag = default!;
-    [Dependency] private readonly SharedContainerSystem _container = default!;
-    [Dependency] private readonly DialogSystem _dialog = default!;
-    [Dependency] private readonly SharedDoAfterSystem _doAfter = default!;
-    [Dependency] private readonly SharedJobSystem _jobs = default!;
-    [Dependency] private readonly MindSystem _mind = default!;
-    [Dependency] private readonly MobStateSystem _mobState = default!;
-    [Dependency] private readonly NpcFactionSystem _npcFaction = default!;
-    [Dependency] private readonly ISharedPlayerManager _player = default!;
-    [Dependency] private readonly PopupSystem _popup = default!;
-    [Dependency] private readonly IPrototypeManager _protoManager = default!;
-    [Dependency] private readonly RoleSystem _role = default!;
+    [Dependency] private IAdminLogManager _adminLog = default!;
+    [Dependency] private AntagSelectionSystem _antag = default!;
+    [Dependency] private SharedContainerSystem _container = default!;
+    [Dependency] private DialogSystem _dialog = default!;
+    [Dependency] private SharedDoAfterSystem _doAfter = default!;
+    [Dependency] private SharedJobSystem _jobs = default!;
+    [Dependency] private MindSystem _mind = default!;
+    [Dependency] private MobStateSystem _mobState = default!;
+    [Dependency] private NpcFactionSystem _npcFaction = default!;
+    [Dependency] private GunIFFSystem _gunIFF = default!;
+    [Dependency] private ISharedPlayerManager _player = default!;
+    [Dependency] private PopupSystem _popup = default!;
+    [Dependency] private IPrototypeManager _protoManager = default!;
+    [Dependency] private RoleSystem _role = default!;
 
     public override void Initialize()
     {
@@ -250,6 +252,7 @@ public sealed class TattooSystem : EntitySystem
 
         // Add CLF faction
         _npcFaction.AddFaction(target, comp.Faction);
+        _gunIFF.AddUserFaction(target, comp.IFF);
 
         // Add CLF member component
         EnsureComp<CLFMemberComponent>(target);

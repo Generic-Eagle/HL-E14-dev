@@ -11,11 +11,19 @@
     - Epilepsy
     - NonResuscitable
   ranks:
-    RMCRankCorporal:
+    #RMCRankSergeant:
+    #- !type:RoleTimeRequirement
+    #  role: AU14JobGOVFORPlatoonCorpsman
+    #  time: 180000 # 50 hours
+    #RMCRankCorporal:
+    #- !type:RoleTimeRequirement
+    #  role: AU14JobGOVFORPlatoonCorpsman
+    #  time: 86400 # 24 hours
+    RMCRankLanceCorporal:
     - !type:RoleTimeRequirement
       role: AU14JobGOVFORPlatoonCorpsman
-      time: 72000 # 20 hours
-    RMCRankLanceCorporal: []
+      time: 36000 # 10 hours
+    RMCRankPrivateFirstClass: []
   startingGear: AU14GearGOVFORPlatoonCorpsman
   dummyStartingGear: AU14GearGOVFORCorpsmanDummy
   icon: "AU14JobIconCorpsman"
@@ -54,7 +62,7 @@
   id: AU14GearGOVFORPlatoonCorpsman
   equipment:
     id: AU14JobIDCardGOVFORPlatoonCorpsman
-    ears: AU14HeadsetSectionMarine
+    ears: AU14HeadsetGovforMarine
 - type: entity
   parent: CMSpawnPointJobBase
   id: AU14SpawnPointGOVFORPlatoonCorpsman
@@ -75,4 +83,4 @@
     shoes: CMBootsBlack
     head: AU14JungleM10CorpsmanHelmet
     jumpsuit: AU14JungleFatigues
-    ears: AU14HeadsetSectionMarine
+    ears: AU14HeadsetGovforMarine

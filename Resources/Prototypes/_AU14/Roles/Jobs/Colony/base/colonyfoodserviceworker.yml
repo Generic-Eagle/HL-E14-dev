@@ -8,7 +8,8 @@
   ranks:
     RMCRankCivilian: []
   startingGear: AU14GearCivilianFoodServiceWorker
-  icon: "CMJobIconEmpty"
+  icon: "AU14JobIconColonyFSW"
+  hasIcon: false
   requireAdminNotify: false
   joinNotifyCrew: false
   supervisors: au14-job-supervisors-colonycivilian
@@ -39,8 +40,6 @@
 - type: startingGear
   id: AU14GearCivilianFoodServiceWorker
   equipment:
-    jumpsuit: AU14CivilianWorkwearYellow
-    shoes: RMCShoesBlack
     id: AU14IDCardFoodServiceWorker
     outerClothing: RMCMedicalApron
 

@@ -37,11 +37,11 @@
     cultistJob: 2
   spawnTogether: true
   scaling:
-    CMXenoQueen:
-      scale: 0.05
-      whenToBeginScaling: 50
+#   CMXenoQueen:
+#     scale: 0.05
+#     whenToBeginScaling: 50
     cultistJob:
-      scale: 0.2
+      scale: 0.05
       whenToBeginScaling: 50
 
 - type: partySpawn
@@ -53,7 +53,8 @@
   spawnTogether: true
   scaling:
     cultistJob:
-      scale: 0.2
+      scale: 0.08
+      benchmark: 3
       whenToBeginScaling: 50
 
 - type: auThirdParty
@@ -62,6 +63,7 @@
   blacklistedgamemodes:
   - insurgency
   - forceonforce
+  - DistressSignal
   entrymethod: shuttle
   weight: 3
   minplayers: 70
@@ -75,6 +77,7 @@
   blacklistedgamemodes:
   - insurgency
   - forceonforce
+  - DistressSignal
   entrymethod: ground
   weight: 15
   minplayers: 35
@@ -90,11 +93,12 @@
     cultistJob: 3
   spawnTogether: true
   scaling:
-    CMXenoQueen:
-      scale: 0.05
-      whenToBeginScaling: 50
+#   CMXenoQueen:
+#     scale: 0.05
+#     whenToBeginScaling: 50
     cultistJob:
-      scale: 0.3
+      scale: 0.03
+      benchmark: 4
       whenToBeginScaling: 50
   Markers:
     Member: cultcfmarker

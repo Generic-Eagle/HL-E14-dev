@@ -18,11 +18,9 @@
     sections:
     - name: Fatigues
       entries:
-      - id: CMJumpsuitTShirtGray
+      - id: AU14CivilianWorkwearBlue
         amount: 40
-      - id: CMJumpsuitTShirtWhite
-        amount: 40
-      - id: CMJumpsuitTShirtRed
+      - id: RMCJumpsuitLiaisonGreyWorkwear
         amount: 40
       - id: AU14CivilianWorkwearPink
         amount: 40
@@ -31,6 +29,18 @@
       - id: RMCJumpsuitKhakiWorkwearJacketless
         amount: 40
       - id: CMJumpsuitLiaisonField
+        amount: 40
+      - id: AU14CivilianFlannelWhite
+        amount: 40
+      - id: AU14CivilianFlannelRed
+        amount: 40
+      - id: AU14CivilianFlannelPurple
+        amount: 40
+      - id: AU14CivilianFloralRed
+        amount: 40
+      - id: AU14CivilianFloralBlue
+        amount: 40
+      - id: AU14CivilianFloralYellow
         amount: 40
     - name: Footwear
       entries:
@@ -70,11 +80,13 @@
         amount: 20
       - id: AU14DesertBoonieHat
         amount: 20
+      - id: AU14HeadCommandoBeanie
+        amount: 10
     - name: Headsets
       entries:
       - id: RMCM5CameraGear
         amount: 30
-      - id: AU14HeadsetSectionMarine
+      - id: AU14HeadsetGovforMarine
         name: empty headset
         amount: 20
     - name: Heads Up Display
@@ -114,7 +126,7 @@
       - id: RMCBeltHolsterPistolTSE
         amount: 20
       - id: RMCBeltHolsterRevolver
-        amount: 20
+        amount: 10
       - id: CMBeltKnifeFilled
         name: M276 Knife Rig (Full)
         amount: 2
@@ -577,8 +589,24 @@
         amount: 15
       - id: CMPillCanisterTricordrazine
         amount: 15
-#      - id: CMPillCanisterPeridaxon
-#      - id: CMPillCanisterTramadol
+      - id: RMCPillCanisterIron
+        amount: 15
+      - id: AU14PillCanisterParacetamol
+        amount: 15
+      - id: AU14PillCanisterTramadol
+        amount: 15
+      - id: AU14PillCanisterOxycodone
+        amount: 15
+      - id: AU14PillCanisterCardiocaine
+        amount: 15
+      - id: AU14PillCanisterHepatocytin
+        amount: 15
+      - id: AU14PillCanisterNephronate
+        amount: 15
+      - id: AU14PillCanisterOsteoCalc
+        amount: 15
+      - id: AU14PillCanisterPulmovine
+        amount: 15
     - name: Injectors
       entries:
       - id: CMEpinephrineAutoInjector
@@ -590,6 +618,16 @@
       - id: CMDexalinPlusAutoInjector
         amount: 15
       - id: CMTricordrazineAutoInjector
+        amount: 15
+      - id: CMBicaridineAutoInjector
+        amount: 15
+      - id: CMKelotaneAutoInjector
+        amount: 15
+      - id: AU14ParacetamolAutoInjector
+        amount: 15
+      - id: AU14TramadolAutoInjector
+        amount: 15
+      - id: AU14OxycodoneAutoInjector
         amount: 15
     - name: Medical Gloves
       choices: { CMUPlatoonMedicalGloves: 1 }
@@ -617,7 +655,9 @@
     sections:
     - name: Headsets
       entries:
-      - id: AU14HeadsetSectionLeader
+      - id: AU14HeadsetGovforCommand
+        amount: 2
+      - id: AU14HeadsetGovforAuxiliary
         amount: 2
     - name: Backpack
       entries:
@@ -627,14 +667,28 @@
       entries:
       - id: AU14PouchCommandFill
         amount: 10
-    - name: Miscellaneous
+    - name: Equipment
+      takeAll: CMStandard
       entries:
       - id: RMCLaserDesignator
+      - id: RMCWhistle
+      - id: RMCPackFlareCAS
+    - name: Spare Equipment
+      entries:
+      - id: RMCExplosiveBreachingCharge
+        amount: 4
+      - id: RMCBinoculars
+        amount: 5
+      - id: RMCLaserDesignator
+        amount: 2
+      - id: RMCFulton20
         amount: 4
       - id: RMCWhistle
         amount: 10
+      - id: RMCBoxPackFlareCAS
+        amount: 1
       - id: RMCPackFlareCAS
-        amount: 10
+        amount: 6
 
 - type: entity
   parent: ColMarTechBase
@@ -670,7 +724,7 @@
   id: AU14VAIPOsectionleaderequipmentvendor
   name: VAIPO section leader vendor
   description: >-
-    An automated supervisor rack, hooked up to a compact storage of Vanguard Arrow Incorporated mercenary section-leadership equipment used by their Primary Operations branch.
+    An automated equipment rack, hooked up to a compact storage of Vanguard Arrow Incorporated mercenary section-leadership equipment used by their Primary Operations branch.
     Designed for immediate readiness following cryogenic hypersleep or rapid mobilization orders.
   components:
   - type: AccessReader
@@ -679,14 +733,12 @@
     sprite: _RMC14/Structures/Machines/VendingMachines/ColMarTech/clothing.rsi
   - type: CMAutomatedVendor
     sections:
-    - name: Miscellaneous
+    - name: Equipment
+      takeAll: CMStandard
       entries:
       - id: RMCLaserDesignator
-        amount: 2
       - id: RMCWhistle
-        amount: 2
       - id: RMCPackFlareCAS
-        amount: 2
 
 - type: entity
   parent: ColMarTechBase
@@ -846,6 +898,8 @@
         amount: 5
       - id: RMCWeaponPistolM77Empty
         amount: 5
+      - id: RMCM2CCase
+        amount: 1
     - name: primary ammunition
       entries:
       - id: CMMagazineRifleM54C
@@ -926,6 +980,8 @@
         amount: 8
       - id: RMCWeaponLauncherDisposableFolded
         amount: 2
+      - id: RMCRocketM5510Brute
+        amount: 12
     - name: Barrel Attachments
       entries:
       - id: RMCAttachmentExtendedBarrel

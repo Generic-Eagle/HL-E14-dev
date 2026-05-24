@@ -30,16 +30,35 @@
   - type: Corrodible
     isCorrodible: false
 
+# ├──[ COMMS TOWER FREQS ]───────────────────────────────────────────┤
 - type: entity
-  parent: CMIDCardBase
-  id: AU14IDCardColonyColonist
-  name: colonist ID card
+  id: FactionCLF
+  categories: [ HideSpawnMenu ]
   components:
-  - type: PresetIdCard
-    job: AU14JobCivilianColonist
-  - type: IdCard
-    jobTitle: au14-id-job-title-colony-civilian # so everyone can use it roundstart
+  - type: IFFFaction
+  - type: FactionFrequencies
+    channels:
+    - radioCLF
 
+- type: entity
+  id: FactionCMB
+  categories: [ HideSpawnMenu ]
+  components:
+  - type: IFFFaction
+  - type: FactionFrequencies
+    channels:
+    - radioCMB
+
+- type: entity
+  id: FactionWeYa
+  categories: [ HideSpawnMenu ]
+  components:
+  - type: IFFFaction
+  - type: FactionFrequencies
+    channels:
+    - radioWEYU
+
+# ├──[ CLF & MOB ]───────────────────────────────────────────────────┤
 - type: entity
   parent: CMIDCardBase
   id: AU14IDCardCLFCellLeader
@@ -51,7 +70,11 @@
     groups:
     - Colonist
   - type: IdCard
-    jobTitle: au14-id-job-title-colony-civilian
+    jobTitle: au14-job-name-civiliancolonist
+  - type: ItemIFF
+    factions:
+    - FactionSurvivor
+    - FactionCLF
 
 - type: entity
   parent: AU14IDCardBaseCivilianNoIFF
@@ -62,7 +85,11 @@
     groups:
     - Colonist
   - type: IdCard
-    jobTitle: au14-id-job-title-colony-civilian
+    jobTitle: au14-job-name-civiliancolonist
+  - type: ItemIFF
+    factions:
+    - FactionSurvivor
+    - FactionCLF
 
 - type: entity
   parent: AU14IDCardBaseCivilianNoIFF
@@ -73,7 +100,27 @@
     groups:
     - Colonist
   - type: IdCard
-    jobTitle: au14-id-job-title-colony-civilian
+    jobTitle: au14-job-name-civilianphysician
+  - type: ItemIFF
+    factions:
+    - FactionSurvivor
+    - FactionCLF
+
+- type: entity
+  parent: AU14IDCardCLFPhysician
+  id: AU14IDCardCLFGeneralPractitioner
+  name: CLF general practitioner ID card
+  components:
+  - type: IdCard
+    jobTitle: au14-job-name-civiliangeneralpractitioner
+
+- type: entity
+  parent: AU14IDCardCLFPhysician
+  id: AU14IDCardCLFPharmacist
+  name: CLF pharmacist ID card
+  components:
+  - type: IdCard
+    jobTitle: au14-job-name-civilianpharmacist
 
 - type: entity
   parent: AU14IDCardBaseCivilianNoIFF
@@ -84,55 +131,46 @@
     groups:
     - Colonist
   - type: IdCard
+    jobTitle: au14-job-name-civiliansurgeon
+  - type: ItemIFF
+    factions:
+    - FactionSurvivor
+    - FactionCLF
+
+- type: entity
+  parent: CMIDCardBase
+  id: AU14IDCardMobBoss
+  name: Mob boss ID card
+  components:
+  - type: PresetIdCard
+    job: AU14JobMobBoss
+  - type: IdCard
     jobTitle: au14-id-job-title-colony-civilian
 
 - type: entity
-  parent: AU14IDCardBaseCivilianNoIFF
-  id: AU14IDCardFoodServiceWorker
-  name: food service worker ID card
+  parent: CMIDCardBase
+  id: AU14IDCardMobGoon
+  name: Mob goon ID card
   components:
   - type: PresetIdCard
-    job: AU14JobCivilianFoodServiceWorker
+    job: AU14JobMobGoon
+  - type: IdCard
+    jobTitle: au14-id-job-title-colony-civilian
 
+# ├──[ CORPORATE ]───────────────────────────────────────────────────┤
 - type: entity
   parent: AU14IDCardBaseCivilianNoIFF
-  id: AU14IDCardColonyShopkeep
-  name: shopkeep ID card
+  id: AU14IDCardCorporateSpy
+  name: Lasalle Bionational ID card
+  description: A corporate identification badge with Lasalle Bionational branding. Grants access to Weyland-Yutani facilities.
   components:
-  - type: PresetIdCard
-    job: AU14JobCivilianShopkeep
-
-- type: entity
-  parent: AU14IDCardBaseCivilianNoIFF
-  id: AU14IDCardColonyJournalist
-  name: journalist ID card
-  components:
-  - type: PresetIdCard
-    job: AU14JobCivilianJournalist
-
-- type: entity
-  parent: AU14IDCardColonyJournalist
-  id: AU14IDCardColonyJournalistIndependent
-  name: independent journalist ID card
-  components:
-  - type: JobTitleChanger
-    jobTitle: Independent Journalist
-
-- type: entity
-  parent: AU14IDCardColonyJournalist
-  id: AU14IDCardColonyJournalistFreePress
-  name: free press journalist ID card
-  components:
-  - type: JobTitleChanger
-    jobTitle: Free Press Journalist
-
-- type: entity
-  parent: AU14IDCardColonyJournalist
-  id: AU14IDCardColonyJournalistPhotojournalist
-  name: photojournalist ID card
-  components:
-  - type: JobTitleChanger
-    jobTitle: Photojournalist
+  - type: IdCard
+    nameLocId: cm-access-id-card-component-owner-name-job-title-text
+    fullNameLocId: cm-access-id-card-component-owner-full-name-job-title-text
+    canMicrowave: false
+  - type: Access
+    groups:
+    - auwy
 
 - type: entity
   parent: AU14IDCardBaseCivilianNoIFF
@@ -141,6 +179,23 @@
   components:
   - type: PresetIdCard
     job: AU14JobCivilianScientist
+  - type: ItemIFF
+    factions:
+    - FactionWeYa
+
+# ├──[ SYNTHS ]──────────────────────────────────────────────────────┤
+- type: entity
+  parent: AU14IDCardBaseCivilianNoIFF
+  id: AU14IDCardColonyWorkingJoe
+  name: Working Joe ID card
+  components:
+  - type: PresetIdCard
+    job: AU14JobColonyWorkingJoe
+  - type: ItemIFF
+    factions:
+    - FactionSurvivor
+    - FactionCMB
+    - FactionWeYa
 
 - type: entity
   parent: AU14IDCardBaseCivilianNoIFF
@@ -149,6 +204,10 @@
   components:
   - type: PresetIdCard
     job: AU14JobCivilianColonySynthetic
+  - type: ItemIFF
+    factions:
+    - FactionSurvivor
+    - FactionCMB
 
 - type: entity
   parent: AU14IDCardColonySynthetic
@@ -174,6 +233,7 @@
   - type: JobTitleChanger
     jobTitle: Colony Administration Advisor Synthetic
 
+# ├──[ LEADERS ]─────────────────────────────────────────────────────┤
 - type: entity
   parent: AU14IDCardBaseCivilianNoIFF
   id: AU14IDCardColonyAdministrator
@@ -181,6 +241,10 @@
   components:
   - type: PresetIdCard
     job: AU14JobCivilianColonyAdministrator
+  - type: ItemIFF
+    factions:
+    - FactionSurvivor
+    - FactionCMB
 
 - type: entity
   parent: AU14IDCardBaseCivilianNoIFF
@@ -189,6 +253,9 @@
   components:
   - type: PresetIdCard
     job: AU14JobCivilianCorporateLiaison
+  - type: ItemIFF
+    factions:
+    - FactionWeYa
 
 - type: entity
   parent: AU14IDCardBaseCivilianNoIFF
@@ -197,6 +264,10 @@
   components:
   - type: PresetIdCard
     job: AU14JobCivilianForeman
+  - type: ItemIFF
+    factions:
+    - FactionSurvivor
+    - FactionCMB
 
 - type: entity
   parent: AU14IDCardBaseCivilianNoIFF
@@ -206,6 +277,7 @@
   - type: PresetIdCard
     job: AU14JobCivilianHeadOfEngineering
 
+# ├──[ COLONY JOBS ]─────────────────────────────────────────────────┤
 - type: entity
   parent: AU14IDCardBaseCivilianNoIFF
   id: AU14IDCardColonyFreightSystemsSpecialist
@@ -243,8 +315,37 @@
   id: AU14IDCardColonyPhysician
   name: physician ID card
   components:
-  - type: PresetIdCard
-    job: AU14JobCivilianPhysician
+  - type: Access
+    groups:
+    - Colonist
+    - aumed
+    - AUPrisonStaff
+  - type: IdCard
+    jobTitle: au14-job-name-civilianphysician
+
+- type: entity
+  parent: AU14IDCardColonyPhysician
+  id: AU14IDCardColonySurgeon
+  name: surgeon ID card
+  components:
+  - type: IdCard
+    jobTitle: au14-job-name-civiliansurgeon
+
+- type: entity
+  parent: AU14IDCardColonyPhysician
+  id: AU14IDCardColonyGeneralPractitioner
+  name: general practitioner ID card
+  components:
+  - type: IdCard
+    jobTitle: au14-job-name-civiliangeneralpractitioner
+
+- type: entity
+  parent: AU14IDCardColonyPhysician
+  id: AU14IDCardColonyPharmacist
+  name: pharmacist ID card
+  components:
+  - type: IdCard
+    jobTitle: au14-job-name-civilianpharmacist
 
 - type: entity
   parent: AU14IDCardBaseCivilianNoIFF
@@ -294,36 +395,64 @@
   - type: JobTitleChanger
     jobTitle: Emergency Response Firefighter
 
+# ├──[ COLONY ]──────────────────────────────────────────────────────┤
 - type: entity
-  parent: AU14IDCardBaseCivilianNoIFF
-  id: AU14IDCardColonyCMBDeputy
-  name: CMB deputy ID card
+  parent: CMIDCardBase
+  id: AU14IDCardColonyColonist
+  name: colonist ID card
   components:
   - type: PresetIdCard
-    job: AU14JobCivilianCMBDeputy
-  - type: Sprite
-    sprite: _RMC14/Objects/CMIDs/cmb_deputy.rsi
-    state: icon
-  - type: Clothing
-    slots:
-    - idcard
-    sprite: _RMC14/Objects/CMIDs/cmb_deputy.rsi
+    job: AU14JobCivilianColonist
+  - type: IdCard
+    jobTitle: au14-id-job-title-colony-civilian
 
 - type: entity
   parent: AU14IDCardBaseCivilianNoIFF
-  id: AU14IDCardColonyCMBMarshal
-  name: CMB marshal ID card
+  id: AU14IDCardFoodServiceWorker
+  name: food service worker ID card
   components:
   - type: PresetIdCard
-    job: AU14JobCivilianCMBMarshal
-  - type: Sprite
-    sprite: _RMC14/Objects/CMIDs/cmb_marshal.rsi
-    state: icon
-  - type: Clothing
-    slots:
-    - idcard
-    sprite: _RMC14/Objects/CMIDs/cmb_marshal.rsi
+    job: AU14JobCivilianFoodServiceWorker
 
+- type: entity
+  parent: AU14IDCardBaseCivilianNoIFF
+  id: AU14IDCardColonyShopkeep
+  name: shopkeep ID card
+  components:
+  - type: PresetIdCard
+    job: AU14JobCivilianShopkeep
+
+- type: entity
+  parent: AU14IDCardBaseCivilianNoIFF
+  id: AU14IDCardColonyJournalist
+  name: journalist ID card
+  components:
+  - type: PresetIdCard
+    job: AU14JobCivilianJournalist
+
+- type: entity
+  parent: AU14IDCardColonyJournalist
+  id: AU14IDCardColonyJournalistIndependent
+  name: independent journalist ID card
+  components:
+  - type: JobTitleChanger
+    jobTitle: Independent Journalist
+
+- type: entity
+  parent: AU14IDCardColonyJournalist
+  id: AU14IDCardColonyJournalistFreePress
+  name: free press journalist ID card
+  components:
+  - type: JobTitleChanger
+    jobTitle: Free Press Journalist
+
+- type: entity
+  parent: AU14IDCardColonyJournalist
+  id: AU14IDCardColonyJournalistPhotojournalist
+  name: photojournalist ID card
+  components:
+  - type: JobTitleChanger
+    jobTitle: Photo Journalist
 
 - type: entity
   parent: AU14IDCardBaseCivilianNoIFF
@@ -359,6 +488,7 @@
   - type: JobTitleChanger
     jobTitle: CCAF recruiter
 
+# ├──[ LEOs ]────────────────────────────────────────────────────────┤
 - type: entity
   parent: AU14IDCardBaseCivilianNoIFF
   id: AU14IDCardCivilianKellandWarden
@@ -366,6 +496,44 @@
   components:
   - type: PresetIdCard
     job: AU14JobCivilianKellandWarden
+
+- type: entity
+  parent: AU14IDCardBaseCivilianNoIFF
+  id: AU14IDCardColonyCMBMarshal
+  name: CMB marshal ID card
+  components:
+  - type: PresetIdCard
+    job: AU14JobCivilianCMBMarshal
+  - type: Sprite
+    sprite: _RMC14/Objects/CMIDs/cmb_marshal.rsi
+    state: icon
+  - type: Clothing
+    slots:
+    - idcard
+    sprite: _RMC14/Objects/CMIDs/cmb_marshal.rsi
+  - type: ItemIFF
+    factions:
+    - FactionSurvivor
+    - FactionCMB
+
+- type: entity
+  parent: AU14IDCardBaseCivilianNoIFF
+  id: AU14IDCardColonyCMBDeputy
+  name: CMB deputy ID card
+  components:
+  - type: PresetIdCard
+    job: AU14JobCivilianCMBDeputy
+  - type: Sprite
+    sprite: _RMC14/Objects/CMIDs/cmb_deputy.rsi
+    state: icon
+  - type: Clothing
+    slots:
+    - idcard
+    sprite: _RMC14/Objects/CMIDs/cmb_deputy.rsi
+  - type: ItemIFF
+    factions:
+    - FactionSurvivor
+    - FactionCMB
 
 - type: entity
   parent: AU14IDCardBaseCivilianNoIFF
@@ -398,57 +566,3 @@
   components:
   - type: PresetIdCard
     job: AU14JobCivilianPaPOfficer
-
-- type: entity
-  parent: AU14IDCardBaseCivilianNoIFF
-  id: AU14IDCardColonyWorkingJoe
-  name: Working Joe ID card
-  components:
-  - type: PresetIdCard
-    job: AU14JobColonyWorkingJoe
-
-- type: entity
-  parent: AU14IDCardBaseCivilianNoIFF
-  id: AU14IDCardCorporateSpy
-  name: Lasalle Bionational ID card
-  description: A corporate identification badge with Lasalle Bionational branding. Grants access to Weyland-Yutani facilities.
-  components:
-  - type: IdCard
-    nameLocId: cm-access-id-card-component-owner-name-job-title-text
-    fullNameLocId: cm-access-id-card-component-owner-full-name-job-title-text
-    canMicrowave: false
-  - type: Access
-    groups:
-    - auwy
-
-- type: entity
-  parent: AU14IDCardBaseCivilianNoIFF
-  id: AU14IDCardCivilianColonyPilot
-  name: commercial pilot ID card
-  components:
-  - type: PresetIdCard
-    job: AU14JobCivilianColonyPilot
-
-- type: entity
-  parent: AU14IDCardBaseCivilianNoIFF
-  id: AU14IDCardCivilianOrbitalManager
-  name: commercial pilot ID card
-  components:
-  - type: PresetIdCard
-    job: AU14JobCivilianOrbitalManager
-
-- type: entity
-  parent: AU14IDCardBaseCivilianNoIFF
-  id: AU14IDCardCivilianRightsObserver
-  name: rights observer ID card
-  components:
-  - type: PresetIdCard
-    job: AU14JobInvestigationCMBRightsObserver
-
-- type: entity
-  parent: AU14IDCardBaseCivilianNoIFF
-  id: AU14IDCardCivilianICCLiaison
-  name: interstellar commerce commission liaison ID card
-  components:
-  - type: PresetIdCard
-    job: AU14JobInvestigationICCLiaison

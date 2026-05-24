@@ -61,7 +61,7 @@
     - CMAccessXeno
     - CMAccessXenoQueen
     # CMU!!!!
-    - RMCAccessWeYa
+    - AU14AccessCorporateWEYU
     - CMAccessColonyArmory
     - AU14AccessGovfor
     - AU14AccessGovforSquad
@@ -82,6 +82,14 @@
     - AU14AccessOpforFTL
     - AU14AccessOpforGunner
     - AU14AccessOpforPilot
+    - AU14AccessColonyHeadPhysician
+    - AU14AccessColonyHeadEngineer
+    - AU14AccessColonyMarshall
+    - AU14AccessColonyForeman
+    - AU14AccessColonyAdministrator
+    - AU14AccessColonyHeadOfService
+    - AU14AccessCorporateWEYULiaison
+    - AU14AccessColonyAmbassador
 
     privilegedIdSlot:
       name: id-card-console-privileged-id

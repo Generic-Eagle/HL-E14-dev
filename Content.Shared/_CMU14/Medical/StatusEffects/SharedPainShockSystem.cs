@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using Content.Shared._CMU14.Medical;
 using Content.Shared._CMU14.Medical.BodyPart;
 using Content.Shared._CMU14.Medical.BodyPart.Events;
@@ -10,6 +9,7 @@ using Content.Shared._CMU14.Medical.Organs.Events;
 using Content.Shared._CMU14.Medical.StatusEffects.Events;
 using Content.Shared._CMU14.Medical.Wounds;
 using Content.Shared._CMU14.Medical.Wounds.Events;
+using Content.Shared._RMC14.Synth;
 using Content.Shared.Body.Part;
 using Content.Shared.Body.Systems;
 using Content.Shared.FixedPoint;
@@ -24,15 +24,15 @@ using Robust.Shared.Timing;
 
 namespace Content.Shared._CMU14.Medical.StatusEffects;
 
-public abstract class SharedPainShockSystem : EntitySystem
+public abstract partial class SharedPainShockSystem : EntitySystem
 {
-    [Dependency] protected readonly IConfigurationManager Cfg = default!;
-    [Dependency] protected readonly IGameTiming Timing = default!;
-    [Dependency] protected readonly INetManager Net = default!;
-    [Dependency] protected readonly IRobustRandom Random = default!;
-    [Dependency] protected readonly SharedBodySystem Body = default!;
-    [Dependency] protected readonly SharedFractureSystem Fracture = default!;
-    [Dependency] protected readonly SharedStatusEffectsSystem Status = default!;
+    [Dependency] protected IConfigurationManager Cfg = default!;
+    [Dependency] protected IGameTiming Timing = default!;
+    [Dependency] protected INetManager Net = default!;
+    [Dependency] protected IRobustRandom Random = default!;
+    [Dependency] protected SharedBodySystem Body = default!;
+    [Dependency] protected SharedFractureSystem Fracture = default!;
+    [Dependency] protected SharedStatusEffectsSystem Status = default!;
 
     private const float PainScanInterval = 0.5f;
     private const float SourceStackMultiplier = 0.30f;
@@ -103,6 +103,8 @@ public abstract class SharedPainShockSystem : EntitySystem
             return;
         if (!HasComp<CMUHumanMedicalComponent>(body))
             return;
+        if (TryClearSynthPain(body, pain))
+            return;
 
         if (TryComp<MobStateComponent>(body, out var mob) && mob.CurrentState == MobState.Dead)
             return;
@@ -118,7 +120,7 @@ public abstract class SharedPainShockSystem : EntitySystem
     private void OnFractureSeverityChanged(ref FractureSeverityChangedEvent args)
         => OnRecomputeTrigger(args.Body);
 
-    private void OnSplintChanged(CMUSplintChangedEvent args)
+    private void OnSplintChanged(ref CMUSplintChangedEvent args)
         => OnPartRecomputeTrigger(args.Part);
 
     private void OnCastStartup(Entity<CMUCastComponent> ent, ref ComponentStartup args)
@@ -145,7 +147,7 @@ public abstract class SharedPainShockSystem : EntitySystem
     private void OnWoundsRemove(Entity<BodyPartWoundComponent> ent, ref ComponentRemove args)
         => OnPartRecomputeTrigger(ent.Owner);
 
-    private void OnWoundTreated(WoundTreatedEvent args)
+    private void OnWoundTreated(ref WoundTreatedEvent args)
         => OnRecomputeTrigger(args.Body);
 
     private void OnEscharStartup(Entity<CMUEscharComponent> ent, ref ComponentStartup args)
@@ -154,7 +156,7 @@ public abstract class SharedPainShockSystem : EntitySystem
     private void OnEscharRemove(Entity<CMUEscharComponent> ent, ref ComponentRemove args)
         => OnPartRecomputeTrigger(ent.Owner);
 
-    private void OnInternalBleedChanged(InternalBleedingChangedEvent args)
+    private void OnInternalBleedChanged(ref InternalBleedingChangedEvent args)
         => OnRecomputeTrigger(args.Body);
 
     private void OnPartRecomputeTrigger(EntityUid part)
@@ -170,6 +172,8 @@ public abstract class SharedPainShockSystem : EntitySystem
             return;
         if (!TryComp<PainShockComponent>(args.Target, out var pain))
             return;
+        if (TryClearSynthPain(args.Target, pain))
+            return;
 
         ent.Comp.ActiveProfiles.Clear();
         ent.Comp.AccumulationSuppression = 0f;
@@ -179,6 +183,52 @@ public abstract class SharedPainShockSystem : EntitySystem
 
         pain.NextUpdate = TimeSpan.Zero;
         UpdateTier(args.Target, pain, false);
+    }
+
+    private bool TryClearSynthPain(EntityUid body, PainShockComponent pain)
+    {
+        if (!HasComp<SynthComponent>(body))
+            return false;
+
+        if (Net.IsServer)
+            ClearPainState(body, pain);
+
+        return true;
+    }
+
+    private void ClearPainState(EntityUid body, PainShockComponent pain)
+    {
+        var changed = pain.Pain != FixedPoint2.Zero
+            || pain.PainTarget != FixedPoint2.Zero
+            || pain.CachedRiseRate != FixedPoint2.Zero
+            || pain.AccumulationRateDirty
+            || pain.RawTier != PainTier.None
+            || pain.Tier != PainTier.None
+            || pain.InShock
+            || pain.NextUpdate != TimeSpan.Zero
+            || pain.NextShockPulse != TimeSpan.Zero
+            || pain.NextTierAlertRefresh != TimeSpan.Zero
+            || pain.NextPainReflection != TimeSpan.Zero
+            || pain.NextPainRelief != TimeSpan.Zero;
+
+        pain.Pain = FixedPoint2.Zero;
+        pain.PainTarget = FixedPoint2.Zero;
+        pain.CachedRiseRate = FixedPoint2.Zero;
+        pain.AccumulationRateDirty = false;
+        pain.RawTier = PainTier.None;
+        pain.Tier = PainTier.None;
+        pain.InShock = false;
+        pain.NextUpdate = TimeSpan.Zero;
+        pain.NextShockPulse = TimeSpan.Zero;
+        pain.NextTierAlertRefresh = TimeSpan.Zero;
+        pain.NextPainReflection = TimeSpan.Zero;
+        pain.NextPainRelief = TimeSpan.Zero;
+
+        var removedStatus = TierStatusEffectId(PainTier.Shock) is { } shockStatus
+            && Status.TryRemoveStatusEffect(body, shockStatus);
+
+        if (changed || removedStatus)
+            Dirty(body, pain);
     }
 
     public override void Update(float frameTime)
@@ -200,6 +250,9 @@ public abstract class SharedPainShockSystem : EntitySystem
         var query = EntityQueryEnumerator<PainShockComponent, CMUHumanMedicalComponent, MobStateComponent>();
         while (query.MoveNext(out var uid, out var pain, out _, out var mob))
         {
+            if (TryClearSynthPain(uid, pain))
+                continue;
+
             if (mob.CurrentState == MobState.Dead || pain.NextUpdate > now)
                 continue;
             pain.NextUpdate = now + TimeSpan.FromSeconds(1);
@@ -227,6 +280,8 @@ public abstract class SharedPainShockSystem : EntitySystem
         if (!Resolve(ent.Owner, ref ent.Comp, logMissing: false))
             return;
         if (!HasComp<CMUHumanMedicalComponent>(ent.Owner))
+            return;
+        if (TryClearSynthPain(ent.Owner, ent.Comp))
             return;
         if (refreshCache)
             RefreshPainSources(ent.Owner, ent.Comp);
@@ -280,6 +335,8 @@ public abstract class SharedPainShockSystem : EntitySystem
         if (Net.IsClient)
             return;
         if (!TryComp<PainShockComponent>(body, out var pain))
+            return;
+        if (TryClearSynthPain(body, pain))
             return;
 
         UpdateTier(body, pain, false);
@@ -378,6 +435,9 @@ public abstract class SharedPainShockSystem : EntitySystem
 
     public PainTier GetEffectiveTier(EntityUid body, PainShockComponent pain)
     {
+        if (HasComp<SynthComponent>(body))
+            return PainTier.None;
+
         var rawTier = GetRawTier(pain);
         return ApplySuppressionToTier(body, rawTier);
     }
@@ -396,21 +456,19 @@ public abstract class SharedPainShockSystem : EntitySystem
 
     public PainSourceSnapshot ComputePainSourceProfile(EntityUid body)
     {
-        var sources = new List<float>();
-        var riseRate = 0f;
+        if (HasComp<SynthComponent>(body))
+            return new PainSourceSnapshot(FixedPoint2.Zero, FixedPoint2.Zero);
 
-        void AddSource(float target)
-        {
-            if (target <= 0f)
-                return;
-            sources.Add(target);
-            riseRate += target * PainRiseRatePerTarget;
-        }
+        var sourceCount = 0;
+        var highest = 0f;
+        var total = 0f;
+        var riseRate = 0f;
 
         foreach (var (partUid, _) in Body.GetBodyChildren(body))
         {
             if (TryComp<FractureComponent>(partUid, out var frac))
-                AddSource(FracturePainTarget(Fracture.GetEffectiveSeverity((partUid, frac))));
+                AddPainSource(ref sourceCount, ref highest, ref total, ref riseRate,
+                    FracturePainTarget(Fracture.GetEffectiveSeverity((partUid, frac))));
 
             if (TryComp<BodyPartHealthComponent>(partUid, out var ph) &&
                 ph.Max > FixedPoint2.Zero)
@@ -419,9 +477,9 @@ public abstract class SharedPainShockSystem : EntitySystem
                 var max = ph.Max;
                 var fraction = current.Float() / max.Float();
                 if (fraction < 0.10f)
-                    AddSource(30f);
+                    AddPainSource(ref sourceCount, ref highest, ref total, ref riseRate, 30f);
                 else if (fraction < 0.25f)
-                    AddSource(15f);
+                    AddPainSource(ref sourceCount, ref highest, ref total, ref riseRate, 15f);
             }
 
             if (TryComp<BodyPartWoundComponent>(partUid, out var pw))
@@ -431,39 +489,47 @@ public abstract class SharedPainShockSystem : EntitySystem
                     if (pw.Wounds[i].Treated)
                         continue;
                     var size = i < pw.Sizes.Count ? pw.Sizes[i] : WoundSize.Deep;
-                    AddSource(WoundPainTarget(size));
+                    AddPainSource(ref sourceCount, ref highest, ref total, ref riseRate, WoundPainTarget(size));
                 }
             }
 
             if (HasComp<CMUEscharComponent>(partUid))
-                AddSource(55f);
+                AddPainSource(ref sourceCount, ref highest, ref total, ref riseRate, 55f);
 
             if (HasComp<InternalBleedingComponent>(partUid))
-                AddSource(35f);
+                AddPainSource(ref sourceCount, ref highest, ref total, ref riseRate, 35f);
         }
 
         foreach (var organ in Body.GetBodyOrgans(body))
         {
             if (!TryComp<OrganHealthComponent>(organ.Id, out var oh))
                 continue;
-            AddSource(OrganPainTarget(oh.Stage));
+            AddPainSource(ref sourceCount, ref highest, ref total, ref riseRate, OrganPainTarget(oh.Stage));
         }
 
-        if (sources.Count == 0)
+        if (sourceCount == 0)
             return new PainSourceSnapshot(FixedPoint2.Zero, FixedPoint2.Zero);
-
-        var highest = 0f;
-        var total = 0f;
-        foreach (var source in sources)
-        {
-            highest = MathF.Max(highest, source);
-            total += source;
-        }
 
         var target = MathF.Min(PainTargetCap, highest + SourceStackMultiplier * (total - highest));
         return new PainSourceSnapshot(
             (FixedPoint2)target,
             (FixedPoint2)MathF.Min(PainRiseRateCap, riseRate));
+    }
+
+    private static void AddPainSource(
+        ref int count,
+        ref float highest,
+        ref float total,
+        ref float riseRate,
+        float target)
+    {
+        if (target <= 0f)
+            return;
+
+        count++;
+        highest = MathF.Max(highest, target);
+        total += target;
+        riseRate += target * PainRiseRatePerTarget;
     }
 
     public FixedPoint2 ComputeAccumulationRate(EntityUid body)

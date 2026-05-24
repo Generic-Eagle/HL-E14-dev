@@ -1,6 +1,10 @@
 using System.Linq;
+using Content.Server.Access.Systems;
+using Content.Server.IdentityManagement;
+using Content.Server.Preferences.Managers;
 using Content.Server.AU14.Round;
 using Content.Shared.AU14.Threats;
+using Content.Shared.Access.Systems;
 using Robust.Shared.Map;
 using Content.Shared.Roles;
 using Content.Shared.Mind;
@@ -8,13 +12,17 @@ using Content.Server.GameTicking;
 using Content.Shared._RMC14.Dropship;
 using Content.Shared.AU14.util;
 using Content.Shared.Players;
+using Content.Shared.Preferences;
 using Robust.Shared.Random;
 using Robust.Server.Player;
 using Robust.Shared.EntitySerialization.Systems;
 using Robust.Shared.Network;
+using Robust.Shared.Player;
 using Robust.Shared.Prototypes;
+using Robust.Server.GameObjects;
 using Content.Server.AU14.VendorMarker;
 using Content.Shared.Ghost;
+using Content.Shared.Humanoid;
 using Content.Shared.ParaDrop;
 using Content.Shared._RMC14.CrashLand;
 using Content.Server.Chat.Systems;
@@ -23,18 +31,22 @@ using Robust.Shared.EntitySerialization;
 
 namespace Content.Server.AU14.ThirdParty;
 
-public sealed class AuThirdPartySystem : EntitySystem
+public sealed partial class AuThirdPartySystem : EntitySystem
 {
-    [Dependency] private readonly IPlayerManager _playerManager = default!;
-    [Dependency] private readonly IRobustRandom _random = default!;
-    [Dependency] private readonly IEntityManager _entityManager = default!;
-    [Dependency] private readonly MapLoaderSystem _mapLoader = default!;
+    [Dependency] private IPlayerManager _playerManager = default!;
+    [Dependency] private IRobustRandom _random = default!;
+    [Dependency] private IEntityManager _entityManager = default!;
+    [Dependency] private MapLoaderSystem _mapLoader = default!;
     private readonly ISawmill _sawmill = Logger.GetSawmill("thirdparty");
-    [Dependency] private readonly IPrototypeManager _prototypeManager = default!;
-    [Dependency] private readonly AuRoundSystem _auRoundSystem = default!;
-    [Dependency] private readonly ChatSystem _chat = default!;
-    [Dependency] private readonly SharedDropshipSystem _sharedDropshipSystem = default!;
-    [Dependency] private readonly SharedTransformSystem _transform = default!;
+    [Dependency] private IPrototypeManager _prototypeManager = default!;
+    [Dependency] private AuRoundSystem _auRoundSystem = default!;
+    [Dependency] private ChatSystem _chat = default!;
+    [Dependency] private SharedDropshipSystem _sharedDropshipSystem = default!;
+    [Dependency] private SharedTransformSystem _transform = default!;
+    [Dependency] private IServerPreferencesManager _preferences = default!;
+    [Dependency] private MetaDataSystem _metaData = default!;
+    [Dependency] private IdCardSystem _idCard = default!;
+    [Dependency] private IdentitySystem _identity = default!;
 
     // --- State for round third party spawning ---
     private ThreatPrototype? _currentThreat;
@@ -68,7 +80,7 @@ public sealed class AuThirdPartySystem : EntitySystem
 
     public float GetSignalIntervalMultiplier() => _signalIntervalMultiplier;
 
-    public void SpawnThirdParty(AuThirdPartyPrototype party, PartySpawnPrototype spawnProto, bool roundStart, Dictionary<NetUserId, (ProtoId<JobPrototype>?, EntityUid)>? assignedJobs = null, bool? overrideDropship = null)
+    public bool SpawnThirdParty(AuThirdPartyPrototype party, PartySpawnPrototype spawnProto, bool roundStart, Dictionary<NetUserId, (ProtoId<JobPrototype>?, EntityUid)>? assignedJobs = null, bool? overrideDropship = null)
     {
         const float SpawnTogetherRadius = 8f;
 
@@ -107,20 +119,20 @@ public sealed class AuThirdPartySystem : EntitySystem
             if (!foundDestination)
             {
                 _sawmill.Error("[AuThirdPartySystem] No valid dropship destination found (not landed, not controlled). Aborting third party spawn.");
-                return;
+                return false;
             }
             _sawmill.Debug($"[AuThirdPartySystem] Found valid dropship destination: {chosenDestination}");
             var deserializationOpts = DeserializationOptions.Default with { InitializeMaps = true };
             if (!_mapLoader.TryLoadMap(party.dropshippath, out var dropshipMap, out var grids, deserializationOpts))
             {
                 _sawmill.Error($"[AuThirdPartySystem] Failed to load dropship map: {party.dropshippath}");
-                return;
+                return false;
             }
             mainGridUid = grids.FirstOrDefault();
             if (mainGridUid == EntityUid.Invalid)
             {
                 _sawmill.Error($"[AuThirdPartySystem] No grids found in dropship map: {party.dropshippath}");
-                return;
+                return false;
             }
             _sawmill.Debug($"[AuThirdPartySystem] Dropship grid initialized: {mainGridUid}");
 
@@ -392,7 +404,7 @@ public sealed class AuThirdPartySystem : EntitySystem
             if (safeLeaderMarkers.Count < leaderReq || safeGruntMarkers.Count < gruntReq || safeEntityMarkers.Count < entityReq)
             {
                 _sawmill.Warning($"[AuThirdPartySystem] Not enough safe markers to spawn third party {party.ID}: leaders needed {leaderReq}, safe available {safeLeaderMarkers.Count}; grunts needed {gruntReq}, safe available {safeGruntMarkers.Count}; entities needed {entityReq}, safe available {safeEntityMarkers.Count}. Aborting spawn.");
-                return;
+                return false;
             }
 
             // Replace marker pools with safe lists so subsequent selection never picks an unsafe marker.
@@ -406,7 +418,7 @@ public sealed class AuThirdPartySystem : EntitySystem
             if (leaderMarkers.Count < leaderReq || gruntMarkers.Count < gruntReq || entityMarkers.Count < entityReq)
             {
                 _sawmill.Warning($"[AuThirdPartySystem] Not enough unused dropship markers to spawn third party {party.ID}: leaders needed {leaderReq}, available {leaderMarkers.Count}; grunts needed {gruntReq}, available {gruntMarkers.Count}; entities needed {entityReq}, available {entityMarkers.Count}. Aborting spawn.");
-                return;
+                return false;
             }
         }
 
@@ -611,10 +623,13 @@ public sealed class AuThirdPartySystem : EntitySystem
                 var ticker = _entityManager.System<GameTicker>();
                 ticker.PlayerJoinGame(session, silent: true);
                 var data = session.ContentData();
-                var mind = mindSystem.GetMind(playerNetId) ?? mindSystem.CreateMind(playerNetId, data?.Name ?? "Third Party Player");
-                mindSystem.SetUserId(mind, playerNetId);
-                mindSystem.TransferTo(mind, entity);
-                roleSystem.MindAddJobRole(mind, silent: true, jobPrototype: "AU14JobThirdPartyLeader");
+                var mind = mindSystem.GetMind(playerNetId);
+                var characterName = GetPlayerCharacterName(session, mind, data?.Name ?? "Third Party Player");
+                ApplyPlayerCharacterName(entity, characterName);
+                mind ??= mindSystem.CreateMind(playerNetId, characterName);
+                mindSystem.SetUserId(mind.Value, playerNetId);
+                mindSystem.TransferTo(mind.Value, entity);
+                roleSystem.MindAddJobRole(mind.Value, silent: true, jobPrototype: "AU14JobThirdPartyLeader");
             }
             for (int i = 0; i < memberPlayers.Count && i < spawnedGrunts.Count; i++)
             {
@@ -625,10 +640,13 @@ public sealed class AuThirdPartySystem : EntitySystem
                 var ticker = _entityManager.System<GameTicker>();
                 ticker.PlayerJoinGame(session, silent: true);
                 var data = session.ContentData();
-                var mind = mindSystem.GetMind(playerNetId) ?? mindSystem.CreateMind(playerNetId, data?.Name ?? "Third Party Player");
-                mindSystem.SetUserId(mind, playerNetId);
-                mindSystem.TransferTo(mind, entity);
-                roleSystem.MindAddJobRole(mind, silent: true, jobPrototype: "AU14JobThirdPartyMember");
+                var mind = mindSystem.GetMind(playerNetId);
+                var characterName = GetPlayerCharacterName(session, mind, data?.Name ?? "Third Party Player");
+                ApplyPlayerCharacterName(entity, characterName);
+                mind ??= mindSystem.CreateMind(playerNetId, characterName);
+                mindSystem.SetUserId(mind.Value, playerNetId);
+                mindSystem.TransferTo(mind.Value, entity);
+                roleSystem.MindAddJobRole(mind.Value, silent: true, jobPrototype: "AU14JobThirdPartyMember");
             }
         }
         if (!string.IsNullOrWhiteSpace(party.AnnounceArrival))
@@ -637,12 +655,47 @@ public sealed class AuThirdPartySystem : EntitySystem
             _sawmill.Info($"[AuThirdPartySystem] Announced arrival for third party {party.ID}: {party.AnnounceArrival}");
         }
 
+        return true;
+    }
+
+    private string GetPlayerCharacterName(ICommonSession player, EntityUid? mind, string fallback)
+    {
+        if (mind != null &&
+            TryComp<MindComponent>(mind.Value, out var mindComp) &&
+            !string.IsNullOrWhiteSpace(mindComp.CharacterName))
+        {
+            return mindComp.CharacterName;
+        }
+
+        if (_preferences.GetPreferencesOrNull(player.UserId)?.SelectedCharacter is HumanoidCharacterProfile profile &&
+            !string.IsNullOrWhiteSpace(profile.Name))
+        {
+            return profile.Name;
+        }
+
+        return fallback;
+    }
+
+    private void ApplyPlayerCharacterName(EntityUid mob, string characterName)
+    {
+        if (!HasComp<HumanoidAppearanceComponent>(mob))
+            return;
+
+        if (string.IsNullOrWhiteSpace(characterName))
+            return;
+
+        _metaData.SetEntityName(mob, characterName);
+
+        if (_idCard.TryFindIdCard(mob, out var idCard))
+            _idCard.TryChangeFullName(idCard.Owner, characterName, idCard.Comp);
+
+        _identity.QueueIdentityUpdate(mob);
     }
 
     public override void Update(float frameTime)
     {
         base.Update(frameTime);
-        if (!_spawningActive || _thirdPartyList == null || _currentThreat == null)
+        if (!_spawningActive || _thirdPartyList == null)
             return;
         if (_nextThirdPartyIndex >= _thirdPartyList.Count)
         {
@@ -661,7 +714,7 @@ public sealed class AuThirdPartySystem : EntitySystem
         {
             return;
         }
-        var interval = TimeSpan.FromTicks((long)(_spawnInterval.Ticks * _signalIntervalMultiplier / Math.Max(1, party.weight)));
+        var interval = TimeSpan.FromTicks((long)(_spawnInterval.Ticks * _signalIntervalMultiplier));
         if (_spawnTimer < interval.TotalSeconds)
             return;
         _spawnTimer = 0f;
@@ -671,14 +724,21 @@ public sealed class AuThirdPartySystem : EntitySystem
         {
             if (_prototypeManager.TryIndex(party.PartySpawn, out var spawnProto))
             {
-                SpawnThirdParty(party, spawnProto, false);
-                _sawmill.Debug($"[AuThirdPartySystem] Spawned third party {party.ID} (roll {roll} <= {chance})");
+                if (SpawnThirdParty(party, spawnProto, false))
+                {
+                    _sawmill.Debug($"[AuThirdPartySystem] Spawned third party {party.ID} (roll {roll} <= {chance})");
+                    _nextThirdPartyIndex++;
+                }
+                else
+                {
+                    _sawmill.Warning($"[AuThirdPartySystem] Spawn attempt for third party {party.ID} failed; keeping it queued for a later retry.");
+                }
             }
             else
             {
                 _sawmill.Error($"[AuThirdPartySystem] No spawn proto for third party {party.ID} (PartySpawn={party.PartySpawn})");
+                _nextThirdPartyIndex++;
             }
-            _nextThirdPartyIndex++;
         }
         else
         {
@@ -693,30 +753,13 @@ public sealed class AuThirdPartySystem : EntitySystem
         _thirdPartyList = _auRoundSystem.SelectedThirdParties.ToList();
         _nextThirdPartyIndex = 0;
         _spawnTimer = 0f;
-        if (_currentThreat != null)
+        try
         {
-            try
-            {
-                _spawnInterval = TimeSpan.FromSeconds(Math.Max(1, _currentThreat.ThirdPartyInterval));
-            }
-            catch
-            {
-                _sawmill.Warning("[AuThirdPartySystem] Invalid ThirdPartyInterval on threat; using default interval.");
-            }
+            _spawnInterval = TimeSpan.FromSeconds(Math.Max(1, _currentThreat.ThirdPartyInterval));
         }
-        else
+        catch
         {
-
-                var selectedPlanetField = _auRoundSystem.GetType().GetField("_selectedPlanet", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
-                var selectedPlanet = selectedPlanetField?.GetValue(_auRoundSystem) as Content.Shared._RMC14.Rules.RMCPlanetMapPrototypeComponent;
-                if (selectedPlanet != null && selectedPlanet.ThirdPartyInterval.HasValue)
-                {
-                    var val = Math.Max(1, selectedPlanet.ThirdPartyInterval.Value);
-                    _spawnInterval = TimeSpan.FromSeconds(val);
-                    _sawmill.Debug($"[AuThirdPartySystem] Using planet spawn interval: {val} seconds (no active threat)");
-                }
-
-
+            _sawmill.Warning("[AuThirdPartySystem] Invalid ThirdPartyInterval on threat; using default interval.");
         }
 
         if (_thirdPartyList == null || _thirdPartyList.Count == 0)
@@ -737,8 +780,10 @@ public sealed class AuThirdPartySystem : EntitySystem
 
                 if (_prototypeManager.TryIndex<PartySpawnPrototype>(party.PartySpawn, out var spawnProto))
                 {
-                    SpawnThirdParty(party, spawnProto, true, assignedJobs);
-                    _sawmill.Debug($"[AuThirdPartySystem] Spawned roundstart third party {party.ID}");
+                    if (SpawnThirdParty(party, spawnProto, true, assignedJobs))
+                        _sawmill.Debug($"[AuThirdPartySystem] Spawned roundstart third party {party.ID}");
+                    else
+                        _sawmill.Warning($"[AuThirdPartySystem] Roundstart spawn attempt for third party {party.ID} failed.");
                 }
                 else
                 {

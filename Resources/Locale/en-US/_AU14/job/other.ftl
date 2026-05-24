@@ -11,22 +11,19 @@ au14-department-isolation = Isolation
 au14-department-isolation-description = Roles limited to use on the Isolation gamemode
 
 
-au14-department-weyu = WeYu
+au14-department-weyu = We-Yu
 au14-department-wyu-description = Jobs part of Weyland Yutani
 
 au14-job-name-mobboss= Mob Boss
 au14-job-description-mobboss= You're the leader of the local crime syndicate, ensure the goals of your family are met
 au14-job-prefix-mobboss = MOB
-AU14JobMobBoss = Mob Boss
 
 au14-job-name-mobgoon= Mob Goon
 au14-job-description-mobgoon = You're a soldier in local crime syndicate, listen to the boss
-AU14JobMobGoon = Mob Goon
 
 au14-job-name-wyguard = Security Officer
 au14-job-description-wyguard= You're corporate security hired by Weyland-Yutani. Listen to and protect the employees and company assets
 au14-job-prefix-wyguard = WYSEC
-AU14JobWYGuard = Security Officer
 
 au14-department-third-party = Third Party
 au14-department-third-party-description = Select this job to play as a third party
@@ -307,3 +304,15 @@ au14-vaisp-greeting = You are part of Vanguard's Arrow Incorporated.
     Ensure their safety at all cost.
 
     You are FRIENDLY to all UA units.
+
+au14-prodigyparty-description = You are a part of "Prodigy Armed Repair Team" (PART)! You were called for a special mission in the area, follow your orders.
+
+au14-prodigyparty-greeting = You are a part of "Prodigy Armed Repair Team" (PART) party!
+
+    You were called for a special mission in the area, follow your orders.
+
+    Protecting your hiring member is a top priority along with your mission.
+
+    Prodigy Security - Repairing Our World
+
+    You are HOSTILE to all WeYu units
