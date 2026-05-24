@@ -171,8 +171,6 @@
     isCorrodible: false
   - type: CMArmor
     bio: 25
-    heatingCoefficient: 0.001
-    coolingCoefficient: 0.3
   - type: RMCImmuneToIgnition
     immuneToDirectHits: false
   - type: FirewalkArmor
