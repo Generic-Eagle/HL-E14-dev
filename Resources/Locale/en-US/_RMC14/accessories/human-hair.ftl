@@ -202,9 +202,9 @@ marking-RMCHumanHairMarineBun = Marine Bun (RMC)
 
 marking-RMCHumanHairMarineBun2 = Marine Bun 2 (RMC)
 
-marking-RMCHumanHairPonytail6 = Ponytail 5 (RMC)
+marking-RMCHumanHairPonytail5 = Ponytail 5 (RMC)
 
-marking-RMCHumanHairPonytail7 = Ponytail 6 (RMC)
+marking-RMCHumanHairPonytail6 = Ponytail 6 (RMC)
 
 marking-RMCHumanHairPonytail7 = Ponytail 7 (RMC)
 
