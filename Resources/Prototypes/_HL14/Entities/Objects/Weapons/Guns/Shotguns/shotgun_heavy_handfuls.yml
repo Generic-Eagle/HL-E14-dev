@@ -30,7 +30,7 @@
 - type: stack
   id: HL14ShellShotgunBuckshotHeavy
   name: handful of heavy buckshot shells
-  icon: { sprite: /Textures/_HL13/Objects/Weapons/Guns/Ammunition/Handfuls/shotgun_heavy_handfuls.rsi, state: heavy_buckshot_shell_1 }
+  icon: { sprite: /Textures/_HL13/Objects/Weapons/Guns/Ammunition/Handfuls/shotgun_heavy_handfuls.rsi, state: heavy_buckshot_1 }
   spawn: HL14ShellShotgunHeavyBuckshot
   maxCount: 4
 
@@ -66,7 +66,7 @@
 - type: stack
   id: HL14ShellShotgunSlugHeavy
   name: handful of heavy slug shells
-  icon: { sprite: /Textures/_HL13/Objects/Weapons/Guns/Ammunition/Handfuls/shotgun_heavy_handfuls.rsi, state: heavy_slug_shell_1 }
+  icon: { sprite: /Textures/_HL13/Objects/Weapons/Guns/Ammunition/Handfuls/shotgun_heavy_handfuls.rsi, state: heavy_slug_1 }
   spawn: HL14ShellShotgunHeavySlugs
   maxCount: 4
 
