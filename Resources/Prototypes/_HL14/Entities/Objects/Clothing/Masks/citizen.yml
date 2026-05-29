@@ -13,7 +13,7 @@
   - type: IdentityBlocker
   - type: EyeProtection
   - type: HideLayerClothing
-    slots:
+    Slots:
     - Hair
     - HeadTop
     - HeadSide
